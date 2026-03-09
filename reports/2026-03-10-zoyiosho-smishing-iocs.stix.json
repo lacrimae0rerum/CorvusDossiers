@@ -1,0 +1,692 @@
+{
+  "meta": {
+    "investigation_id": "SMISHING-ZOYIOSHO-2026-0310",
+    "title": "Smishing Threat Actor Investigation — zoyiosho.my.id",
+    "classification": "UNCLASSIFIED",
+    "generated_by": "CorvusEngine v2.0.0 / CorvusPrime v2.1.0",
+    "generated_at": "2026-03-10T19:45:00Z",
+    "updated_at": "2026-03-10T19:45:00Z",
+    "modules_executed": [
+      "intelligence_operations",
+      "infrastructure_assessment",
+      "tactical_correlation_frameworks",
+      "source_correlation_matrix",
+      "data_recognition_ingestion",
+      "webint_module",
+      "correlation_analysis"
+    ],
+    "tools_used": [
+      "dig", "whois", "nmap", "curl", "openssl", "wafw00f", "whatweb",
+      "theHarvester", "dnsrecon", "traceroute", "python3/cryptography",
+      "URLscan.io API", "Shodan InternetDB", "crt.sh", "AlienVault OTX",
+      "Wayback Machine CDX", "WebSearch OSINT"
+    ],
+    "confidence_overall": "HIGH",
+    "confidence_score": 0.82,
+    "evidence_files": {
+      "decrypted_phishing_page": "DECRYPTED_phishing_page.html",
+      "decrypted_eval_payload": "DECRYPTED_eval_payload.js",
+      "encrypted_source": "equity_phishing_page.html",
+      "root_cloudflare_interstitial": "root_page.html",
+      "tco_redirect_page": "tco_redirect.html",
+      "urlscan_screenshot_equity": "urlscan_screenshot_equity.png",
+      "urlscan_screenshot_original": "urlscan_screenshot_original.png",
+      "http_headers_phishing": "headers_phishing.txt",
+      "http_headers_equity": "headers_equity_phish.txt",
+      "http_headers_tco": "headers_tco.txt"
+    }
+  },
+
+  "target": {
+    "primary_url": "https://zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+    "active_phishing_url": "https://equity.zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+    "delivery_vector_url": "https://t.co/in5dy63sCm",
+    "domain": "zoyiosho.my.id",
+    "attack_type": "smishing",
+    "campaign_status": "ACTIVE on equity subdomain (HTTP 200)",
+    "phishing_kit_type": "AES-GCM encrypted fake CAPTCHA → credential harvester",
+    "backend_framework": "Laravel (PHP)",
+    "origin_server": "Apache on cPanel shared hosting"
+  },
+
+  "phishing_kit_analysis": {
+    "encryption": {
+      "outer_layer": {
+        "algorithm": "AES-128-GCM",
+        "key_b64": "wUgGAWmO35BkVktQXe3cfA==",
+        "key_hex": "c14806016998df906454b4515ddddc7c",
+        "iv_b64": "px89rtFJcpVi32Xl",
+        "iv_hex": "a71f3daed14972956dd7e5e5",
+        "tag_b64": "/OxuIekfNAuwb68CMpWuvA==",
+        "ciphertext_size": 9272,
+        "plaintext_size": 9270,
+        "purpose": "Encrypts entire phishing page HTML — prevents static analysis by WAF, antivirus, HTTrack, wget"
+      },
+      "inner_layer_eval": {
+        "algorithm": "Custom PRNG-XOR-ROT cipher → eval()",
+        "prng_seed": 321103,
+        "prng_formula": "(seed * 9301 + 49297) % 233280",
+        "hash_component": "791c3e2e",
+        "function_obfuscation": "XOR character codes to derive 'atob', Symbol.toPrimitive to derive 'eval'",
+        "purpose": "Anti-debugging, anti-DevTools, bot detection"
+      },
+      "form_layer": {
+        "algorithm": "XOR with MD5 key",
+        "xor_key_md5": "1d5abbdd7e22c041d7f6c51f07e9b57d",
+        "decrypted_value": "23798794727476c48ab0369c83cb532b",
+        "purpose": "Campaign/session identifier for POST form submission"
+      }
+    },
+    "anti_analysis_techniques": [
+      "AES-GCM encryption of entire page content",
+      "Custom PRNG cipher for eval'd JavaScript",
+      "Bot detection: navigator.webdriver, window.callPhantom, window._phantom",
+      "Puppeteer detection: User-Agent contains 'purp'",
+      "DevTools detection: F12, Ctrl+Shift+I/J/C/K, Ctrl+U disabled",
+      "Right-click context menu disabled",
+      "Debugger timing trap with setInterval + performance.now()",
+      "Anti-analysis redirect to alibaba.com if debugger detected",
+      "XOR encryption of form POST data"
+    ],
+    "fake_captcha_ui": {
+      "title": "Polite Hold in Place",
+      "heading": "Continue now",
+      "text": "Please verify to continue to the protected resource",
+      "checkbox_text": "Show you're human",
+      "badges": ["SSL", "v3.0"],
+      "success_text": "Verified Successfully",
+      "footer": "This step helps keep automated bots away from the site",
+      "design": "Card-style UI mimicking Cloudflare/hCaptcha verification, mobile-optimized 320px width",
+      "behavior": "Click checkbox → spinner 0.9s → checkmark → progress bar → POST form after 3s"
+    },
+    "form_exfiltration": {
+      "form_id": "tu0",
+      "method": "POST (obfuscated as P&#79;S&#84;)",
+      "fields": [
+        {"name": "obj", "value": "empty — populated server-side or next stage"},
+        {"name": "art", "id": "yd6", "value": "base64(xor_decrypted_campaign_id)"}
+      ],
+      "post_target": "Same URL (self-submit to Laravel backend)",
+      "next_stage": "Laravel backend processes POST and serves credential harvesting form"
+    }
+  },
+
+  "delivery_vector": {
+    "platform": "Twitter/X (t.co URL shortener)",
+    "short_url": "https://t.co/in5dy63sCm",
+    "redirect_method": "JavaScript location.replace() + noscript meta refresh",
+    "redirect_target": "http://zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+    "referrer_policy": "always (leaks t.co referrer to phishing page)",
+    "opener_protection": "window.opener = null",
+    "redirect_chain": [
+      "https://t.co/in5dy63sCm → 200 (JS redirect)",
+      "http://zoyiosho.my.id/PiLcgSf@L86IDXnT/ → 307 (HTTP→HTTPS)",
+      "https://zoyiosho.my.id/PiLcgSf@L86IDXnT/ → 404 (content rotated from apex)",
+      "https://equity.zoyiosho.my.id/PiLcgSf@L86IDXnT/ → 200 (ACTIVE phishing page)"
+    ],
+    "t_co_server": "cloudflare envoy (t4_a)",
+    "t_co_tls": "TLS 1.3, AES_128_GCM, X25519MLKEM768",
+    "t_co_cf_ray": "9da46dddeee37954-MAD"
+  },
+
+  "entities": {
+    "domains": [
+      {
+        "type": "domain",
+        "value": "zoyiosho.my.id",
+        "role": "primary_phishing_domain",
+        "first_seen": "2026-01-03T23:58:28Z",
+        "last_seen": "2026-03-10",
+        "status": "cloudflare_phishing_flag_active",
+        "registrar": "PT Beon Intermedia (JagoanHosting)",
+        "registrar_abuse_contact": "care@jagoanhosting.id",
+        "registry_domain_id": "19108480_DOMAIN_ID-ID",
+        "creation_date": "2026-01-03T23:58:28Z",
+        "updated_date": "2026-01-04T16:09:15Z",
+        "expiry_date": "2027-01-03T23:59:59Z",
+        "dnssec": "unsigned",
+        "tld_notes": ".my.id — #1 most abused SLD in Indonesia (1,215+ abuse cases Q3 2024), free registration available"
+      },
+      {
+        "type": "domain",
+        "value": "equity.zoyiosho.my.id",
+        "role": "ACTIVE_phishing_subdomain",
+        "campaign_theme": "banking_financial",
+        "first_seen": "2026-03-04",
+        "last_seen": "2026-03-10",
+        "status": "ACTIVE — serving AES-encrypted phishing page (HTTP 200)",
+        "framework": "Laravel (PHP)",
+        "cookies": ["XSRF-TOKEN", "laravel_session"]
+      },
+      {
+        "type": "domain",
+        "value": "colab.zoyiosho.my.id",
+        "role": "phishing_subdomain",
+        "campaign_theme": "google_colab_impersonation",
+        "first_seen": "2026-03-07",
+        "last_seen": "2026-03-07",
+        "status": "cloudflare_phishing_flag"
+      },
+      {
+        "type": "domain",
+        "value": "www.equity.zoyiosho.my.id",
+        "role": "phishing_subdomain_alias",
+        "first_seen": "2026-03-04"
+      },
+      {
+        "type": "domain",
+        "value": "cpanel.zoyiosho.my.id",
+        "role": "hosting_management_panel"
+      },
+      {
+        "type": "domain",
+        "value": "mail.zoyiosho.my.id",
+        "role": "mail_subdomain_unused"
+      },
+      {
+        "type": "domain",
+        "value": "webmail.zoyiosho.my.id",
+        "role": "webmail_subdomain_unused"
+      }
+    ],
+
+    "infrastructure": [
+      {
+        "type": "ip_address",
+        "value": "188.114.96.5",
+        "version": "ipv4",
+        "role": "cloudflare_proxy",
+        "asn": "AS13335",
+        "organization": "Cloudflare, Inc.",
+        "netname": "CLOUDFLARENET-EU",
+        "range": "188.114.96.0/22",
+        "note": "Reverse proxy — NOT origin server IP"
+      },
+      {
+        "type": "ip_address",
+        "value": "188.114.97.5",
+        "version": "ipv4",
+        "role": "cloudflare_proxy",
+        "asn": "AS13335"
+      },
+      {
+        "type": "ip_address",
+        "value": "188.114.96.3",
+        "version": "ipv4",
+        "role": "cloudflare_proxy_alternate",
+        "asn": "AS13335",
+        "source": "URLscan.io scans"
+      },
+      {
+        "type": "ip_address",
+        "value": "104.21.20.103",
+        "version": "ipv4",
+        "role": "historical_cloudflare_proxy",
+        "asn": "AS13335",
+        "source": "theHarvester passive DNS"
+      },
+      {
+        "type": "ip_address",
+        "value": "172.67.192.85",
+        "version": "ipv4",
+        "role": "historical_cloudflare_proxy",
+        "asn": "AS13335",
+        "source": "theHarvester passive DNS"
+      },
+      {
+        "type": "ip_address",
+        "value": "2a06:98c1:3120::5",
+        "version": "ipv6",
+        "role": "cloudflare_proxy",
+        "asn": "AS13335"
+      },
+      {
+        "type": "ip_address",
+        "value": "2a06:98c1:3121::5",
+        "version": "ipv6",
+        "role": "cloudflare_proxy",
+        "asn": "AS13335"
+      },
+      {
+        "type": "nameserver",
+        "value": "reza.ns.cloudflare.com",
+        "role": "authoritative_dns"
+      },
+      {
+        "type": "nameserver",
+        "value": "sid.ns.cloudflare.com",
+        "role": "authoritative_dns"
+      },
+      {
+        "type": "hosting_provider",
+        "value": "PT Beon Intermedia",
+        "brand": "JagoanHosting",
+        "asn": "AS55688",
+        "location": "Jl. Jemur Andayani 50, Surabaya, Indonesia",
+        "role": "origin_hosting_and_registrar",
+        "abuse_contacts": ["care@jagoanhosting.id", "abuse@jagoanhosting.com"],
+        "technical_contact": "Farid Rahman (om.team@jagoanhosting.com)",
+        "ipv4_prefixes": 23,
+        "ipv4_addresses": 5888,
+        "spam_rate": "1.85% (13/701 active IPs)",
+        "abuse_trend": "escalating — 20 events Feb 2026, 17 in March 2026",
+        "bgp_notes": "AS55688 announces bogons (abnormal BGP behavior)"
+      },
+      {
+        "type": "cdn_proxy",
+        "value": "Cloudflare",
+        "asn": "AS13335",
+        "role": "reverse_proxy_waf_dns",
+        "pop_observed": "MAD (Madrid, Spain)",
+        "abuse_contact": "abuse@cloudflare.com",
+        "phishing_status": "Domain flagged as 'Suspected Phishing' with Turnstile interstitial",
+        "turnstile_sitekey": "0x4AAAAAABDaGKKSGLylJZFA",
+        "ech_enabled": true,
+        "protocols": ["HTTP/2", "HTTP/3 (QUIC)", "TLS 1.3"],
+        "ports_open": [80, 443, 2083, 8080, 8443]
+      }
+    ],
+
+    "certificates": [
+      {
+        "type": "ssl_certificate",
+        "serial": "10E2A1644E72B364117FF7535276D310",
+        "issuer": "Google Trust Services WE1",
+        "common_name": "zoyiosho.my.id",
+        "sans": ["zoyiosho.my.id", "*.zoyiosho.my.id"],
+        "not_before": "2026-03-04T17:34:47Z",
+        "not_after": "2026-06-02T18:33:14Z",
+        "key_type": "ECDSA P-256",
+        "role": "cloudflare_universal_ssl_current",
+        "ct_logs": ["Cloudflare Nimbus2026", "Google Xenon2026h1"],
+        "public_key_fingerprint": "F7:EF:CF:59:8A:D8:CB:51:DB:CE:EE:38:7A:B5:E8:41:5A:18:85:69"
+      },
+      {
+        "type": "ssl_certificate",
+        "serial": "06E50BF736B0A1754E38241FEF5EEF3CF0B4",
+        "issuer": "Let's Encrypt R12",
+        "common_name": "cpanel.zoyiosho.my.id",
+        "sans": [
+          "cpanel.zoyiosho.my.id", "autodiscover.zoyiosho.my.id",
+          "cpcalendars.zoyiosho.my.id", "cpcontacts.zoyiosho.my.id",
+          "mail.zoyiosho.my.id", "webdisk.zoyiosho.my.id",
+          "webmail.zoyiosho.my.id", "www.zoyiosho.my.id", "zoyiosho.my.id"
+        ],
+        "not_before": "2026-01-04",
+        "sha256": "32F12D3BA5C15D2F42F94425EFC35EB97E7E5AB18E501853396BA40646E3DCDA",
+        "role": "cpanel_autossl_origin_server",
+        "note": "CRITICAL — reveals cPanel shared hosting origin before Cloudflare proxy"
+      },
+      {
+        "type": "ssl_certificate",
+        "issuer": "E7 (Let's Encrypt)",
+        "common_name": "t.co",
+        "sans": ["t.co"],
+        "role": "delivery_vector_tls"
+      }
+    ],
+
+    "urls": [
+      {
+        "type": "phishing_url",
+        "value": "https://zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+        "status": "404 — content rotated from apex domain",
+        "note": "Path uses @ symbol for URL parser confusion"
+      },
+      {
+        "type": "phishing_url",
+        "value": "https://equity.zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+        "status": "200 — ACTIVE phishing page",
+        "content": "AES-GCM encrypted fake CAPTCHA page",
+        "framework": "Laravel"
+      },
+      {
+        "type": "delivery_url",
+        "value": "https://t.co/in5dy63sCm",
+        "status": "ACTIVE — still redirecting to phishing URL",
+        "platform": "Twitter/X",
+        "redirect_method": "JavaScript location.replace()"
+      },
+      {
+        "type": "anti_analysis_redirect",
+        "value": "http://alibaba.com",
+        "purpose": "Redirect destination when debugger/DevTools detected"
+      }
+    ],
+
+    "organizations": [
+      {
+        "type": "organization",
+        "value": "PT Beon Intermedia",
+        "role": "domain_registrar_and_origin_host",
+        "country": "ID",
+        "city": "Surabaya",
+        "asn": "AS55688",
+        "brand": "JagoanHosting"
+      },
+      {
+        "type": "organization",
+        "value": "Cloudflare, Inc.",
+        "role": "cdn_proxy_waf_provider",
+        "country": "US",
+        "asn": "AS13335"
+      },
+      {
+        "type": "organization",
+        "value": "PANDI (Pengelola Nama Domain Internet Indonesia)",
+        "role": "id_domain_registry_authority",
+        "country": "ID",
+        "abuse_exchange": "IDADX (idadx.id)"
+      }
+    ],
+
+    "threat_actors": [
+      {
+        "type": "threat_actor",
+        "name": "Smishing Triad",
+        "aliases": ["Lighthouse PhaaS"],
+        "attribution_confidence": "MEDIUM-HIGH",
+        "attribution_score": 0.70,
+        "attribution_note": "Infrastructure aligns with Smishing Triad TTPs. Likely a Lighthouse PhaaS customer/affiliate using independent Indonesian infrastructure rather than core group operation.",
+        "origin": "Chinese-speaking eCrime group",
+        "active_since": "2023",
+        "operations": {
+          "model": "Phishing-as-a-Service (PhaaS)",
+          "tool": "Lighthouse phishing kit",
+          "price": "$200/month on Telegram",
+          "scale": "194,000+ FQDNs, 136,933 root domains",
+          "active_domains_per_8_days": 25000,
+          "countries_targeted": 121,
+          "cards_compromised_us": "15-100 million",
+          "revenue_estimate": "$1 billion+ over 3 years"
+        },
+        "matching_ttps": [
+          "Cloudflare DNS proxy usage (34.6% of FQDNs)",
+          "Cheap disposable TLD (.my.id)",
+          "cPanel shared hosting as origin",
+          "Wildcard certificate for subdomain rotation",
+          "Multiple simultaneous campaign themes (banking, tech)",
+          "No email infrastructure (web-only phishing)",
+          "Indonesian registrar infrastructure",
+          "Spain targeting (CF-Ray MAD PoP)",
+          "URL path obfuscation with @ symbol",
+          "AES-encrypted phishing pages (anti-analysis)",
+          "Fake CAPTCHA/verification UI as first stage",
+          "Laravel PHP backend",
+          "t.co URL shortener for delivery"
+        ],
+        "divergent_indicators": [
+          ".my.id TLD not in documented 187 Smishing Triad TLDs",
+          "JagoanHosting registrar vs typical Dominet (HK) Limited (68%)",
+          "Indonesian hosting vs typical Tencent/Alibaba"
+        ],
+        "legal_actions": [
+          "Google RICO lawsuit filed November 2025"
+        ]
+      }
+    ],
+
+    "cryptographic_artifacts": [
+      {
+        "type": "aes_key",
+        "value_b64": "wUgGAWmO35BkVktQXe3cfA==",
+        "algorithm": "AES-128-GCM",
+        "purpose": "Phishing page content encryption"
+      },
+      {
+        "type": "aes_iv",
+        "value_b64": "px89rtFJcpVi32Xl",
+        "purpose": "AES-GCM initialization vector"
+      },
+      {
+        "type": "md5_hash",
+        "value": "1d5abbdd7e22c041d7f6c51f07e9b57d",
+        "purpose": "XOR key for form data encryption"
+      },
+      {
+        "type": "md5_hash",
+        "value": "23798794727476c48ab0369c83cb532b",
+        "purpose": "Campaign/session identifier (decrypted form POST value)"
+      },
+      {
+        "type": "prng_seed",
+        "value": 321103,
+        "formula": "(seed * 9301 + 49297) % 233280",
+        "purpose": "Inner JavaScript obfuscation cipher"
+      }
+    ]
+  },
+
+  "dns_records": {
+    "A": ["188.114.96.5", "188.114.97.5"],
+    "AAAA": ["2a06:98c1:3120::5", "2a06:98c1:3121::5"],
+    "NS": ["reza.ns.cloudflare.com", "sid.ns.cloudflare.com"],
+    "SOA": "reza.ns.cloudflare.com. dns.cloudflare.com. 2398331862",
+    "HTTPS_SVCB": "1 . alpn=h3,h2 ipv4hint=188.114.96.5,188.114.97.5 ech=AEX+DQBBGQAgACBWHTQT0gdqHVtgnJURmb6wIfW/ZJ7dwV1BHJhcVfGLOQAEAAEAAQASY2xvdWRmbGFyZS1lY2guY29tAAA=",
+    "HINFO": "RFC8482",
+    "MX": null,
+    "TXT": null,
+    "SPF": null,
+    "DMARC": null,
+    "DKIM": null,
+    "CAA": null,
+    "wildcard_dns": true,
+    "note": "ALL subdomains (tested 20+) resolve to same Cloudflare IPs"
+  },
+
+  "nmap_scan": {
+    "target_ip": "188.114.96.5",
+    "ports_open": [
+      {"port": 80, "service": "http", "product": "Cloudflare http proxy"},
+      {"port": 443, "service": "ssl/http", "product": "Cloudflare http proxy"},
+      {"port": 8080, "service": "http", "product": "Cloudflare http proxy"},
+      {"port": 8443, "service": "ssl/http", "product": "Cloudflare http proxy"}
+    ],
+    "ports_filtered": 996,
+    "all_pages_title": "Suspected phishing site | Cloudflare",
+    "robots_txt": "1 disallowed entry: /"
+  },
+
+  "waf_detection": {
+    "tool": "wafw00f v2.3.2",
+    "waf_detected": "Cloudflare (Cloudflare Inc.)"
+  },
+
+  "web_fingerprint": {
+    "tool": "WhatWeb",
+    "server": "cloudflare",
+    "status": "403 Forbidden",
+    "technologies": ["HTML5", "Cloudflare"],
+    "headers": {
+      "X-Frame-Options": "SAMEORIGIN",
+      "Referrer-Policy": "same-origin",
+      "Cache-Control": "private, max-age=0, no-store, no-cache"
+    }
+  },
+
+  "urlscan_results": [
+    {
+      "scan_id": "019cd909-e5f9-77ff-b940-c94d0b0a8cea",
+      "url": "https://t.co/in5dy63sCm",
+      "final_url": "https://zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+      "status": 404,
+      "title": "404 Not Found",
+      "ip": "188.114.96.3",
+      "time": "2026-03-10T18:37:16.721Z",
+      "screenshot": "urlscan_screenshot_original.png",
+      "technologies": ["Cloudflare Bot Management"]
+    },
+    {
+      "scan_id": "019cd936-1bbf-757a-bf39-89b167cf1596",
+      "url": "https://equity.zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+      "status": 200,
+      "ip": "188.114.96.3",
+      "time": "2026-03-10T19:25:34.019Z",
+      "screenshot": "urlscan_screenshot_equity.png",
+      "technologies": ["Laravel", "Cloudflare Bot Management"],
+      "note": "ACTIVE PHISHING PAGE — returned HTTP 200 with AES-encrypted content"
+    }
+  ],
+
+  "mitre_attack": {
+    "framework_version": "v15",
+    "mappings": [
+      {"tactic": "Resource Development", "tactic_id": "TA0042", "technique": "Acquire Infrastructure: Domains", "technique_id": "T1583.001"},
+      {"tactic": "Resource Development", "tactic_id": "TA0042", "technique": "Acquire Infrastructure: Virtual Private Server", "technique_id": "T1583.003"},
+      {"tactic": "Resource Development", "tactic_id": "TA0042", "technique": "Stage Capabilities: Link Target", "technique_id": "T1608.005"},
+      {"tactic": "Resource Development", "tactic_id": "TA0042", "technique": "Obtain Capabilities: Web Services", "technique_id": "T1588.006"},
+      {"tactic": "Initial Access", "tactic_id": "TA0001", "technique": "Phishing: Spearphishing Link", "technique_id": "T1566.002"},
+      {"tactic": "Execution", "tactic_id": "TA0002", "technique": "User Execution: Malicious Link", "technique_id": "T1204.001"},
+      {"tactic": "Collection", "tactic_id": "TA0009", "technique": "Input Capture: Web Portal Capture", "technique_id": "T1056.003"},
+      {"tactic": "Defense Evasion", "tactic_id": "TA0005", "technique": "Hide Infrastructure", "technique_id": "T1665"},
+      {"tactic": "Defense Evasion", "tactic_id": "TA0005", "technique": "Obfuscated Files or Information: Encrypted/Encoded File", "technique_id": "T1027.013"},
+      {"tactic": "Defense Evasion", "tactic_id": "TA0005", "technique": "Obfuscated Files or Information: Dynamic API Resolution", "technique_id": "T1027.007"},
+      {"tactic": "Command and Control", "tactic_id": "TA0011", "technique": "Web Service: Bidirectional Communication", "technique_id": "T1102.002"}
+    ]
+  },
+
+  "diamond_model": {
+    "adversary": {
+      "name": "Smishing Triad affiliate / Lighthouse PhaaS customer",
+      "confidence": "MEDIUM-HIGH (70%)",
+      "type": "eCrime affiliate",
+      "origin": "Chinese-speaking (probable)",
+      "model": "Phishing-as-a-Service consumer"
+    },
+    "infrastructure": {
+      "domain": "zoyiosho.my.id (+ wildcard subdomains)",
+      "registrar": "PT Beon Intermedia / JagoanHosting (Indonesia, AS55688)",
+      "origin_hosting": "cPanel Apache shared hosting",
+      "proxy": "Cloudflare (AS13335, Madrid PoP)",
+      "backend_framework": "Laravel (PHP)",
+      "encryption": "AES-128-GCM client-side content encryption",
+      "delivery": "t.co URL shortener (Twitter/X)"
+    },
+    "capability": {
+      "phishing_kit": "Multi-layer encrypted fake CAPTCHA → credential harvester",
+      "encryption_layers": 3,
+      "anti_analysis": "Bot detection, DevTools detection, debugger traps, anti-right-click",
+      "evasion": "Cloudflare proxy, AES-GCM encryption, PRNG cipher, subdomain rotation",
+      "campaigns": ["banking/equity", "tech/colab", "unknown/PiLcgSf"]
+    },
+    "victim": {
+      "targeting": "Spanish mobile users (CF-Ray MAD, es-ES locale)",
+      "delivery": "SMS smishing + Twitter/X t.co shortened links",
+      "lure": "Fake verification/CAPTCHA page → credential harvesting"
+    }
+  },
+
+  "timeline": [
+    {"date": "2026-01-03T23:58:28Z", "event": "Domain zoyiosho.my.id registered at JagoanHosting"},
+    {"date": "2026-01-04T16:09:15Z", "event": "DNS nameservers pointed to Cloudflare (reza/sid)"},
+    {"date": "2026-01-04T20:20:00Z", "event": "cPanel AutoSSL certificate issued (Let's Encrypt R12) — reveals origin hosting"},
+    {"date": "2026-01-04", "event": "Wildcard cert + Cloudflare Universal SSL issued"},
+    {"date": "2026-03-04", "event": "Subdomain equity.zoyiosho.my.id first observed (AlienVault OTX)"},
+    {"date": "2026-03-04", "event": "Cloudflare Universal SSL certificate renewed (Google Trust Services WE1)"},
+    {"date": "2026-03-07", "event": "Subdomain colab.zoyiosho.my.id first observed"},
+    {"date": "2026-03-07", "event": "New Let's Encrypt E8 wildcard certificate issued"},
+    {"date": "2026-03-08", "event": "equity.zoyiosho.my.id last observed in OTX"},
+    {"date": "2026-03-10T14:56:44Z", "event": "HTTrack mirror attempt failed (SSL error)"},
+    {"date": "2026-03-10T18:37:16Z", "event": "URLscan scan via t.co shows 404 on apex domain"},
+    {"date": "2026-03-10T19:16:00Z", "event": "CorvusEngine investigation — Cloudflare phishing interstitial on root domain"},
+    {"date": "2026-03-10T19:25:34Z", "event": "URLscan confirms HTTP 200 on equity subdomain with Laravel"},
+    {"date": "2026-03-10T19:29:39Z", "event": "Phishing page downloaded from equity subdomain (13,182 bytes)"},
+    {"date": "2026-03-10T19:30:00Z", "event": "AES-GCM payload decrypted — fake CAPTCHA page with anti-analysis revealed"},
+    {"date": "2026-03-10T19:35:00Z", "event": "Inner eval() payload decrypted — bot detection + DevTools traps identified"}
+  ],
+
+  "iocs": {
+    "domains": [
+      "zoyiosho.my.id",
+      "equity.zoyiosho.my.id",
+      "colab.zoyiosho.my.id",
+      "www.equity.zoyiosho.my.id",
+      "cpanel.zoyiosho.my.id",
+      "mail.zoyiosho.my.id",
+      "webmail.zoyiosho.my.id"
+    ],
+    "ips_cloudflare_proxy": [
+      "188.114.96.3", "188.114.96.5", "188.114.97.5",
+      "104.21.20.103", "172.67.192.85",
+      "2a06:98c1:3120::5", "2a06:98c1:3121::5"
+    ],
+    "urls": [
+      "https://zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+      "https://equity.zoyiosho.my.id/PiLcgSf@L86IDXnT/",
+      "https://t.co/in5dy63sCm"
+    ],
+    "certificate_serials": [
+      "10E2A1644E72B364117FF7535276D310",
+      "06E50BF736B0A1754E38241FEF5EEF3CF0B4"
+    ],
+    "certificate_sha256": [
+      "32F12D3BA5C15D2F42F94425EFC35EB97E7E5AB18E501853396BA40646E3DCDA"
+    ],
+    "hashes_md5": [
+      "1d5abbdd7e22c041d7f6c51f07e9b57d",
+      "23798794727476c48ab0369c83cb532b"
+    ],
+    "crypto_keys": {
+      "aes_key": "wUgGAWmO35BkVktQXe3cfA==",
+      "aes_iv": "px89rtFJcpVi32Xl"
+    },
+    "nameservers": [
+      "reza.ns.cloudflare.com",
+      "sid.ns.cloudflare.com"
+    ],
+    "registrar": "PT Beon Intermedia / JagoanHosting (AS55688)",
+    "anti_analysis_redirect": "http://alibaba.com",
+    "turnstile_sitekey": "0x4AAAAAABDaGKKSGLylJZFA"
+  },
+
+  "recommendations": {
+    "immediate": [
+      "Report t.co link (https://t.co/in5dy63sCm) to Twitter/X for takedown",
+      "Report equity.zoyiosho.my.id to Cloudflare: abuse.cloudflare.com/phishing",
+      "Report to registrar: care@jagoanhosting.id / abuse@jagoanhosting.com",
+      "Submit to PANDI/IDADX: idadx.id/report",
+      "Submit to Google Safe Browsing, PhishTank, URLhaus",
+      "Report URLscan scan IDs as confirmed phishing"
+    ],
+    "investigation_next_steps": [
+      "Complete POST form submission flow to identify credential harvesting page (Stage 2)",
+      "Discover origin server IP via SecurityTrails historical DNS or cPanel cert search on Shodan/Censys",
+      "Search for Twitter/X account that posted the t.co link",
+      "Analyze Laravel session tokens for additional campaign infrastructure",
+      "Monitor CT logs for new certificates on *.zoyiosho.my.id",
+      "Correlate AES key and MD5 hashes with known Lighthouse kit samples",
+      "Search for other .my.id domains registered at JagoanHosting on 2026-01-03"
+    ],
+    "detection_signatures": [
+      "Alert on AES-GCM encrypted HTML pages with crypto.subtle.decrypt in source",
+      "Alert on fake CAPTCHA pages with 'Polite Hold in Place' title",
+      "Block t.co links redirecting to .my.id domains",
+      "Monitor for Laravel sessions from equity/colab subdomains of .my.id",
+      "Detect XOR-encrypted form POST values with MD5-structured keys"
+    ]
+  },
+
+  "sources": [
+    "WHOIS via PANDI registry",
+    "DNS resolution via Google DNS and Cloudflare DNS",
+    "Certificate Transparency logs (crt.sh)",
+    "AlienVault OTX passive DNS",
+    "RIPE WHOIS for IP allocation",
+    "URLscan.io API (2 scans)",
+    "Shodan InternetDB",
+    "Cloudflare HTTP headers (CF-Ray MAD PoP)",
+    "nmap v7.98 service scan",
+    "wafw00f v2.3.2 WAF detection",
+    "WhatWeb technology fingerprinting",
+    "theHarvester v4.9.2 OSINT",
+    "openssl s_client certificate inspection",
+    "Python cryptography library (AES-GCM decryption)",
+    "Silent Push — Smishing Triad research",
+    "Palo Alto Unit42 — Global smishing campaign analysis",
+    "KrebsOnSecurity — Google RICO lawsuit",
+    "SecurityWeek — 194,000 domain campaign",
+    "IDADX — Indonesian domain abuse statistics",
+    "phish.report — PT Beon Intermedia contact",
+    "Sublime Security — t.co phishing abuse analysis"
+  ]
+}

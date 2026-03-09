@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THREAT-2026-SMISH-001 — neflixpagocuenta.net</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Fragment+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME — DARK-FIRST CYBERSECURITY ============ */
+:root {
+  --font-body: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-mono: 'Fragment Mono', 'SF Mono', Consolas, monospace;
+
+  --bg: #09090b;
+  --bg-subtle: #0e0e12;
+  --surface: #131318;
+  --surface2: #1a1a21;
+  --surface-elevated: #1f1f28;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-bright: rgba(255, 255, 255, 0.12);
+  --text: #e4e4e7;
+  --text-dim: #71717a;
+  --text-muted: #52525b;
+
+  /* Accent palette */
+  --red: #e50914;           /* Netflix red — critical */
+  --red-dim: rgba(229, 9, 20, 0.12);
+  --red-glow: rgba(229, 9, 20, 0.06);
+  --amber: #d97706;         /* Warnings */
+  --amber-dim: rgba(217, 119, 6, 0.12);
+  --green: #059669;         /* Defense / safe */
+  --green-dim: rgba(5, 150, 105, 0.12);
+  --blue: #0284c7;          /* Info / infrastructure */
+  --blue-dim: rgba(2, 132, 199, 0.10);
+  --cranberry: #9f1239;     /* Threat actor */
+  --cranberry-dim: rgba(159, 18, 57, 0.15);
+  --slate: #334155;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #fafafa;
+    --bg-subtle: #f5f5f5;
+    --surface: #ffffff;
+    --surface2: #f0f0f3;
+    --surface-elevated: #ffffff;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-bright: rgba(0, 0, 0, 0.15);
+    --text: #18181b;
+    --text-dim: #71717a;
+    --text-muted: #a1a1aa;
+    --red: #dc2626;
+    --red-dim: rgba(220, 38, 38, 0.08);
+    --red-glow: rgba(220, 38, 38, 0.04);
+    --amber: #b45309;
+    --amber-dim: rgba(180, 83, 9, 0.08);
+    --green: #047857;
+    --green-dim: rgba(4, 120, 87, 0.08);
+    --blue: #0369a1;
+    --blue-dim: rgba(3, 105, 161, 0.06);
+    --cranberry: #be123c;
+    --cranberry-dim: rgba(190, 18, 60, 0.08);
+    --slate: #94a3b8;
+  }
+}
+
+/* ============ RESET + BASE ============ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 0%, var(--red-glow) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, var(--blue-dim) 0%, transparent 40%);
+  color: var(--text);
+  font-family: var(--font-body);
+  padding: 32px 40px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ LAYOUT — NAV + MAIN ============ */
+.wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0 40px;
+}
+.main { min-width: 0; }
+
+/* ============ TOC ============ */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  padding: 14px 0;
+  grid-row: 1 / -1;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+.toc::-webkit-scrollbar { width: 3px; }
+.toc::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: 2px; }
+
+.toc-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  padding: 0 0 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.toc a {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.4;
+  margin-bottom: 1px;
+}
+.toc a:hover { color: var(--text); background: var(--surface2); }
+.toc a.active { color: var(--red); border-left-color: var(--red); }
+
+@media (max-width: 1000px) {
+  .wrap { grid-template-columns: 1fr; padding-top: 0; }
+  body { padding: 16px; padding-top: 0; }
+  .toc {
+    position: sticky; top: 0; z-index: 200;
+    max-height: none; display: flex; gap: 4px; align-items: center;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 10px 0; margin: 0 -16px; padding-left: 16px; padding-right: 16px; grid-row: auto;
+  }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc-title { display: none; }
+  .toc a {
+    white-space: nowrap; flex-shrink: 0; border-left: none;
+    border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; padding: 6px 10px; font-size: 10px;
+  }
+  .toc a.active { border-left: none; border-bottom-color: var(--red); background: var(--surface); color: var(--red); }
+  .main { padding-top: 20px; }
+  .sec-head { scroll-margin-top: 52px; }
+}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.anim {
+  animation: fadeUp 0.4s ease-out both;
+  animation-delay: calc(var(--i, 0) * 0.05s);
+}
+.anim-s {
+  animation: fadeScale 0.35s ease-out both;
+  animation-delay: calc(var(--i, 0) * 0.06s);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============ HERO HEADER ============ */
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-left: 4px solid var(--red);
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+}
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.hero h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.hero-domain {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ============ BADGES ============ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  padding: 3px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.badge--red { background: var(--red-dim); color: var(--red); }
+.badge--red::before { animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.badge--amber { background: var(--amber-dim); color: var(--amber); }
+.badge--green { background: var(--green-dim); color: var(--green); }
+.badge--blue { background: var(--blue-dim); color: var(--blue); }
+.badge--slate { background: rgba(100,116,139,0.12); color: var(--slate); }
+
+/* ============ SECTION HEADS ============ */
+.sec-head {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  padding: 20px 0 12px;
+  margin-top: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sec-head .sec-num {
+  display: inline-block;
+  background: var(--red-dim);
+  color: var(--red);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+/* ============ KPI GRID ============ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  transition: border-color 0.2s;
+}
+.kpi:hover { border-color: var(--border-bright); }
+.kpi-val {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+/* ============ CARDS ============ */
+.ve-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.ve-card--hero {
+  border-color: var(--border-bright);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.ve-card--recessed {
+  background: var(--bg-subtle);
+  border-color: var(--border);
+}
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+/* ============ ATTACK FLOW ============ */
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 24px;
+}
+.flow-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  position: relative;
+}
+.flow-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flow-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  flex-shrink: 0;
+  border: 2px solid;
+}
+.flow-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 12px;
+}
+.flow-body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  border-left: 3px solid;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.flow-body:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+.flow-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.flow-endpoint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.flow-data {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.flow-data-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Flow severity colors */
+.flow--low .flow-num { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+.flow--low .flow-connector { background: var(--blue); opacity: 0.3; }
+.flow--low .flow-body { border-left-color: var(--blue); }
+
+.flow--med .flow-num { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+.flow--med .flow-connector { background: var(--amber); opacity: 0.3; }
+.flow--med .flow-body { border-left-color: var(--amber); }
+
+.flow--high .flow-num { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+.flow--high .flow-connector { background: var(--red); opacity: 0.3; }
+.flow--high .flow-body { border-left-color: var(--red); }
+
+.flow--crit .flow-num { border-color: var(--red); color: #fff; background: var(--red); }
+.flow--crit .flow-connector { background: var(--red); opacity: 0.5; }
+.flow--crit .flow-body { border-left-color: var(--red); background: var(--red-dim); }
+
+.flow--ok .flow-num { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.flow--ok .flow-connector { background: var(--green); opacity: 0.3; }
+.flow--ok .flow-body { border-left-color: var(--green); }
+
+/* ============ INFRA GRID ============ */
+.infra-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.infra-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  border-top: 3px solid var(--blue);
+}
+.infra-card--primary { border-top-color: var(--red); }
+.infra-card--asn { border-top-color: var(--cranberry); }
+.infra-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.infra-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.infra-row:last-child { border-bottom: none; }
+.infra-key { color: var(--text-dim); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.infra-val { font-family: var(--font-mono); font-size: 12px; text-align: right; }
+.infra-val--red { color: var(--red); }
+
+/* ============ DOMAIN CLUSTERS ============ */
+.cluster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.cluster {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  transition: border-color 0.2s;
+}
+.cluster:hover { border-color: var(--border-bright); }
+.cluster-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cluster-brand {
+  font-size: 14px;
+  font-weight: 700;
+}
+.cluster-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.cluster-domains {
+  list-style: none;
+}
+.cluster-domains li {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 0;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+.cluster-domains li:last-child { border-bottom: none; }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot--live { background: var(--red); }
+.dot--blocked { background: var(--amber); }
+.dot--dead { background: var(--text-muted); }
+
+/* ============ TA PROFILE ============ */
+.ta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.ta-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 3px solid var(--cranberry);
+}
+
+/* ============ TIMELINE ============ */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 24px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--text-muted), var(--red));
+}
+.tl-item {
+  position: relative;
+  padding-bottom: 20px;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--text-muted);
+}
+.tl-item--active::before {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 8px var(--red-dim);
+}
+.tl-item--peak::before {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+.tl-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.tl-desc {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ============ TABLES ============ */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.5; }
+.data-table thead { position: sticky; top: 0; z-index: 2; }
+.data-table th {
+  background: var(--surface2);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-bright);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--bg-subtle); }
+.data-table tbody tr { transition: background 0.15s; }
+.data-table tbody tr:hover { background: var(--surface2); }
+.data-table code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--red-dim);
+  color: var(--red);
+  padding: 1px 5px;
+  border-radius: 3px;
+  word-break: break-all;
+}
+.data-table small { display: block; color: var(--text-dim); font-size: 10px; margin-top: 2px; }
+
+/* ============ EVIDENCE BLOCK ============ */
+.evidence {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-bright);
+  border-left: 3px solid var(--amber);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  overflow-wrap: break-word;
+}
+.evidence strong { color: var(--red); font-weight: 400; }
+.evidence em { color: var(--amber); font-style: normal; }
+
+/* ============ DEFENSE ACTIONS ============ */
+.defense-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.defense-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+.defense-card--p1 { border-left: 4px solid var(--red); }
+.defense-card--p2 { border-left: 4px solid var(--amber); }
+.defense-card--p3 { border-left: 4px solid var(--blue); }
+.defense-priority {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.defense-card--p1 .defense-priority { color: var(--red); }
+.defense-card--p2 .defense-priority { color: var(--amber); }
+.defense-card--p3 .defense-priority { color: var(--blue); }
+.defense-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.defense-detail { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.defense-detail code {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--surface2); padding: 1px 5px; border-radius: 3px;
+}
+
+/* ============ CALLOUT ============ */
+.callout {
+  background: var(--red-dim);
+  border: 1px solid rgba(229, 9, 20, 0.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.callout-title {
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+/* ============ COLLAPSIBLE ============ */
+details.collapsible {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+details.collapsible summary {
+  padding: 12px 18px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  transition: background 0.15s;
+}
+details.collapsible summary:hover { background: var(--surface2); }
+details.collapsible summary::-webkit-details-marker { display: none; }
+details.collapsible summary::before {
+  content: '▸';
+  font-size: 11px;
+  color: var(--text-dim);
+  transition: transform 0.15s;
+}
+details.collapsible[open] summary::before { transform: rotate(90deg); }
+.collapsible-body {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+/* ============ UTILITIES ============ */
+.mb-sm { margin-bottom: 8px; }
+.mb-md { margin-bottom: 16px; }
+.mb-lg { margin-bottom: 24px; }
+.mono { font-family: var(--font-mono); }
+.dim { color: var(--text-dim); }
+.text-red { color: var(--red); }
+.text-amber { color: var(--amber); }
+.text-green { color: var(--green); }
+.text-blue { color: var(--blue); }
+.text-sm { font-size: 12px; }
+.flex-gap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  body { padding: 12px; }
+  .hero h1 { font-size: 20px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-val { font-size: 24px; }
+  .flow-step { grid-template-columns: 40px 1fr; gap: 10px; }
+  .infra-grid, .cluster-grid, .ta-grid, .defense-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ═══════ TOC ═══════ -->
+<nav class="toc" id="toc">
+  <div class="toc-title">Sections</div>
+  <a href="#s1">1. Summary</a>
+  <a href="#s2">2. Key Metrics</a>
+  <a href="#s3">3. Attack Flow</a>
+  <a href="#s4">4. Infrastructure</a>
+  <a href="#s5">5. Domain Clusters</a>
+  <a href="#s6">6. Threat Actor</a>
+  <a href="#s7">7. Timeline</a>
+  <a href="#s8">8. IOC Table</a>
+  <a href="#s9">9. Cross-Brand</a>
+  <a href="#s10">10. Defense</a>
+</nav>
+
+<div class="main">
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero anim" style="--i:0">
+  <div class="hero-label">Threat Intelligence Report &mdash; THREAT-2026-SMISH-001</div>
+  <h1>Active Smishing Campaign</h1>
+  <div class="hero-domain">neflixpagocuenta.net</div>
+  <div class="hero-meta">
+    <span class="badge badge--red">Active</span>
+    <span class="badge badge--red">Urgente</span>
+    <span class="badge badge--amber">TLP:AMBER</span>
+    <span class="badge badge--blue">2026-03-09</span>
+    <span class="badge badge--slate">Passive OSINT</span>
+  </div>
+</div>
+
+<!-- ═══════ S1 — EXECUTIVE SUMMARY ═══════ -->
+<div id="s1" class="sec-head anim" style="--i:1"><span class="sec-num">01</span> Resumen Ejecutivo</div>
+
+<div class="callout anim" style="--i:2">
+  <div class="callout-title">Campaña de smishing activa &mdash; sitio operativo</div>
+  Kit de fraude financiero en tiempo real desplegado en <code style="font-family:var(--font-mono);font-size:11px;background:var(--red-dim);color:var(--red);padding:1px 5px;border-radius:3px">neflixpagocuenta.net</code> suplantando a Netflix. Captura credenciales, PII completa, datos de tarjeta + PIN, y engaña a víctimas para aprobar transacciones reales via 3D Secure. Operación multi-país, multi-marca con infraestructura dedicada (ASN propio, 1.024 IPs). Mismo kit confirmado activo hoy en dominio de sanidad francesa.
+</div>
+
+<!-- ═══════ S2 — METRICS ═══════ -->
+<div id="s2" class="sec-head anim" style="--i:3"><span class="sec-num">02</span> Key Metrics</div>
+
+<div class="kpi-grid">
+  <div class="kpi anim-s" style="--i:4">
+    <div class="kpi-val text-red" data-count="237">237+</div>
+    <div class="kpi-label">Historical Domains</div>
+  </div>
+  <div class="kpi anim-s" style="--i:5">
+    <div class="kpi-val text-red">2</div>
+    <div class="kpi-label">Active Kits Today</div>
+  </div>
+  <div class="kpi anim-s" style="--i:6">
+    <div class="kpi-val text-amber">15+</div>
+    <div class="kpi-label">Brands Impersonated</div>
+  </div>
+  <div class="kpi anim-s" style="--i:7">
+    <div class="kpi-val text-amber">13+</div>
+    <div class="kpi-label">Countries Targeted</div>
+  </div>
+  <div class="kpi anim-s" style="--i:8">
+    <div class="kpi-val text-blue">1,024</div>
+    <div class="kpi-label">IPs in ASN</div>
+  </div>
+  <div class="kpi anim-s" style="--i:9">
+    <div class="kpi-val">14</div>
+    <div class="kpi-label">Data Types Captured</div>
+  </div>
+  <div class="kpi anim-s" style="--i:10">
+    <div class="kpi-val">7</div>
+    <div class="kpi-label">Attack Stages</div>
+  </div>
+  <div class="kpi anim-s" style="--i:11">
+    <div class="kpi-val text-green">~1,760</div>
+    <div class="kpi-label">Domains in ASN</div>
+  </div>
+</div>
+
+<!-- ═══════ S3 — ATTACK FLOW ═══════ -->
+<div id="s3" class="sec-head anim" style="--i:12"><span class="sec-num">03</span> Attack Flow &mdash; 7 Stages</div>
+
+<div class="flow-container anim" style="--i:13">
+
+  <!-- SMS -->
+  <div class="flow-step flow--low">
+    <div class="flow-line"><div class="flow-num">SMS</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">SMS Delivery (Smishing)</div>
+      <div class="flow-endpoint">Probable SMS gateway: scampigate.com</div>
+      <div class="text-sm dim">Víctima recibe SMS con enlace a neflixpagocuenta.net. Redirige automáticamente: HTTP → HTTPS → /login → gate.php?page=verif</div>
+    </div>
+  </div>
+
+  <!-- Stage 1 -->
+  <div class="flow-step flow--low">
+    <div class="flow-line"><div class="flow-num">1</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">Verificación Anti-Bot</div>
+      <div class="flow-endpoint">gate.php?page=verif</div>
+      <div class="text-sm dim">Cloudflare Turnstile CAPTCHA. Bloquea scrapers, sandboxes y bots de seguridad.</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--blue">Sitekey: 0X4AAAAAACTqp1CezracoxEG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 2 -->
+  <div class="flow-step flow--high">
+    <div class="flow-line"><div class="flow-num">2</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">Login &mdash; Credential Harvesting</div>
+      <div class="flow-endpoint">gate.php?page=login</div>
+      <div class="text-sm dim">Réplica exacta de login de Netflix. Captura credenciales de acceso.</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--red">Email / Teléfono</span>
+        <span class="flow-data-tag badge--red">Contraseña</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 3 -->
+  <div class="flow-step flow--high">
+    <div class="flow-line"><div class="flow-num">3</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">Billing &mdash; PII Harvesting</div>
+      <div class="flow-endpoint">gate.php?page=billing</div>
+      <div class="text-sm dim">Captura datos personales completos. "Actualizar información de facturación."</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--red">Nombre completo</span>
+        <span class="flow-data-tag badge--amber">Dirección</span>
+        <span class="flow-data-tag badge--amber">Ciudad + CP</span>
+        <span class="flow-data-tag badge--amber">Teléfono</span>
+        <span class="flow-data-tag badge--amber">Fecha nacimiento</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 4 -->
+  <div class="flow-step flow--high">
+    <div class="flow-line"><div class="flow-num">4</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">Credit Card &mdash; Financial Data</div>
+      <div class="flow-endpoint">gate.php?page=cc</div>
+      <div class="text-sm dim">"Actualizar información de pago." Captura datos completos de tarjeta.</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--red">Número tarjeta</span>
+        <span class="flow-data-tag badge--red">Titular</span>
+        <span class="flow-data-tag badge--red">Expiración</span>
+        <span class="flow-data-tag badge--red">CVV/CVC</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 5 -->
+  <div class="flow-step flow--high">
+    <div class="flow-line"><div class="flow-num">5</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">PIN Bancario</div>
+      <div class="flow-endpoint">gate.php?page=pin</div>
+      <div class="text-sm dim">Inusual en phishing kits estándar. Indica exfiltración para compras POS / retiros ATM.</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--red">PIN 4 dígitos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 6 — CRITICAL -->
+  <div class="flow-step flow--crit">
+    <div class="flow-line"><div class="flow-num">6</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">VBV / 3D Secure &mdash; Fraude en Tiempo Real</div>
+      <div class="flow-endpoint">gate.php?page=vbv</div>
+      <div class="callout" style="margin-top:8px;margin-bottom:0">
+        <div class="callout-title">Ingeniería social crítica</div>
+        Texto de engaño: <em>"Los montos mostrados en la aplicación son totalmente aleatorios y NO se realizará ningún cargo."</em><br>
+        <strong>Realidad:</strong> El TA inicia un cargo REAL. La víctima lo autoriza en su app bancaria creyendo que es una verificación. El cargo SE EJECUTA.
+      </div>
+      <div class="flow-data" style="margin-top:8px">
+        <span class="flow-data-tag badge--red">Aprobación 3DS real-time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 7 -->
+  <div class="flow-step flow--high">
+    <div class="flow-line"><div class="flow-num">7</div><div class="flow-connector"></div></div>
+    <div class="flow-body">
+      <div class="flow-title">OTP / SMS &mdash; 2FA Bypass</div>
+      <div class="flow-endpoint">gate.php?page=otp</div>
+      <div class="text-sm dim">Fallback para bancos sin app. Intercepta código de verificación bancaria.</div>
+      <div class="flow-data">
+        <span class="flow-data-tag badge--red">Código OTP 6 dígitos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="flow-step flow--ok">
+    <div class="flow-line"><div class="flow-num">✓</div></div>
+    <div class="flow-body">
+      <div class="flow-title">Success &mdash; Falsa confirmación</div>
+      <div class="text-sm dim">"Su cuenta ha sido verificada con éxito." Redirige a netflix.com real para dar apariencia de legitimidad.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ S4 — INFRASTRUCTURE ═══════ -->
+<div id="s4" class="sec-head anim" style="--i:14"><span class="sec-num">04</span> Infrastructure</div>
+
+<div class="infra-grid">
+
+  <div class="infra-card infra-card--primary anim" style="--i:15">
+    <h4>Primary Server</h4>
+    <div class="infra-row"><span class="infra-key">IP</span><span class="infra-val infra-val--red">45.74.47.181</span></div>
+    <div class="infra-row"><span class="infra-key">Domains</span><span class="infra-val">237+</span></div>
+    <div class="infra-row"><span class="infra-key">Active Kits</span><span class="infra-val infra-val--red">2</span></div>
+    <div class="infra-row"><span class="infra-key">Org</span><span class="infra-val">Secure Internet LLC</span></div>
+    <div class="infra-row"><span class="infra-key">Location</span><span class="infra-val">Houston, TX</span></div>
+    <div class="infra-row"><span class="infra-key">Reverse DNS</span><span class="infra-val dim">none</span></div>
+    <div class="infra-row"><span class="infra-key">Route created</span><span class="infra-val">2026-01-13</span></div>
+  </div>
+
+  <div class="infra-card infra-card--asn anim" style="--i:16">
+    <h4>AS213441 — SLAYER GROUP LIMITED</h4>
+    <div class="infra-row"><span class="infra-key">Country</span><span class="infra-val">GB (RIPE NCC)</span></div>
+    <div class="infra-row"><span class="infra-key">Registered</span><span class="infra-val">2025-02-10</span></div>
+    <div class="infra-row"><span class="infra-key">Upstream</span><span class="infra-val">AS30823 aurologic</span></div>
+    <div class="infra-row"><span class="infra-key">Total IPs</span><span class="infra-val">1,024</span></div>
+    <div class="infra-row"><span class="infra-key">Total domains</span><span class="infra-val">~1,760</span></div>
+    <div class="infra-row"><span class="infra-key">Type</span><span class="infra-val infra-val--red">Bulletproof</span></div>
+  </div>
+
+  <div class="infra-card anim" style="--i:17">
+    <h4>Server Stack</h4>
+    <div class="infra-row"><span class="infra-key">Web server</span><span class="infra-val">nginx</span></div>
+    <div class="infra-row"><span class="infra-key">Language</span><span class="infra-val">PHP 8.3.30</span></div>
+    <div class="infra-row"><span class="infra-key">Panel</span><span class="infra-val">Plesk (PleskLin)</span></div>
+    <div class="infra-row"><span class="infra-key">OS</span><span class="infra-val">Linux</span></div>
+    <div class="infra-row"><span class="infra-key">Anti-bot</span><span class="infra-val">Cloudflare Turnstile</span></div>
+    <div class="infra-row"><span class="infra-key">SSL</span><span class="infra-val">Let's Encrypt R12</span></div>
+  </div>
+
+  <div class="infra-card anim" style="--i:18">
+    <h4>IPv4 Prefixes (4× /24)</h4>
+    <div class="infra-row"><span class="infra-key">Primary</span><span class="infra-val">45.74.47.0/24</span></div>
+    <div class="infra-row"><span class="infra-key">Secondary</span><span class="infra-val">45.74.10.0/24</span></div>
+    <div class="infra-row"><span class="infra-key">Africa block</span><span class="infra-val">102.135.91.0/24</span></div>
+    <div class="infra-row"><span class="infra-key">Asia block</span><span class="infra-val">180.178.160.0/24</span></div>
+    <div class="infra-row"><span class="infra-key">Adjacent IP</span><span class="infra-val">45.74.47.68</span></div>
+    <div class="infra-row"><span class="infra-key">Secondary IP</span><span class="infra-val">45.74.10.195</span></div>
+  </div>
+
+</div>
+
+<!-- ═══════ S5 — DOMAIN CLUSTERS ═══════ -->
+<div id="s5" class="sec-head anim" style="--i:19"><span class="sec-num">05</span> Domain Clusters by Brand</div>
+
+<div class="flex-gap mb-sm anim" style="--i:20">
+  <span class="text-sm dim" style="display:inline-flex;align-items:center;gap:4px"><span class="dot dot--live"></span> Active/Kit</span>
+  <span class="text-sm dim" style="display:inline-flex;align-items:center;gap:4px"><span class="dot dot--blocked"></span> Blocked</span>
+  <span class="text-sm dim" style="display:inline-flex;align-items:center;gap:4px"><span class="dot dot--dead"></span> Dead/Burned</span>
+</div>
+
+<div class="cluster-grid">
+
+  <div class="cluster anim" style="--i:21">
+    <div class="cluster-header">
+      <span class="cluster-brand" style="color:var(--red)">Netflix</span>
+      <span class="cluster-count">11 domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--live"></span> neflixpagocuenta.net</li>
+      <li><span class="dot dot--blocked"></span> verificaflix.com</li>
+      <li><span class="dot dot--blocked"></span> ntfx-shippai-jp.com</li>
+      <li><span class="dot dot--dead"></span> netflx-forfait.com</li>
+      <li><span class="dot dot--dead"></span> kundesupportnetflix.com</li>
+      <li><span class="dot dot--dead"></span> giahannetflix.com</li>
+      <li><span class="dot dot--dead"></span> netflix-accounts-update.com</li>
+      <li><span class="dot dot--dead"></span> netflixpagamento.com</li>
+      <li><span class="dot dot--dead"></span> +3 more (burned)</li>
+    </ul>
+  </div>
+
+  <div class="cluster anim" style="--i:22">
+    <div class="cluster-header">
+      <span class="cluster-brand" style="color:var(--blue)">Carte Vitale / Sanidad FR</span>
+      <span class="cluster-count">15+ domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--live"></span> espace-sante-dossier.com</li>
+      <li><span class="dot dot--dead"></span> carte-vital-support.com</li>
+      <li><span class="dot dot--dead"></span> assurance-maladie-public.com</li>
+      <li><span class="dot dot--dead"></span> amelivitale-infoassurance.com</li>
+      <li><span class="dot dot--dead"></span> renouvellement-carte-vitale.com</li>
+      <li><span class="dot dot--dead"></span> info-suivis-sante.com</li>
+      <li><span class="dot dot--dead"></span> espace-vitale-infos.com</li>
+      <li><span class="dot dot--dead"></span> +8 more</li>
+    </ul>
+  </div>
+
+  <div class="cluster anim" style="--i:23">
+    <div class="cluster-header">
+      <span class="cluster-brand" style="color:var(--amber)">Logística / Paquetería</span>
+      <span class="cluster-count">20+ domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--dead"></span> mondial-relay-douanes.com</li>
+      <li><span class="dot dot--dead"></span> bpost-be.com</li>
+      <li><span class="dot dot--dead"></span> bpost-colis-323240963.com</li>
+      <li><span class="dot dot--dead"></span> ups-bezorging.com</li>
+      <li><span class="dot dot--dead"></span> dhl-diensten.com</li>
+      <li><span class="dot dot--dead"></span> depot-paquet.com</li>
+      <li><span class="dot dot--dead"></span> canadapost-suivi.ca</li>
+      <li><span class="dot dot--dead"></span> +13 more</li>
+    </ul>
+  </div>
+
+  <div class="cluster anim" style="--i:24">
+    <div class="cluster-header">
+      <span class="cluster-brand">Banca / Finanzas</span>
+      <span class="cluster-count">6 domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--dead"></span> pay-pal-fr.com</li>
+      <li><span class="dot dot--dead"></span> oppositions-banques-de-france.com</li>
+      <li><span class="dot dot--dead"></span> services-banque-de-france.com</li>
+      <li><span class="dot dot--dead"></span> ccss-services-lu.com</li>
+      <li><span class="dot dot--dead"></span> raiffeisen-ba.com</li>
+      <li><span class="dot dot--dead"></span> kundemypaylife.com</li>
+    </ul>
+  </div>
+
+  <div class="cluster anim" style="--i:25">
+    <div class="cluster-header">
+      <span class="cluster-brand">Doctolib</span>
+      <span class="cluster-count">4 domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--dead"></span> mon-compte-doctolib.com</li>
+      <li><span class="dot dot--dead"></span> mon-espace-client-doctolib.com</li>
+      <li><span class="dot dot--dead"></span> doctolib-consultation.help</li>
+      <li><span class="dot dot--dead"></span> doctolib-consultation.info</li>
+    </ul>
+  </div>
+
+  <div class="cluster anim" style="--i:26">
+    <div class="cluster-header">
+      <span class="cluster-brand">Others</span>
+      <span class="cluster-count">8+ domains</span>
+    </div>
+    <ul class="cluster-domains">
+      <li><span class="dot dot--dead"></span> via-verde-app.com <span class="dim" style="font-size:9px">PT Tolls</span></li>
+      <li><span class="dot dot--dead"></span> viaverde-site.com <span class="dim" style="font-size:9px">PT Tolls</span></li>
+      <li><span class="dot dot--dead"></span> actualisation-icloud.com <span class="dim" style="font-size:9px">Apple</span></li>
+      <li><span class="dot dot--dead"></span> noones-partnership.com <span class="dim" style="font-size:9px">Crypto</span></li>
+      <li><span class="dot dot--dead"></span> mvm-szolgaltatasok.com <span class="dim" style="font-size:9px">Hungary</span></li>
+      <li><span class="dot dot--dead"></span> regularisation-free-facture.com <span class="dim" style="font-size:9px">ISP FR</span></li>
+      <li><span class="dot dot--live"></span> scampigate.com <span class="dim" style="font-size:9px">SMS Gateway</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ═══════ S6 — THREAT ACTOR ═══════ -->
+<div id="s6" class="sec-head anim" style="--i:27"><span class="sec-num">06</span> Threat Actor Profile</div>
+
+<div class="ta-grid">
+
+  <div class="ta-card anim" style="--i:28">
+    <div class="card-label">Identifiers</div>
+    <div class="infra-row"><span class="infra-key">Email 1</span><span class="infra-val infra-val--red">karript6@gmx.com</span></div>
+    <div class="infra-row"><span class="infra-key">Email 2</span><span class="infra-val infra-val--red">romaintrdbl@gmail.com</span></div>
+    <div class="infra-row"><span class="infra-key">Handle</span><span class="infra-val">karript6</span></div>
+    <div class="infra-row"><span class="infra-key">Probable name</span><span class="infra-val">Romain</span></div>
+    <div class="infra-row"><span class="infra-key">Public footprint</span><span class="infra-val">ZERO</span></div>
+    <div class="infra-row"><span class="infra-key">Active since</span><span class="infra-val">April 2020</span></div>
+  </div>
+
+  <div class="ta-card anim" style="--i:29">
+    <div class="card-label">Geo Attribution</div>
+    <div class="infra-row"><span class="infra-key">WHOIS</span><span class="infra-val">Dresden, DE</span></div>
+    <div class="infra-row"><span class="infra-key">EXIF Timezone</span><span class="infra-val">UTC+3</span></div>
+    <div class="infra-row"><span class="infra-key">Email provider</span><span class="infra-val">GMX (German)</span></div>
+    <div class="infra-row"><span class="infra-key">Kit default lang</span><span class="infra-val">French</span></div>
+    <div class="infra-row"><span class="infra-key">Primary targets</span><span class="infra-val">France</span></div>
+    <div style="margin-top:10px;padding:10px;background:var(--cranberry-dim);border-radius:6px;font-size:11px;line-height:1.5;">
+      <strong style="color:var(--red)">Hypothesis:</strong> <span class="dim">Francophone in UTC+3 zone. Possibly North Africa (Maghreb) or Eastern Europe (Romania, Bulgaria). Dresden WHOIS likely false. Using German VPN/identity for domain registration.</span>
+    </div>
+  </div>
+
+  <div class="ta-card anim" style="--i:30">
+    <div class="card-label">TTPs</div>
+    <div class="infra-row"><span class="infra-key">Initial access</span><span class="infra-val">Smishing (SMS)</span></div>
+    <div class="infra-row"><span class="infra-key">Kit type</span><span class="infra-val">PHP gate.php</span></div>
+    <div class="infra-row"><span class="infra-key">Anti-bot</span><span class="infra-val">Cloudflare Turnstile</span></div>
+    <div class="infra-row"><span class="infra-key">Domain cycle</span><span class="infra-val">2-4 weeks</span></div>
+    <div class="infra-row"><span class="infra-key">Sophistication</span><span class="infra-val text-amber">MOD-HIGH</span></div>
+    <div class="infra-row"><span class="infra-key">OPSEC</span><span class="infra-val text-amber">MODERATE</span></div>
+    <div class="infra-row"><span class="infra-key">Financial fraud</span><span class="infra-val infra-val--red">Real-time 3DS</span></div>
+    <div class="infra-row"><span class="infra-key">Registrars</span><span class="infra-val">PDR, Openprovider, Metaregistrar</span></div>
+  </div>
+
+  <div class="ta-card anim" style="--i:31">
+    <div class="card-label">EXIF Forensics &mdash; Logo Asset</div>
+    <div class="infra-row"><span class="infra-key">Software</span><span class="infra-val">Photoshop CC 2017</span></div>
+    <div class="infra-row"><span class="infra-key">OS</span><span class="infra-val">Windows</span></div>
+    <div class="infra-row"><span class="infra-key">Created</span><span class="infra-val">2020-04-03</span></div>
+    <div class="infra-row"><span class="infra-key">Timezone</span><span class="infra-val">UTC+3</span></div>
+    <div class="infra-row"><span class="infra-key">Resolution</span><span class="infra-val">3840×2160</span></div>
+    <div class="infra-row" style="flex-direction:column;gap:2px">
+      <span class="infra-key">XMP Instance ID</span>
+      <span class="infra-val" style="text-align:left;font-size:9px;word-break:break-all">xmp.iid:7cfe7f16-5916-d74a-9071-a65caafb2b96</span>
+    </div>
+    <div class="infra-row" style="flex-direction:column;gap:2px">
+      <span class="infra-key">XMP Document ID</span>
+      <span class="infra-val" style="text-align:left;font-size:9px;word-break:break-all">adobe:docid:photoshop:57500b65-753c-11ea-b41b-aeb013380cea</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ S7 — TIMELINE ═══════ -->
+<div id="s7" class="sec-head anim" style="--i:32"><span class="sec-num">07</span> Activity Timeline</div>
+
+<div class="timeline anim" style="--i:33">
+  <div class="tl-item">
+    <div class="tl-date">2020-04-03</div>
+    <div class="tl-desc">Netflix logo asset created <span class="dim">&mdash; Photoshop CC 2017, UTC+3. Earliest known artifact.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2021-09-17</div>
+    <div class="tl-desc">First known certificate <span class="dim">&mdash; netflx-forfait.com. Infrastructure active 4+ years.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2025-02-10</div>
+    <div class="tl-desc">AS213441 SLAYER-AS registered <span class="dim">&mdash; RIPE NCC, dedicated ASN for phishing ops.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2025-11-28</div>
+    <div class="tl-desc">verificaflix.com <span class="dim">&mdash; First recent Netflix domain in new infrastructure.</span></div>
+  </div>
+  <div class="tl-item tl-item--peak">
+    <div class="tl-date">2026-01 (peak)</div>
+    <div class="tl-desc"><strong>15+ domains registered</strong> <span class="dim">&mdash; Netflix, PayPal, Carte Vitale, Doctolib, Mondial Relay, bpost, Via Verde.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-01-13</div>
+    <div class="tl-desc">BGP route 45.74.47.0/24 announced <span class="dim">&mdash; Infrastructure goes live.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-02-17</div>
+    <div class="tl-desc">neflixpagocuenta.net registered <span class="dim">&mdash; PDR Ltd., Dresden registrant.</span></div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-08</div>
+    <div class="tl-desc">SSL certificate issued <span class="dim">&mdash; Let's Encrypt R12 for neflixpagocuenta.net.</span></div>
+  </div>
+  <div class="tl-item tl-item--active">
+    <div class="tl-date">2026-03-09 — HOY</div>
+    <div class="tl-desc"><strong style="color:var(--red)">Smishing campaign detected.</strong> Kit active. espace-sante-dossier.com cert issued today (cross-brand kit confirmed).</div>
+  </div>
+</div>
+
+<!-- ═══════ S8 — IOC TABLE ═══════ -->
+<div id="s8" class="sec-head anim" style="--i:34"><span class="sec-num">08</span> IOC Table &mdash; Primary Indicators</div>
+
+<div class="table-wrap anim" style="--i:35">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Status</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Domain</td><td><code>neflixpagocuenta.net</code></td><td><span class="badge badge--red">Active Kit</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Domain</td><td><code>espace-sante-dossier.com</code></td><td><span class="badge badge--red">Active Kit</span></td><td>CONFIRMED</td></tr>
+        <tr><td>IP</td><td><code>45.74.47.181</code></td><td><span class="badge badge--red">Active</span></td><td>CONFIRMED</td></tr>
+        <tr><td>IP</td><td><code>45.74.47.68</code></td><td><span class="badge badge--amber">Adjacent</span></td><td>CONFIRMED</td></tr>
+        <tr><td>IP</td><td><code>45.74.10.195</code></td><td><span class="badge badge--amber">Secondary</span></td><td>CONFIRMED</td></tr>
+        <tr><td>ASN</td><td><code>AS213441 — SLAYER-AS</code></td><td><span class="badge badge--red">Active</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Email</td><td><code>karript6@gmx.com</code></td><td><span class="badge badge--slate">SOA record</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Email</td><td><code>romaintrdbl@gmail.com</code></td><td><span class="badge badge--slate">SOA record</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Sitekey</td><td><code>0X4AAAAAACTqp1CezracoxEG</code><small>Cloudflare Turnstile — not publicly reported</small></td><td><span class="badge badge--red">Active</span></td><td>CONFIRMED</td></tr>
+        <tr><td>API</td><td><code>gate.php?action=get_translations&amp;lang={lang}</code><small>Kit fingerprint — unique to this family</small></td><td><span class="badge badge--red">Active</span></td><td>CONFIRMED</td></tr>
+        <tr><td>XMP ID</td><td><code>xmp.iid:7cfe7f16-5916-d74a-9071-a65caafb2b96</code><small>Logo asset instance ID</small></td><td><span class="badge badge--slate">Forensic</span></td><td>CONFIRMED</td></tr>
+        <tr><td>XMP Doc</td><td><code>adobe:docid:photoshop:57500b65-753c-11ea-b41b-aeb013380cea</code><small>Logo asset document ID</small></td><td><span class="badge badge--slate">Forensic</span></td><td>CONFIRMED</td></tr>
+        <tr><td>localStorage</td><td><code>netflix_verif_translations_{lang}</code><small>Browser fingerprint — check victim browsers</small></td><td><span class="badge badge--blue">Detection</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Prefix</td><td><code>45.74.47.0/24</code></td><td><span class="badge badge--red">Block</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Prefix</td><td><code>45.74.10.0/24</code></td><td><span class="badge badge--amber">Block</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Prefix</td><td><code>102.135.91.0/24</code></td><td><span class="badge badge--amber">Block</span></td><td>CONFIRMED</td></tr>
+        <tr><td>Prefix</td><td><code>180.178.160.0/24</code></td><td><span class="badge badge--amber">Block</span></td><td>CONFIRMED</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<details class="collapsible anim" style="--i:36">
+  <summary>Anti-Analysis Headers (kit fingerprint)</summary>
+  <div class="collapsible-body">
+    <code>X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex</code><br>
+    <code>X-Frame-Options: DENY</code><br>
+    <code>Referrer-Policy: no-referrer</code><br>
+    <code>Cache-Control: no-store, no-cache, must-revalidate</code><br>
+    <code>Permissions-Policy: geolocation=(), microphone=(), camera=()</code>
+  </div>
+</details>
+
+<!-- ═══════ S9 — CROSS-BRAND ═══════ -->
+<div id="s9" class="sec-head anim" style="--i:37"><span class="sec-num">09</span> Cross-Brand Kit Reuse &mdash; Evidence</div>
+
+<div class="ve-card ve-card--hero anim" style="--i:38">
+  <h3>Proof: Same kit on healthcare domain</h3>
+  <p class="text-sm dim mb-md">The domain <code style="font-family:var(--font-mono);font-size:11px;background:var(--blue-dim);color:var(--blue);padding:1px 5px;border-radius:3px">espace-sante-dossier.com</code> (impersonating French health records) returns <strong>identical</strong> gate.php translation API JSON. Certificate issued TODAY (2026-03-09). The TA forgot to sanitize Netflix-specific strings:</p>
+
+  <div class="evidence">
+    <em>// espace-sante-dossier.com — should be healthcare, but contains:</em><br><br>
+    <strong>"new_to_netflix"</strong>: "Vous etes nouveau sur Netflix ?"<br>
+    <strong>"subscription_renewed"</strong>: "Votre abonnement a ete renouvele"<br>
+    <strong>"success_message"</strong>: "...profiter de tout le contenu <strong>Netflix</strong> sans restrictions"
+  </div>
+
+  <div class="flex-gap" style="margin-top:10px">
+    <span class="badge badge--red">Same backend</span>
+    <span class="badge badge--amber">Un-sanitized strings</span>
+    <span class="badge badge--blue">Modular multi-brand kit</span>
+  </div>
+</div>
+
+<div class="ve-card ve-card--recessed anim" style="--i:39">
+  <h3>Implication</h3>
+  <p class="text-sm dim">The kit uses a modular translation system (<code style="font-family:var(--font-mono);font-size:10px;background:var(--surface2);padding:1px 5px;border-radius:3px">gate.php?action=get_translations&amp;lang={lang}</code>) designed for rapid multi-brand deployment. The TA cloned the Netflix configuration for the healthcare variant but failed to customize the Netflix-specific translation keys. This proves:</p>
+  <ul style="margin-top:8px;padding-left:20px;font-size:12px;line-height:1.8;color:var(--text-dim)">
+    <li>Same phishing kit deployed across brand impersonations</li>
+    <li>Kit is designed for multi-brand operation from inception</li>
+    <li>Operational tempo prioritizes speed over stealth</li>
+    <li>Translation API is a reliable detection fingerprint</li>
+  </ul>
+</div>
+
+<!-- ═══════ S10 — DEFENSE ═══════ -->
+<div id="s10" class="sec-head anim" style="--i:40"><span class="sec-num">10</span> Defense Actions</div>
+
+<div class="defense-grid">
+
+  <div class="defense-card defense-card--p1 anim" style="--i:41">
+    <div class="defense-priority">P1 — Critical / Immediate</div>
+    <div class="defense-title">Block ASN at perimeter</div>
+    <div class="defense-detail">Block entire AS213441 — all 4× /24 prefixes. ASN is ~13 months old, hosts 1,760 domains, clear abuse pattern. IPs: <code>45.74.47.0/24</code>, <code>45.74.10.0/24</code>, <code>102.135.91.0/24</code>, <code>180.178.160.0/24</code></div>
+  </div>
+
+  <div class="defense-card defense-card--p1 anim" style="--i:42">
+    <div class="defense-priority">P1 — Critical / Immediate</div>
+    <div class="defense-title">Report to aurologic GmbH (upstream)</div>
+    <div class="defense-detail">AS30823 is the <strong>sole upstream provider</strong>. If they null-route AS213441, ALL TA infrastructure goes offline simultaneously. Most effective single action.</div>
+  </div>
+
+  <div class="defense-card defense-card--p1 anim" style="--i:43">
+    <div class="defense-priority">P1 — Critical / Immediate</div>
+    <div class="defense-title">Revoke Cloudflare Turnstile sitekey</div>
+    <div class="defense-detail">Report sitekey <code>0X4AAAAAACTqp1CezracoxEG</code> to Cloudflare abuse. Revocation disables captcha on ALL kit instances simultaneously. Not yet reported publicly.</div>
+  </div>
+
+  <div class="defense-card defense-card--p2 anim" style="--i:44">
+    <div class="defense-priority">P2 — High / 24h</div>
+    <div class="defense-title">Report to CERTs</div>
+    <div class="defense-detail">
+      INCIBE: <code>incidencias@incibe-cert.es</code><br>
+      CCN-CERT: <code>incidentes@ccn-cert.cni.es</code><br>
+      CERT-FR: <code>cert-fr.cossi@ssi.gouv.fr</code><br>
+      Netflix: <code>phishing@netflix.com</code>
+    </div>
+  </div>
+
+  <div class="defense-card defense-card--p2 anim" style="--i:45">
+    <div class="defense-priority">P2 — High / 24h</div>
+    <div class="defense-title">Submit to blocklists</div>
+    <div class="defense-detail">Google Safe Browsing, PhishTank, APWG. Submit all active domains and URLs. Registrar abuse: <code>abuse-contact@publicdomainregistry.com</code></div>
+  </div>
+
+  <div class="defense-card defense-card--p3 anim" style="--i:46">
+    <div class="defense-priority">P3 — Medium / Ongoing</div>
+    <div class="defense-title">Monitor & Hunt</div>
+    <div class="defense-detail">Monitor crt.sh for new certs on 45.74.47.0/24. Create YARA rules for <code>gate.php?action=get_translations</code> pattern. Monitor @ecarlesi on urlscan.io. VirusTotal retrohunt with XMP IDs.</div>
+  </div>
+
+</div>
+
+
+<!-- ═══════ DISCLAIMER ═══════ -->
+<div style="margin-top:48px;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11px;line-height:1.7;color:var(--text-dim);">
+  <strong style="color:var(--text);font-size:12px;">Disclaimer</strong><br><br>
+  This report is published for defensive cybersecurity purposes under the principles of responsible threat intelligence sharing. The analysis is based exclusively on open-source intelligence (OSINT) derived from unsolicited malicious communications received by the author and subsequent passive investigation of publicly available data.<br><br>
+  Attribution assessments represent the analyst&rsquo;s professional judgment based on available evidence and are provided with an explicit confidence level. They do not constitute accusations of criminal conduct, which is a determination reserved for competent judicial authorities.<br><br>
+  If you believe any information in this report is inaccurate, please open an issue for prompt review and correction.<br><br>
+  Published under the legitimate interest basis of Article 6(1)(f) GDPR, supported by Recital 49 (network and information security) and the right to freedom of expression and information (Article 11 EU Charter of Fundamental Rights).
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<div style="margin-top:16px;padding-top:20px;border-top:1px solid var(--border);text-align:center;">
+  <p class="mono dim" style="font-size:10px;line-height:1.8">
+    THREAT-2026-SMISH-001 &middot; Unified Report v1.0 &middot; 2026-03-09<br>
+    100% Passive OSINT &mdash; No active scanning or form submissions<br>
+    Classification: URGENTE &middot; TLP:AMBER
+  </p>
+</div>
+
+</div><!-- /main -->
+</div><!-- /wrap -->
+
+<!-- ═══════ SCROLL SPY ═══════ -->
+<script>
+(function() {
+  const toc = document.getElementById('toc');
+  const links = toc.querySelectorAll('a');
+  const sections = [];
+  links.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ id, el, link });
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = sections.find(s => s.el === entry.target);
+        if (match) {
+          match.link.classList.add('active');
+          if (window.innerWidth <= 1000) {
+            match.link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  sections.forEach(s => observer.observe(s.el));
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const id = link.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', '#' + id);
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

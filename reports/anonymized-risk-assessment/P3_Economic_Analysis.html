@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P3 -- Economic Vulnerability &amp; Financial Profile | R3x8kW2</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --bg-gradient: linear-gradient(170deg, #0b1120 0%, #0f1a2e 40%, #0b1120 100%);
+      --surface: #111b2e;
+      --surface-elevated: #162040;
+      --surface-recessed: #080e1a;
+      --border: rgba(212, 167, 58, 0.12);
+      --border-strong: rgba(212, 167, 58, 0.25);
+      --text: #d4dae5;
+      --text-bright: #eef1f6;
+      --text-dim: #7a8599;
+      --accent-gold: #d4a73a;
+      --accent-gold-dim: rgba(212, 167, 58, 0.12);
+      --accent-blue: #1e3a5f;
+      --accent-blue-bright: #2d5a8a;
+      --accent-teal: #0891b2;
+      --accent-teal-dim: rgba(8, 145, 178, 0.12);
+      --status-critical: #dc2626;
+      --status-critical-bg: rgba(220, 38, 38, 0.1);
+      --status-high: #ea580c;
+      --status-high-bg: rgba(234, 88, 12, 0.1);
+      --status-medium: #d97706;
+      --status-medium-bg: rgba(217, 119, 6, 0.1);
+      --status-low: #16a34a;
+      --status-low-bg: rgba(22, 163, 74, 0.1);
+      --status-strong: #0891b2;
+      --status-strong-bg: rgba(8, 145, 178, 0.1);
+      --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Cascadia Code', 'Fira Code', monospace;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #eef1f6;
+        --bg-gradient: linear-gradient(170deg, #eef1f6 0%, #e2e7f0 40%, #eef1f6 100%);
+        --surface: #ffffff;
+        --surface-elevated: #ffffff;
+        --surface-recessed: #e8ecf2;
+        --border: rgba(30, 58, 95, 0.12);
+        --border-strong: rgba(30, 58, 95, 0.25);
+        --text: #1e293b;
+        --text-bright: #0f172a;
+        --text-dim: #64748b;
+        --accent-gold: #b8860b;
+        --accent-gold-dim: rgba(184, 134, 11, 0.08);
+        --accent-blue: #1e3a5f;
+        --accent-blue-bright: #2d5a8a;
+        --accent-teal: #0e7490;
+        --accent-teal-dim: rgba(14, 116, 144, 0.08);
+        --status-critical: #dc2626;
+        --status-critical-bg: rgba(220, 38, 38, 0.08);
+        --status-high: #ea580c;
+        --status-high-bg: rgba(234, 88, 12, 0.08);
+        --status-medium: #d97706;
+        --status-medium-bg: rgba(217, 119, 6, 0.08);
+        --status-low: #16a34a;
+        --status-low-bg: rgba(22, 163, 74, 0.08);
+        --status-strong: #0e7490;
+        --status-strong-bg: rgba(14, 116, 144, 0.08);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === GRID LAYOUT WITH SIDEBAR === */
+    .page-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* === SIDEBAR NAV === */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1rem 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+      background: var(--surface-recessed);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-nav { list-style: none; }
+
+    .sidebar-nav li { margin-bottom: 2px; }
+
+    .sidebar-nav a {
+      display: block;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .sidebar-nav a:hover {
+      color: var(--text-bright);
+      background: var(--accent-gold-dim);
+    }
+
+    .sidebar-nav .nav-section {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-gold);
+      padding: 0.8rem 0.6rem 0.3rem;
+      margin-top: 0.5rem;
+    }
+
+    /* === MAIN CONTENT === */
+    .main-content {
+      padding: 2.5rem 3rem 4rem;
+      max-width: 960px;
+      min-width: 0;
+    }
+
+    /* === HERO HEADER === */
+    .hero {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero h1 .accent { color: var(--accent-gold); }
+
+    .hero-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      margin-bottom: 1.25rem;
+    }
+
+    .classification-block {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .classification-block .tag {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    /* === SECTIONS === */
+    .report-section {
+      margin-bottom: 3rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .report-section:nth-child(2) { animation-delay: 0.08s; }
+    .report-section:nth-child(3) { animation-delay: 0.16s; }
+    .report-section:nth-child(4) { animation-delay: 0.24s; }
+    .report-section:nth-child(5) { animation-delay: 0.32s; }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, var(--border-strong), transparent);
+      margin: 3rem 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-teal);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+      line-height: 1.3;
+    }
+
+    h3:first-child { margin-top: 0; }
+
+    /* === TABLES === */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 1.75rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    thead th {
+      background: var(--surface-elevated);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-gold);
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid var(--border-strong);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      overflow-wrap: break-word;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+
+    tbody tr {
+      transition: background 0.15s ease;
+    }
+
+    tbody tr:hover td { background: var(--accent-gold-dim); }
+
+    td:first-child {
+      font-weight: 500;
+      color: var(--text-bright);
+    }
+
+    /* === STATUS BADGES === */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    .badge--critical { color: var(--status-critical); background: var(--status-critical-bg); border: 1px solid rgba(220,38,38,0.2); }
+    .badge--high { color: var(--status-high); background: var(--status-high-bg); border: 1px solid rgba(234,88,12,0.2); }
+    .badge--medium-high { color: var(--status-high); background: var(--status-high-bg); border: 1px solid rgba(234,88,12,0.15); }
+    .badge--medium { color: var(--status-medium); background: var(--status-medium-bg); border: 1px solid rgba(217,119,6,0.2); }
+    .badge--low { color: var(--status-low); background: var(--status-low-bg); border: 1px solid rgba(22,163,74,0.2); }
+    .badge--strong { color: var(--status-strong); background: var(--status-strong-bg); border: 1px solid rgba(8,145,178,0.2); }
+    .badge--neutral { color: var(--text-dim); background: rgba(122,133,153,0.1); border: 1px solid rgba(122,133,153,0.15); }
+
+    /* Status indicators */
+    .indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+    }
+
+    .indicator::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .indicator--full::before { background: var(--accent-teal); box-shadow: 0 0 4px rgba(8,145,178,0.4); }
+    .indicator--half::before { background: var(--status-medium); box-shadow: 0 0 4px rgba(217,119,6,0.3); }
+    .indicator--empty::before { background: var(--status-critical); box-shadow: 0 0 4px rgba(220,38,38,0.3); }
+    .indicator--warn::before { background: var(--status-high); box-shadow: 0 0 4px rgba(234,88,12,0.3); }
+
+    /* === CODE / TREE BLOCKS === */
+    .code-block {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+    }
+
+    .code-block-header {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-gold);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-block pre {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+
+    .code-block .hl-key { color: var(--accent-gold); font-weight: 500; }
+    .code-block .hl-val { color: var(--accent-teal); }
+    .code-block .hl-risk { color: var(--status-critical); font-weight: 600; }
+    .code-block .hl-dim { color: var(--text-dim); }
+    .code-block .hl-struct { color: var(--text-dim); }
+
+    /* === RISK MATRIX (FINAL SUMMARY) === */
+    .risk-matrix {
+      background: var(--surface);
+      border: 2px solid var(--accent-gold);
+      border-radius: var(--radius-lg);
+      padding: 0;
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    .risk-matrix-header {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-bright));
+      padding: 1rem 1.5rem;
+      text-align: center;
+    }
+
+    .risk-matrix-header h4 {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold);
+    }
+
+    .risk-matrix table { margin: 0; }
+    .risk-matrix thead th { background: var(--surface-elevated); }
+    .risk-matrix tbody td { font-size: 0.82rem; }
+
+    /* === RESULT BLOCK === */
+    .result-block {
+      background: linear-gradient(135deg, var(--accent-blue), rgba(30,58,95,0.6));
+      border: 1px solid var(--accent-gold);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .result-block .result-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .result-block p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* === CONFIDENCE DISPLAY === */
+    .confidence {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .report-section, .hero { animation: none; }
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 900px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        overflow-x: auto;
+        overflow-y: visible;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+      }
+
+      .sidebar-nav li { margin-bottom: 0; flex-shrink: 0; }
+
+      .sidebar-nav .nav-section {
+        padding: 0.4rem 0.6rem;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .sidebar-title { margin-bottom: 0.75rem; }
+
+      .main-content { padding: 1.5rem 1.25rem 3rem; }
+
+      .hero h1 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 600px) {
+      .main-content { padding: 1rem 1rem 2rem; }
+      .hero h1 { font-size: 1.2rem; }
+      h2 { font-size: 1.15rem; }
+      table { font-size: 0.78rem; }
+      thead th { font-size: 0.65rem; padding: 0.6rem 0.7rem; }
+      tbody td { padding: 0.6rem 0.7rem; }
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212,167,58,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,167,58,0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION BAR -->
+<nav style="position:sticky;top:0;z-index:9999;background:#090c11;border-bottom:1px solid rgba(212,167,58,0.2);display:flex;align-items:center;padding:0 1rem;height:44px;backdrop-filter:blur(12px);font-family:'IBM Plex Mono',monospace;">
+  <a href="P2_OSINT_Collection_Report.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Anterior: P2 OSINT">&larr;</a>
+  <div style="display:flex;align-items:center;gap:2px;overflow-x:auto;flex:1;padding:0 0.75rem;scrollbar-width:none;">
+    <a href="P0_Executive_Summary.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Summary</a>
+    <a href="P0_Relationship_Graph.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Graph</a>
+    <a href="P1_Lm5nR2xligence_Intake_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P1 Intake</a>
+    <a href="P2_OSINT_Collection_Report.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P2 OSINT</a>
+    <a href="P3_Economic_Analysis.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:600;color:#d4a73a;white-space:nowrap;border:1px solid rgba(212,167,58,0.2);background:rgba(212,167,58,0.1);">P3 Economic</a>
+    <a href="P4_Strategic_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P4 Strategic</a>
+    <a href="P5_Infrastructure_Risk_Map.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P5 Infra</a>
+    <a href="P6_FINAL_OSINT_Lm5nR2xligence_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P6 Final</a>
+  </div>
+  <a href="P4_Strategic_Assessment.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Siguiente: P4 Strategic">&rarr;</a>
+</nav>
+
+  <div class="page-layout">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar">
+      <div class="sidebar-title">R3x8kW2</div>
+      <ul class="sidebar-nav">
+        <li class="nav-section">Fase 3 -- Modulos</li>
+        <li><a href="#e1">E1: Vulnerabilidad Economica</a></li>
+        <li><a href="#e1-perfil">1.1 Perfil de Vulnerabilidad</a></li>
+        <li><a href="#e1-dependencias">1.2 Dependencias Criticas</a></li>
+        <li><a href="#e1-resiliencia">1.3 Factores de Resiliencia</a></li>
+        <li class="nav-section">Redes Comerciales</li>
+        <li><a href="#e2">E2: Impacto Redes Comerciales</a></li>
+        <li><a href="#e2-supply">2.1 Supply Chain Global</a></li>
+        <li><a href="#e2-china">2.2 Restricciones EE.UU.-L_cN5rK2</a></li>
+        <li><a href="#e2-Nw6rT3e">2.3 Impacto Nw6rT3e</a></li>
+        <li class="nav-section">Recursos</li>
+        <li><a href="#e3">E3: Seguridad de Recursos</a></li>
+        <li><a href="#e3-dependencias">3.1 Recursos Criticos</a></li>
+        <li><a href="#e3-resiliencia">3.2 Resiliencia Supply Chain</a></li>
+        <li class="nav-section">Finanzas</li>
+        <li><a href="#e4">E4: Estabilidad Financiera</a></li>
+        <li><a href="#e4-salud">4.1 Salud Financiera</a></li>
+        <li><a href="#e4-deuda">4.2 Sostenibilidad Deuda</a></li>
+        <li><a href="#e4-riesgos">4.3 Riesgos Financieros</a></li>
+        <li><a href="#e4-resumen">4.4 Risk Matrix</a></li>
+      </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <header class="hero" id="top">
+        <h1><span class="accent">P3</span> -- Economic Vulnerability &amp; Financial Profile</h1>
+        <div class="hero-subtitle">R3x8kW2 | FGn4hKse 3 -- MODO 3: SUITE DE ANALISIS ECONOMICO</div>
+        <div class="classification-block">
+          <span class="tag">//CLASSIFICATION:</span> UNCLASSIFIED<br>
+          <span class="tag">//Qv7nJ4m:</span> Modulos ejecutados: E1 (Economic Vulnerability), E2 (Trade Network Impact), E3 (Resource Security), E4 (Financial Stability)<br>
+          <span class="tag">Fecha:</span> 2026-03-07
+        </div>
+      </header>
+
+      <!-- ==================== E1 ==================== -->
+      <section class="report-section" id="e1">
+        <div class="section-label">Modulo E1</div>
+        <h2>Evaluacion de Vulnerabilidad Economica</h2>
+
+        <!-- 1.1 -->
+        <h3 id="e1-perfil">1.1 Perfil de Vulnerabilidad</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dominio</th>
+                <th>Riesgo</th>
+                <th>Confianza</th>
+                <th>Justificacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Concentracion IA</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="indicator indicator--full">85%</span></td>
+                <td>45% del backlog en un segmento emergente ($XX.XB-b1 de $XXX.B-b2)</td>
+              </tr>
+              <tr>
+                <td>Carga de deuda</td>
+                <td><span class="badge badge--medium-high">MEDIO-ALTO</span></td>
+                <td><span class="indicator indicator--full">90%</span></td>
+                <td>$XX.XB-d1 deuda total post-Nw6rT3e</td>
+              </tr>
+              <tr>
+                <td>Dependencia M&amp;A</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="indicator indicator--half">75%</span></td>
+                <td>Modelo de crecimiento historicamente dependiente de adquisiciones</td>
+              </tr>
+              <tr>
+                <td>Riesgo regulatorio</td>
+                <td><span class="badge badge--critical">CRITICO</span></td>
+                <td><span class="indicator indicator--full">90%</span></td>
+                <td>G_n4hK8t + EU + multiples litigios activos</td>
+              </tr>
+              <tr>
+                <td>Concentracion clientes</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td><span class="indicator indicator--half">60%</span></td>
+                <td>Hyperscalers como clientes principales IA (Fd8qW2m, Jt6pR4c, Ks3nV7h)</td>
+              </tr>
+              <tr>
+                <td>Riesgo ciclico</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td><span class="indicator indicator--half">70%</span></td>
+                <td>Industria semiconductores historicamente ciclica</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 1.2 -->
+        <h3 id="e1-dependencias">1.2 Dependencias Economicas Criticas</h3>
+        <div class="code-block">
+          <div class="code-block-header">Analisis de Dependencias</div>
+          <pre><span class="hl-key">DEPENDENCIA #1: Demanda IA</span>
+<span class="hl-struct">├──</span> Revenue IA semiconductores: <span class="hl-val">+74% YoY</span> (Q4 FY2025)
+<span class="hl-struct">├──</span> Backlog IA: <span class="hl-val">$XX.XB-b1</span> (18 meses)
+<span class="hl-struct">├──</span> Clientes: 3-4 hyperscalers principales
+<span class="hl-struct">└──</span> <span class="hl-risk">RIESGO: Desaceleracion IA o cambio a soluciones internas</span>
+
+<span class="hl-key">DEPENDENCIA #2: Nw6rT3e Revenue</span>
+<span class="hl-struct">├──</span> Infrastructure Software: <span class="hl-val">~50% de revenue total</span>
+<span class="hl-struct">├──</span> Modelo subscription: Transicion en curso
+<span class="hl-struct">├──</span> Riesgo: Litigios multiples por cambio licensing
+<span class="hl-struct">└──</span> <span class="hl-risk">RIESGO: Migracion clientes a alternativas (Wt6mK3f, Bh4rN7d)</span>
+
+<span class="hl-key">DEPENDENCIA #3: M&amp;A Pipeline</span>
+<span class="hl-struct">├──</span> <span class="hl-val">40</span> adquisiciones historicas
+<span class="hl-struct">├──</span> Cada adquisicion mayor = salto revenue <span class="hl-val">&gt;50%</span>
+<span class="hl-struct">├──</span> Sin pipeline M&amp;A visible actualmente
+<span class="hl-struct">└──</span> <span class="hl-risk">RIESGO: Crecimiento organico insuficiente sin M&amp;A</span></pre>
+        </div>
+
+        <!-- 1.3 -->
+        <h3 id="e1-resiliencia">1.3 Factores de Resiliencia</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th>Evaluacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Diversificacion segmentos</td>
+                <td><span class="indicator indicator--half">MEDIA</span> -- 2 segmentos pero dominados por pocos productos</td>
+              </tr>
+              <tr>
+                <td>Free Cash Flow</td>
+                <td><span class="indicator indicator--full">FUERTE</span> -- $XX.XB-f1 FCF permite deleveraging rapido</td>
+              </tr>
+              <tr>
+                <td>Margen EBITDA</td>
+                <td><span class="indicator indicator--full">FUERTE</span> -- 67-68% es excepcional</td>
+              </tr>
+              <tr>
+                <td>Market position</td>
+                <td><span class="indicator indicator--full">FUERTE</span> -- 90% custom ASIC, dominancia networking</td>
+              </tr>
+              <tr>
+                <td>Backlog visibility</td>
+                <td><span class="indicator indicator--full">FUERTE</span> -- $XXX.B-b2 da visibilidad a 18+ meses</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ==================== E2 ==================== -->
+      <section class="report-section" id="e2">
+        <div class="section-label">Modulo E2</div>
+        <h2>Analisis de Impacto en Redes Comerciales</h2>
+
+        <!-- 2.1 -->
+        <h3 id="e2-supply">2.1 Posicion en Supply Chain Global</h3>
+        <div class="code-block">
+          <div class="code-block-header">Supply Chain Map</div>
+          <pre><span class="hl-dim">                    UPSTREAM</span>
+<span class="hl-dim">                       |</span>
+    <span class="hl-val">Materias primas</span> ──► <span class="hl-val">Fabricacion (Dq3fB7s 99%)</span> ──► <span class="hl-key">Ht4pL9a (Design)</span>
+         <span class="hl-struct">|</span>                    <span class="hl-struct">|</span>                         <span class="hl-struct">|</span>
+    <span class="hl-dim">Tierras raras</span>        <span class="hl-dim">L_tW3rB7/Asia</span>               <span class="hl-dim">L_q3nR7w</span>
+    <span class="hl-risk">(L_cN5rK2 60%)</span>          <span class="hl-risk">RIESGO CRITICO</span>            <span class="hl-val">BAJO RIESGO</span>
+                                                        <span class="hl-struct">|</span>
+<span class="hl-dim">                                                   DOWNSTREAM</span>
+<span class="hl-dim">                                                        |</span>
+                    <span class="hl-struct">┌───────────────┬──────────────┬────────────┐</span>
+                    <span class="hl-struct">|</span>               <span class="hl-struct">|</span>              <span class="hl-struct">|</span>            <span class="hl-struct">|</span>
+               <span class="hl-key">Hyperscalers</span>    <span class="hl-key">Telecom</span>        <span class="hl-key">Gobierno</span>      <span class="hl-key">Enterprise</span>
+              <span class="hl-dim">(Fd8qW2m,Jt6pR4c)</span>   <span class="hl-dim">(Cm9rF5b,etc)</span>    <span class="hl-dim">(G_DOD8c5,G_NAS3k7)</span>    <span class="hl-dim">(F500 cos)</span>
+               <span class="hl-val">IA Custom</span>       <span class="hl-val">Broadband</span>      <span class="hl-val">Nw6rT3e</span>       <span class="hl-val">Nw6rT3e/CA</span>
+               <span class="hl-val">60% ASIC</span>        <span class="hl-val">Chips</span>          <span class="hl-val">Infra</span>        <span class="hl-val">Software</span></pre>
+        </div>
+
+        <!-- 2.2 -->
+        <h3 id="e2-china">2.2 Impacto de Restricciones EE.UU.-L_cN5rK2</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Escenario</th>
+                <th>Probabilidad</th>
+                <th>Impacto en Ht4pL9a</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mantenimiento status quo</td>
+                <td>40%</td>
+                <td><span class="badge badge--neutral">NEUTRAL</span> -- pausa vigente hasta 2026</td>
+              </tr>
+              <tr>
+                <td>Escalada moderada (mas entidades listadas)</td>
+                <td>35%</td>
+                <td><span class="badge badge--low">BAJO</span> -- Ht4pL9a no exporta chips avanzados a L_cN5rK2 directamente</td>
+              </tr>
+              <tr>
+                <td>Escalada severa (bloqueo Dq3fB7s)</td>
+                <td>15%</td>
+                <td><span class="badge badge--critical">CRITICO</span> -- disrupcion total de fabricacion</td>
+              </tr>
+              <tr>
+                <td>Retaliacion L_cN5rK2 (tierras raras)</td>
+                <td>25%</td>
+                <td><span class="badge badge--high">ALTO</span> -- afecta toda la cadena</td>
+              </tr>
+              <tr>
+                <td>Conflicto L_tW3rB7</td>
+                <td>5%</td>
+                <td><span class="badge badge--critical">CATASTROFICO</span> -- Dq3fB7s = 99% fabricacion IA</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2.3 -->
+        <h3 id="e2-Nw6rT3e">2.3 Impacto Cambio Modelo Nw6rT3e</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Actor Afectado</th>
+                <th>Impacto</th>
+                <th>Reaccion Observada</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Enterprise customers</td>
+                <td>Incrementos 300-1,050%</td>
+                <td>Litigios multiples (Cm9rF5b, Pq2kN8t, Wn4jH6r, Bk7mT3d)</td>
+              </tr>
+              <tr>
+                <td>Cloud providers (EU)</td>
+                <td>Perdida licencias perpetuas</td>
+                <td>Queja G_d5kF2n ante G_p7mR3w</td>
+              </tr>
+              <tr>
+                <td>G_GOBnl7</td>
+                <td>Negativa soporte</td>
+                <td>Sentencia judicial a favor de G_RWS4n8</td>
+              </tr>
+              <tr>
+                <td>G_DOD8c5/Gobierno EE.UU.</td>
+                <td>Incrementos de costo</td>
+                <td>G_h6rL3p negocia D_k7rN5d deal con descuento</td>
+              </tr>
+              <tr>
+                <td>Competidores (Wt6mK3f)</td>
+                <td>Oportunidad de mercado</td>
+                <td>Wt6mK3f reporta crecimiento acelerado</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ==================== E3 ==================== -->
+      <section class="report-section" id="e3">
+        <div class="section-label">Modulo E3</div>
+        <h2>Analisis de Seguridad de Recursos</h2>
+
+        <!-- 3.1 -->
+        <h3 id="e3-dependencias">3.1 Dependencias de Recursos Criticos</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Recurso</th>
+                <th>Proveedor Clave</th>
+                <th>Concentracion</th>
+                <th>Riesgo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Fabricacion avanzada (3nm, 5nm)</strong></td>
+                <td>Dq3fB7s</td>
+                <td>~99%</td>
+                <td><span class="badge badge--critical">CRITICO</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tierras raras</strong></td>
+                <td>L_cN5rK2 (60% global)</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="badge badge--high">ALTO</span></td>
+              </tr>
+              <tr>
+                <td><strong>Silicio de alta pureza</strong></td>
+                <td>Varios</td>
+                <td>Moderada</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td><strong>Talento I+D</strong></td>
+                <td>EE.UU., L_iL5pT9, L_iN2wF6</td>
+                <td>Diversificada</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td><strong>IP/Patentes</strong></td>
+                <td>Propio + adquirido</td>
+                <td>Fuerte</td>
+                <td><span class="badge badge--low">BAJO</span></td>
+              </tr>
+              <tr>
+                <td><strong>Capital financiero</strong></td>
+                <td>Mercados deuda/equity</td>
+                <td>Diversificado</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3.2 -->
+        <h3 id="e3-resiliencia">3.2 Resiliencia Supply Chain</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Estado</th>
+                <th>Observacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Diversificacion fabricacion</td>
+                <td><span class="indicator indicator--empty">DEBIL</span></td>
+                <td>Dependencia casi total en Dq3fB7s</td>
+              </tr>
+              <tr>
+                <td>Inventario estrategico</td>
+                <td><span class="indicator indicator--half">MODERADO</span></td>
+                <td>No hay datos publicos sobre stockpiling</td>
+              </tr>
+              <tr>
+                <td>Alternativas foundry</td>
+                <td><span class="indicator indicator--empty">DEBIL</span></td>
+                <td>Rk8mW4n unica alternativa viable, inferior en yield</td>
+              </tr>
+              <tr>
+                <td>Nearshoring</td>
+                <td><span class="indicator indicator--half">EN CURSO</span></td>
+                <td>Dq3fB7sA fab en construccion, pero limitada</td>
+              </tr>
+              <tr>
+                <td>Talento</td>
+                <td><span class="indicator indicator--full">FUERTE</span></td>
+                <td>Presencia I+D en 5+ paises</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ==================== E4 ==================== -->
+      <section class="report-section" id="e4">
+        <div class="section-label">Modulo E4</div>
+        <h2>Evaluacion de Estabilidad Financiera</h2>
+
+        <!-- 4.1 -->
+        <h3 id="e4-salud">4.1 Indicadores de Salud Financiera</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Metrica</th>
+                <th>Valor</th>
+                <th>Evaluacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Revenue FY2025</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">$XX.XB-r1</td>
+                <td><span class="indicator indicator--full">Record, +24% YoY</span></td>
+              </tr>
+              <tr>
+                <td><strong>EBITDA Margin</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">67%</td>
+                <td><span class="indicator indicator--full">Excepcional para el sector</span></td>
+              </tr>
+              <tr>
+                <td><strong>Free Cash Flow</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">$XX.XB-f1</td>
+                <td><span class="indicator indicator--full">+39% YoY</span></td>
+              </tr>
+              <tr>
+                <td><strong>Total Debt</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">$XX.XB-d1</td>
+                <td><span class="indicator indicator--warn">Elevada pero manejable</span></td>
+              </tr>
+              <tr>
+                <td><strong>Debt-to-Equity</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">0.80</td>
+                <td><span class="indicator indicator--half">Mejorado de 1.715 en 5 anos</span></td>
+              </tr>
+              <tr>
+                <td><strong>Net Debt/Equity</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">60.2%</td>
+                <td><span class="indicator indicator--warn">Considerado alto</span></td>
+              </tr>
+              <tr>
+                <td><strong>Short-term Debt</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">$X.XXB-d2</td>
+                <td><span class="indicator indicator--half">Manejable vs. FCF</span></td>
+              </tr>
+              <tr>
+                <td><strong>Long-term Debt</strong></td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right;">$XX.XB-d3</td>
+                <td><span class="indicator indicator--warn">-6.5% YoY, tendencia deleveraging</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4.2 -->
+        <h3 id="e4-deuda">4.2 Analisis de Sostenibilidad de Deuda</h3>
+        <div class="code-block">
+          <div class="code-block-header">Capacidad de Servicio de Deuda</div>
+          <pre><span class="hl-key">Capacidad de Servicio de Deuda:</span>
+<span class="hl-struct">├──</span> FCF anual: <span class="hl-val">$XX.XB-f1</span>
+<span class="hl-struct">├──</span> Deuda total: <span class="hl-val">$XX.XB-d1</span>
+<span class="hl-struct">├──</span> Ratio FCF/Deuda: <span class="hl-val">41%</span> ──► Puede pagar deuda en <span class="hl-val">~2.4 anos</span> con FCF
+<span class="hl-struct">├──</span> EBITDA/Deuda: <span class="hl-val">66%</span> ──► Cobertura solida
+<span class="hl-struct">├──</span> Tendencia: Deleveraging activo (<span class="hl-val">-6.5% YoY</span> en LT debt)
+<span class="hl-struct">└──</span> <span class="hl-key">EVALUACION:</span> Deuda elevada pero sostenible dado FCF excepcional</pre>
+        </div>
+
+        <!-- 4.3 -->
+        <h3 id="e4-riesgos">4.3 Riesgos Financieros</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Riesgo</th>
+                <th>Probabilidad</th>
+                <th>Impacto</th>
+                <th>Mitigacion Observada</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Desaceleracion IA</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">25%</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td>Backlog $XX.XB-b1 da buffer 18 meses</td>
+              </tr>
+              <tr>
+                <td>Subida tasas interes</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">30%</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td>Deuda mayormente fija post-refinanciacion</td>
+              </tr>
+              <tr>
+                <td>Multas regulatorias (G_n4hK8t/EU)</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">60%</td>
+                <td><span class="badge badge--medium-high">MEDIO-ALTO</span></td>
+                <td>$XX.XB-f1 FCF absorbe multas razonables</td>
+              </tr>
+              <tr>
+                <td>Perdida clientes Nw6rT3e</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">40%</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td>Contratos gobierno + lock-in</td>
+              </tr>
+              <tr>
+                <td>Correccion mercado accionario</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">35%</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td>Fundamentals solidos vs. valoracion</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4.4 RISK MATRIX -->
+        <h3 id="e4-resumen">4.4 Resumen E1-E4</h3>
+        <div class="risk-matrix">
+          <div class="risk-matrix-header">
+            <h4>ECONOMIC RISK MATRIX -- Ht4pL9a</h4>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Riesgo</th>
+                <th>Prob.</th>
+                <th>Impacto</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Regulatorio/Legal</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">60%</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="badge badge--critical">CRITICO</span></td>
+              </tr>
+              <tr>
+                <td>Dependencia Dq3fB7s</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">15%</td>
+                <td><span class="badge badge--critical">CRITICO</span></td>
+                <td><span class="badge badge--high">ALTO</span></td>
+              </tr>
+              <tr>
+                <td>Modelo Nw6rT3e</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">40%</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="badge badge--high">ALTO</span></td>
+              </tr>
+              <tr>
+                <td>Carga de deuda</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">20%</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td>Desaceleracion IA</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">25%</td>
+                <td><span class="badge badge--high">ALTO</span></td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td>Ciclicidad sector</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">30%</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td>Geopolitica L_cN5rK2</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">15%</td>
+                <td><span class="badge badge--critical">CRITICO</span></td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+              </tr>
+              <tr>
+                <td>Competencia</td>
+                <td style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">20%</td>
+                <td><span class="badge badge--medium">MEDIO</span></td>
+                <td><span class="badge badge--low">BAJO</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result-block">
+          <div class="result-tag">//RESULT</div>
+          <p>Suite economica completa. Vulnerabilidades principales: <strong>riesgo regulatorio (CRITICO)</strong>, <strong>dependencia Dq3fB7s (ALTO)</strong>, <strong>modelo Nw6rT3e (ALTO)</strong>. Resiliencia fuerte en FCF y margenes.</p>
+        </div>
+      </section>
+
+    </main>
+    <footer style="text-align:center; padding:1.5rem 1rem; font-size:0.65rem; color:#6c6c80;">
+      R3x8kW2 &bull; P3 Economic Analysis &bull; UNCLASSIFIED &bull; 2026-03-07
+      <br><span style="font-size:0.7rem;">CC BY 4.0 &mdash; Art. 6(1)(f) RGPD &mdash; Derechos ARSALPO: <a href="mailto:corvusdossiers@proton.me" style="color:#5a3d8f;">corvusdossiers@proton.me</a></span>
+    </footer>
+  </div>
+</body>
+</html>

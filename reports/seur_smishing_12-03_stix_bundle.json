@@ -1,0 +1,857 @@
+{
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-5678-4e9f-b012-3456789abcde",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--f1a23b45-6789-4cde-a012-bcdef1234567",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Analista OSINT",
+      "description": "Autor del informe de indicadores de compromiso para la campaña de smishing SEUR / kit k468.",
+      "identity_class": "individual",
+      "roles": [
+        "analyst"
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Operador PhaaS k468 (Desconocido)",
+      "description": "Actor de amenaza no identificado que opera el kit de phishing k468. Indicios de origen rusófono: inclusión de la red de pago MIR (exclusiva de Rusia), cadenas en ruso en el código fuente, y patrones de infraestructura consistentes con operaciones PhaaS de Europa del Este.",
+      "threat_actor_types": [
+        "criminal"
+      ],
+      "aliases": [
+        "k468 Operator"
+      ],
+      "roles": [
+        "agent"
+      ],
+      "sophistication": "intermediate",
+      "resource_level": "organization",
+      "primary_motivation": "personal-gain",
+      "lang": "es"
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Smishing SEUR - SMISH-SEUR-2026-0312",
+      "description": "Campaña de smishing (phishing por SMS) que suplanta a la empresa de mensajería SEUR (Grupo Geopost/DPD) para capturar datos personales, credenciales de tarjetas de pago y códigos OTP/3DS. Utiliza el kit de phishing k468 desplegado en el dominio seurtjm.cv (ccTLD de Cabo Verde).",
+      "first_seen": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "infrastructure",
+      "spec_version": "2.1",
+      "id": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Infraestructura de phishing seurtjm.cv",
+      "description": "Infraestructura del sitio de phishing que incluye dominio seurtjm.cv (.cv = Cabo Verde), IP 50.114.184.241 (Ace Data Centers / IPXO LLC), nameservers ns1/ns2.dyna-ns.net (Dynadot), panel de administración en /CNIXMQnPlR/, API de exfiltración y canal WebSocket C2 bidireccional.",
+      "infrastructure_types": [
+        "hosting"
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "tool",
+      "spec_version": "2.1",
+      "id": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit de Phishing k468",
+      "description": "Kit de phishing como servicio (PhaaS) identificado como k468_es_post_seur_index. Construido con Vue.js y Axios. Implementa flujo multi-etapa: captura de datos personales, datos de tarjeta bancaria, interceptación de OTP/3DS, y canal WebSocket para control en tiempo real por el operador. Soporta redes VISA, Mastercard, AMEX, Discover, JCB, Maestro y MIR.",
+      "tool_types": [
+        "exploitation"
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a1234567-8901-4bcd-ef23-456789abcde0",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Phishing: Spearphishing Link",
+      "description": "Envío de SMS fraudulentos (smishing) con enlace al dominio seurtjm.cv que redirige a una réplica del sitio web de SEUR para engañar a la víctima.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.002",
+          "url": "https://attack.mitre.org/techniques/T1566/002/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--b2345678-9012-4cde-f034-56789abcdef1",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Input Capture: Web Portal Capture",
+      "description": "Captura de credenciales, datos personales y financieros mediante formularios web fraudulentos que replican la interfaz de SEUR. Incluye captura de números de tarjeta, CVV, fecha de caducidad y códigos OTP.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1056.003",
+          "url": "https://attack.mitre.org/techniques/T1056/003/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--c3456789-0123-4def-a145-6789abcdef02",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Adversary-in-the-Middle",
+      "description": "Interceptación en tiempo real de códigos OTP/3DS mediante canal WebSocket bidireccional (wss://seurtjm.cv/ws). El operador actúa como intermediario entre la víctima y la entidad bancaria, retransmitiendo códigos de verificación en tiempo real.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1557",
+          "url": "https://attack.mitre.org/techniques/T1557/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--d4567890-1234-4ef0-b256-789abcdef013",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Financial Theft",
+      "description": "Objetivo final de la campaña: robo financiero mediante el uso fraudulento de datos de tarjetas bancarias y códigos de autenticación capturados a las víctimas.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1657",
+          "url": "https://attack.mitre.org/techniques/T1657/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Dominio de phishing SEUR - seurtjm.cv",
+      "description": "Dominio principal del sitio de phishing que suplanta a SEUR. Registrado con ccTLD de Cabo Verde (.cv).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[domain-name:value = 'seurtjm.cv']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "IP del servidor de phishing",
+      "description": "Dirección IPv4 del servidor que aloja el sitio de phishing. Ace Data Centers / IPXO LLC, CIDR 50.114.184.0/24.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[ipv4-addr:value = '50.114.184.241']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Nameserver primario - ns1.dyna-ns.net",
+      "description": "Servidor DNS primario del dominio de phishing (Dynadot).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[domain-name:value = 'ns1.dyna-ns.net']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Nameserver secundario - ns2.dyna-ns.net",
+      "description": "Servidor DNS secundario del dominio de phishing (Dynadot).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[domain-name:value = 'ns2.dyna-ns.net']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Landing page del phishing",
+      "description": "Página principal del sitio de phishing, réplica de la web de SEUR.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[url:value = 'https://seurtjm.cv/es']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "API de exfiltración de datos",
+      "description": "Endpoint principal de exfiltración donde el kit envía los datos capturados de las víctimas.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[url:value = 'https://seurtjm.cv/CNIXMQnPlR/api/input']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "API de confirmación de entrega",
+      "description": "Endpoint del flujo de confirmación de entrega, parte del engaño de suplantación de SEUR.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[url:value = 'https://seurtjm.cv/api/confirm-delivery']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "WebSocket C2 - Canal de comando y control",
+      "description": "Canal WebSocket bidireccional para control en tiempo real del operador sobre las sesiones de las víctimas.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[url:value = 'wss://seurtjm.cv/ws']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000101",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: es-raw.html",
+      "description": "Página HTML principal del kit de phishing.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '21f6dcf22be8b44d4e54d49f963cc9dd8ce1e943cbdf5de4a8e1a871bb108a46']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000102",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: index-284bfe89.js",
+      "description": "Bundle JavaScript principal con lógica de phishing (Vue.js + Axios).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '179e87d143bc07cfd8f22a6a1557359b064bcacbcc79ba4a5bab77619d5abbd9']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000103",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: index-9766d7ac.css",
+      "description": "CSS del framework Vue del kit de phishing.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '9766d7ac6187ec134308165407ffa1d64d5c12d6737c886ae867391bfe965057']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000201",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: logo.png",
+      "description": "Logo oficial de SEUR robado utilizado en el kit.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '677bbd5328d59f7d728fc62a38e2b37ecfcae8c15aa0a2be53ddf4e177b5603d']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000202",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: bc.png",
+      "description": "Banner corporativo de SEUR robado.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'cb0a32507c72d7bd2c763c1c1e5f80ae4000f7e81e24ac522e7e9b2cc1eac749']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000203",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: seur.css",
+      "description": "CSS corporativo de SEUR robado.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '51167d98ff37f00135834c7f94503939b0e78c30b3f9cb358c11fa3fa6df1475']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000204",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: favicon.jpg",
+      "description": "Favicon del kit de phishing.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'b37e8c0e3341acbe6c7235120ba0ab4dd3a6f824cba36a8f8d997f04223a739b']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000205",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: mir-a02fe0b1.jpg",
+      "description": "Logo de la red de pago MIR (Rusia), indicador de origen rusófono.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'a02fe0b1ea3401e73c9905652c88c20a5a4a8ba3d1927dc4009da1f4857c4e55']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000206",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: btlocaliza.png",
+      "description": "Botón 'Localiza' de SEUR robado.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '59c7979aea38a3d477bdce985f6d5d728f2171d351ba80c4286e9a4153b53f25']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000207",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: iconTienda.png",
+      "description": "Icono de tiendas SEUR Pickup.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '75e7aa5282df233faa3563c49a97080e5647af238cf1a6ba8c9f4801a10d43a0']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000301",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: cardloading.svg",
+      "description": "SVG de animación de carga del kit.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '56af3b63c02fca54cc3bcea72a744d03a5de21f69fd5358e641261c29ee3c6ce']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000302",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: calendar.svg",
+      "description": "Icono de calendario del kit.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '623ffd99ab23341bc6f7d9658866f7ed192a118cae320e4465dcf0aec7902398']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000303",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechaderecha.png",
+      "description": "Icono de flecha derecha.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '8c6c6ff4701fee67f05af52ecbe64f4a1ebf3fc16d873477d5d857afd1f3035f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000304",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechadeslide.png",
+      "description": "Icono de flecha para slider.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '289cbea22b4ad70be6e3eff51a576e1f6993f35fbfe6c0ef170a77c163328a74']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000305",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechaizslide.png",
+      "description": "Icono de flecha izquierda para slider.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '63d5d4c169bd06ddb77e0fbc70afb34e67d6d597411d0171f92872bc8172c77b']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000401",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansDPDLight.otf",
+      "description": "Fuente DPD/SEUR robada (OTF).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'bc2d0863394405ab3d4c9c6422a99c44abc7030ae3d8f2a2aeab95b90f60efa0']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000402",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansLight.woff2",
+      "description": "Fuente DPD/SEUR robada (WOFF2 Light).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'e0ab628e66309c89d43c1fe7ac6f64d24c2e5da927fbc657fa17a81a42dec70a']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000403",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansRegular.woff2",
+      "description": "Fuente DPD/SEUR robada (WOFF2 Regular).",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'a88d9ebb6a866c2d93096cb99f2e41aa904c0b2d748ccac11c34b267199cc1ba']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000404",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: fuentes.css",
+      "description": "CSS de definición de fuentes del kit.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '8d6e544394e61592dcd761fb406cfdc6c7f3af3d96f23368ad17d035bd26c81c']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000405",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: slidemigh.css",
+      "description": "CSS del componente slider.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'df440a6aded0ba7c047c8b8458dedd4c778fb3a4bf04ce2276fc8db79d2e9969']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000406",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: animate.min.css",
+      "description": "Librería CSS de animaciones.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'd3557300717eea06f84dd44bfd9235f7eb11e43291935dc784f33db309bb3b77']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000407",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: mightyslider.animate.css",
+      "description": "CSS de animaciones del slider.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '630de1fe187215d9690866e207162510cdd21f2ce4d6ebe487a638fcb30f816f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000408",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: mightyslider.css",
+      "description": "CSS base del componente slider.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = 'ef1a2d224f7f2ea0cfbfbf37bcc56a47148845d8ceb642d32ab958af052ca88f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000501",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 1a32e1333fcfa-1a32e133.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '1a32e1334123f8d42cc940fea7a84f71f5c903132ea10441cf02e47da19e95bc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000502",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 272b931f3fcfa-272b931f.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '272b931f00a7cf2e1f603aa218844f96278cc890011fc43a08ae2d42aeb9a84c']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000503",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 80066acd3fcfa-80066acd.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "pattern": "[file:hashes.'SHA-256' = '80066acd2096893762dab64b37b03c9de576e948372ac516f05d25f2b1cc988f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "attributed-to",
+      "description": "La campaña de smishing SEUR está atribuida al operador PhaaS k468.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña utiliza el kit de phishing k468.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña utiliza la infraestructura de phishing en seurtjm.cv.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica de Spearphishing Link.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--a1234567-8901-4bcd-ef23-456789abcde0"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica de Web Portal Capture.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--b2345678-9012-4cde-f034-56789abcdef1"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica Adversary-in-the-Middle mediante WebSocket.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--c3456789-0123-4def-a145-6789abcdef02"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña tiene como objetivo el robo financiero.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--d4567890-1234-4ef0-b256-789abcdef013"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El dominio seurtjm.cv indica la campaña de smishing SEUR.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000001",
+      "target_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000009",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "La IP 50.114.184.241 indica la infraestructura de la campaña.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000002",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000010",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "Los hashes de archivos del kit indican el uso de la herramienta k468.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000101",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000011",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El bundle JS principal indica el uso de la herramienta k468.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000102",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000012",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El endpoint WebSocket C2 indica la infraestructura de la campaña.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000008",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000013",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "La API de exfiltración indica la campaña de smishing SEUR.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000006",
+      "target_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000014",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "hosts",
+      "description": "La infraestructura aloja el kit de phishing k468.",
+      "source_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000015",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "owns",
+      "description": "El actor de amenaza controla la infraestructura de phishing.",
+      "source_ref": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    }
+  ]
+}

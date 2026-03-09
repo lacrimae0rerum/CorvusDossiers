@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P4 -- Strategic Assessment & Scenario Analysis | Ht4pL9a OSINT</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* === CUSTOM PROPERTIES === */
+    :root {
+      --bg: #0b0f1a;
+      --bg-gradient: linear-gradient(165deg, #0b0f1a 0%, #111827 40%, #0f1729 100%);
+      --surface: #131a2e;
+      --surface-elevated: #1a2340;
+      --surface-recessed: #080c16;
+      --border: rgba(212, 167, 58, 0.12);
+      --border-strong: rgba(212, 167, 58, 0.25);
+      --text: #d1d5db;
+      --text-bright: #f3f4f6;
+      --text-dim: #6b7280;
+      --text-heading: #e8dcc8;
+      --accent-gold: #d4a73a;
+      --accent-gold-dim: rgba(212, 167, 58, 0.12);
+      --accent-gold-mid: rgba(212, 167, 58, 0.25);
+      --accent-blue: #1e3a5f;
+      --accent-blue-bright: #2563a0;
+      --accent-teal: #0891b2;
+      --accent-teal-dim: rgba(8, 145, 178, 0.12);
+      --status-critical: #dc2626;
+      --status-critical-dim: rgba(220, 38, 38, 0.12);
+      --status-high: #ea580c;
+      --status-high-dim: rgba(234, 88, 12, 0.12);
+      --status-medium: #d4a73a;
+      --status-medium-dim: rgba(212, 167, 58, 0.12);
+      --status-low: #059669;
+      --status-low-dim: rgba(5, 150, 105, 0.12);
+      --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f0ece4;
+        --bg-gradient: linear-gradient(165deg, #f0ece4 0%, #e8e2d6 40%, #f0ece4 100%);
+        --surface: #faf7f2;
+        --surface-elevated: #ffffff;
+        --surface-recessed: #e8e2d6;
+        --border: rgba(30, 58, 95, 0.15);
+        --border-strong: rgba(30, 58, 95, 0.3);
+        --text: #374151;
+        --text-bright: #111827;
+        --text-dim: #6b7280;
+        --text-heading: #1e3a5f;
+        --accent-gold: #b8860b;
+        --accent-gold-dim: rgba(184, 134, 11, 0.1);
+        --accent-gold-mid: rgba(184, 134, 11, 0.2);
+        --accent-blue: #1e3a5f;
+        --accent-blue-bright: #2563a0;
+        --accent-teal: #0e7490;
+        --accent-teal-dim: rgba(14, 116, 144, 0.1);
+        --status-critical: #dc2626;
+        --status-critical-dim: rgba(220, 38, 38, 0.08);
+        --status-high: #ea580c;
+        --status-high-dim: rgba(234, 88, 12, 0.08);
+        --status-medium: #b8860b;
+        --status-medium-dim: rgba(184, 134, 11, 0.08);
+        --status-low: #059669;
+        --status-low-dim: rgba(5, 150, 105, 0.08);
+      }
+    }
+
+    /* === RESET & BGn4hKse === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === LAYOUT SHELL === */
+    .page-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar TOC */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      flex-shrink: 0;
+      background: var(--surface-recessed);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem 0;
+      z-index: 100;
+    }
+
+    .sidebar-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      padding: 0 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 0.45rem 1.25rem 0.45rem 1.75rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      color: var(--text-bright);
+      border-left-color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+    }
+
+    .sidebar nav a.sub {
+      padding-left: 2.5rem;
+      font-size: 0.72rem;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem 4rem;
+    }
+
+    /* Mobile horizontal nav */
+    .mobile-nav {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface-recessed);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 0.6rem 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .mobile-nav a {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .mobile-nav a:hover {
+      color: var(--text-bright);
+      border-color: var(--border-strong);
+      background: var(--accent-gold-dim);
+    }
+
+    @media (max-width: 860px) {
+      .sidebar { display: none; }
+      .mobile-nav { display: block; }
+      .main-content { padding: 1.5rem 1.25rem 3rem; }
+    }
+
+    /* === HEADER / HERO === */
+    .report-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .classification-bar {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      display: inline-block;
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--accent-gold-mid);
+      margin-bottom: 1.25rem;
+    }
+
+    .report-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .report-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .report-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .meta-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius);
+    }
+
+    .meta-tag strong {
+      color: var(--text);
+    }
+
+    .report-lead {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-top: 1.25rem;
+      padding-left: 1rem;
+      border-left: 3px solid var(--accent-gold-mid);
+    }
+
+    /* === SECTION HEADERS === */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      border: 1px solid var(--accent-gold-mid);
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      letter-spacing: -0.01em;
+    }
+
+    .subsection-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      margin-top: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .subsection-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sub-subsection-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    /* === TABLES === */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    thead th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      background: var(--surface-recessed);
+      padding: 0.7rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+      line-height: 1.55;
+      overflow-wrap: break-word;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    tbody tr:hover {
+      background: var(--accent-gold-dim);
+    }
+
+    td strong {
+      color: var(--text-bright);
+      font-weight: 600;
+    }
+
+    /* Status badges in tables */
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      display: inline-block;
+      letter-spacing: 0.03em;
+    }
+
+    .badge--critical {
+      color: var(--status-critical);
+      background: var(--status-critical-dim);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+    }
+
+    .badge--high {
+      color: var(--status-high);
+      background: var(--status-high-dim);
+      border: 1px solid rgba(234, 88, 12, 0.25);
+    }
+
+    .badge--medium {
+      color: var(--status-medium);
+      background: var(--status-medium-dim);
+      border: 1px solid rgba(212, 167, 58, 0.25);
+    }
+
+    .badge--low {
+      color: var(--status-low);
+      background: var(--status-low-dim);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+    }
+
+    /* Rating indicators */
+    .rating {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+
+    .rating--high { color: var(--status-low); }
+    .rating--med { color: var(--status-medium); }
+    .rating--low { color: var(--status-high); }
+
+    /* Confidence indicators */
+    .confidence {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .confidence--high { color: var(--status-low); }
+    .confidence--med { color: var(--accent-gold); }
+    .confidence--low { color: var(--status-high); }
+
+    /* Compact competitor table */
+    .table-compact td, .table-compact th {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    /* === CODE / DIAGRAM BLOCKS === */
+    .code-block {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .code-block-header {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0.6rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .code-block pre {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.65;
+      color: var(--text);
+      padding: 1.1rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0;
+    }
+
+    .code-block pre .hl-accent { color: var(--accent-gold); }
+    .code-block pre .hl-teal { color: var(--accent-teal); }
+    .code-block pre .hl-dim { color: var(--text-dim); }
+    .code-block pre .hl-bright { color: var(--text-bright); font-weight: 600; }
+
+    /* === SCENARIO CARDS === */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .scenario-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .scenario-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .scenario-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.15rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+    }
+
+    .scenario-card-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .scenario-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-right: 0.5rem;
+    }
+
+    .scenario-card-body {
+      padding: 0;
+    }
+
+    /* === CALLOUT / RESULT === */
+    .callout {
+      background: var(--accent-gold-dim);
+      border: 1px solid var(--accent-gold-mid);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .callout-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .callout-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* === KPI ROW === */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.15rem;
+      text-align: center;
+    }
+
+    .kpi-card--hero {
+      background: var(--surface-elevated);
+      border-color: var(--border-strong);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      line-height: 1.2;
+    }
+
+    .kpi-card--hero .kpi-value {
+      font-size: 2rem;
+    }
+
+    .kpi-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* === DIVIDER === */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+      margin: 2.5rem 0;
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .anim-fade-up {
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .anim-fade-scale {
+      animation: fadeScale 0.4s ease both;
+    }
+
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
+    .delay-3 { animation-delay: 0.24s; }
+    .delay-4 { animation-delay: 0.32s; }
+    .delay-5 { animation-delay: 0.40s; }
+    .delay-6 { animation-delay: 0.48s; }
+    .delay-7 { animation-delay: 0.56s; }
+    .delay-8 { animation-delay: 0.64s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .anim-fade-up, .anim-fade-scale {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* === TREND DIRECTION INDICATORS === */
+    .trend-up { color: var(--status-low); }
+    .trend-up::before { content: '\25B2 '; font-size: 0.65rem; }
+    .trend-down { color: var(--status-critical); }
+    .trend-down::before { content: '\25BC '; font-size: 0.65rem; }
+    .trend-mixed { color: var(--accent-gold); }
+    .trend-mixed::before { content: '\25C6 '; font-size: 0.65rem; }
+
+    /* === PRINT === */
+    @media print {
+      .sidebar, .mobile-nav { display: none; }
+      .main-content { max-width: 100%; padding: 1rem; }
+      body { background: white; color: #111; }
+      .table-wrap, .scenario-card, .code-block, .callout, .kpi-card {
+        border-color: #ccc;
+        background: white;
+        break-inside: avoid;
+      }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold-mid); }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION BAR -->
+<nav style="position:sticky;top:0;z-index:9999;background:#090c11;border-bottom:1px solid rgba(212,167,58,0.2);display:flex;align-items:center;padding:0 1rem;height:44px;backdrop-filter:blur(12px);font-family:'IBM Plex Mono',monospace;">
+  <a href="P3_Economic_Analysis.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Anterior: P3 Economic">&larr;</a>
+  <div style="display:flex;align-items:center;gap:2px;overflow-x:auto;flex:1;padding:0 0.75rem;scrollbar-width:none;">
+    <a href="P0_Executive_Summary.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Summary</a>
+    <a href="P0_Relationship_Graph.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Graph</a>
+    <a href="P1_Lm5nR2xligence_Intake_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P1 Intake</a>
+    <a href="P2_OSINT_Collection_Report.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P2 OSINT</a>
+    <a href="P3_Economic_Analysis.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P3 Economic</a>
+    <a href="P4_Strategic_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:600;color:#d4a73a;white-space:nowrap;border:1px solid rgba(212,167,58,0.2);background:rgba(212,167,58,0.1);">P4 Strategic</a>
+    <a href="P5_Infrastructure_Risk_Map.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P5 Infra</a>
+    <a href="P6_FINAL_OSINT_Lm5nR2xligence_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P6 Final</a>
+  </div>
+  <a href="P5_Infrastructure_Risk_Map.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Siguiente: P5 Infra">&rarr;</a>
+</nav>
+
+<!-- Mobile nav bar -->
+<div class="mobile-nav">
+  <a href="#s1">S1 Escenarios</a>
+  <a href="#s2">S2 Capacidad</a>
+  <a href="#s3">S3 Impacto</a>
+  <a href="#s4">S4 Tendencias</a>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Sidebar TOC -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Indice del Informe</div>
+    <nav>
+      <a href="#top">Portada</a>
+      <a href="#s1">S1: Modelado de Escenarios</a>
+      <a href="#s1a" class="sub">Esc. A: Restricciones EE.UU.-L_cN5rK2</a>
+      <a href="#s1b" class="sub">Esc. B: Antimonopolio</a>
+      <a href="#s1c" class="sub">Esc. C: Supply Chain</a>
+      <a href="#s1d" class="sub">Esc. D: Competencia IA</a>
+      <a href="#s1e" class="sub">Esc. E: Exodo Nw6rT3e</a>
+      <a href="#s1matrix" class="sub">Matriz Integrada</a>
+      <a href="#s2">S2: Capacidad del Actor</a>
+      <a href="#s2cap" class="sub">Capacidades por Dominio</a>
+      <a href="#s2comp" class="sub">Ventajas Competitivas</a>
+      <a href="#s2vuln" class="sub">Vulnerabilidades</a>
+      <a href="#s3">S3: Proyeccion de Impacto</a>
+      <a href="#s3Nw6rT3e" class="sub">Impacto Nw6rT3e</a>
+      <a href="#s3ia" class="sub">Impacto IA Silicon</a>
+      <a href="#s3geo" class="sub">Impacto Geopolitico</a>
+      <a href="#s4">S4: Tendencias Multi-Factor</a>
+      <a href="#s4trends" class="sub">Tendencias Identificadas</a>
+      <a href="#s4interactions" class="sub">Interacciones</a>
+      <a href="#result">Resultado</a>
+    </nav>
+  </aside>
+
+  <!-- Main content area -->
+  <main class="main-content" id="top">
+
+    <!-- HEADER -->
+    <header class="report-header anim-fade-up">
+      <div class="classification-bar">UNCLASSIFIED // R3x8kW2</div>
+      <h1 class="report-title">P4 &mdash; Strategic Assessment &amp; Scenario Analysis</h1>
+      <div class="report-subtitle">FGn4hKse 4 &mdash; MODO 4: SUITE DE ANALISIS ESTRATEGICO</div>
+      <div class="report-meta">
+        <span class="meta-tag"><strong>Fecha:</strong> 2026-03-07</span>
+        <span class="meta-tag"><strong>S1</strong> Scenario Modeling</span>
+        <span class="meta-tag"><strong>S2</strong> Actor Capability</span>
+        <span class="meta-tag"><strong>S3</strong> Impact Projection</span>
+        <span class="meta-tag"><strong>S4</strong> Multi-factor Trend</span>
+      </div>
+      <p class="report-lead">
+        Modulos ejecutados: S1 (Scenario Modeling), S2 (Actor Capability), S3 (Impact Projection), S4 (Multi-factor Trend). Este documento presenta la suite completa de analisis estrategico sobre Ht4pL9a
+      </p>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- S1: MODELADO DE ESCENARIOS ESTRATEGICOS     -->
+    <!-- ============================================ -->
+    <section class="section anim-fade-up delay-1" id="s1">
+      <div class="section-header">
+        <span class="section-num">S1</span>
+        <h2 class="section-title">Modelado de Escenarios Estrategicos</h2>
+      </div>
+
+      <!-- Scenario A -->
+      <div id="s1a" class="scenario-card anim-fade-up delay-2">
+        <div class="scenario-card-header">
+          <span class="scenario-card-title">Escenario A: Escalada Restricciones Tech EE.UU.-L_cN5rK2</span>
+          <span class="badge badge--medium">35% PROB</span>
+        </div>
+        <div class="scenario-card-body">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table>
+              <tbody>
+                <tr><td style="width:180px;"><strong>Probabilidad</strong></td><td>35% (18 meses)</td></tr>
+                <tr><td><strong>Trigger</strong></td><td>Fin de pausa comercial PF_tr3Xi (2026), accion militar china</td></tr>
+                <tr><td><strong>Impacto Ht4pL9a</strong></td><td><span class="badge badge--medium">MEDIO</span> &mdash; Ht4pL9a no vende chips avanzados directamente a L_cN5rK2. Riesgo indirecto via Dq3fB7s (restricciones de fabricacion para clientes chinos afectan capacidad disponible)</td></tr>
+                <tr><td><strong>2do orden</strong></td><td>L_cN5rK2 acelera chip independence, reduce mercado accesible a largo plazo</td></tr>
+                <tr><td><strong>Indicadores a monitorear</strong></td><td>Entity List additions, Dq3fB7s capacity allocation, L_cN5rK2 rare earth restrictions</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario B -->
+      <div id="s1b" class="scenario-card anim-fade-up delay-3" style="margin-top:1.25rem;">
+        <div class="scenario-card-header">
+          <span class="scenario-card-title">Escenario B: Accion Antimonopolio Agresiva</span>
+          <span class="badge badge--high">55% PROB</span>
+        </div>
+        <div class="scenario-card-body">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table>
+              <tbody>
+                <tr><td style="width:180px;"><strong>Probabilidad</strong></td><td>55% (12 meses)</td></tr>
+                <tr><td><strong>Trigger</strong></td><td>G_n4hK8t ya presento cargos (ene 2026). EU incrementa escrutinio (feb 2026)</td></tr>
+                <tr><td><strong>Impacto Ht4pL9a</strong></td><td><span class="badge badge--high">ALTO</span> &mdash; Posibles remedios: separacion Nw6rT3e, restricciones licensing, multas significativas</td></tr>
+                <tr><td><strong>Peor caso</strong></td><td>Orden de desinversion Nw6rT3e (bajo probabilidad pero devastador)</td></tr>
+                <tr><td><strong>Indicadores</strong></td><td>Fallos judiciales, settlements, nuevos cargos G_n4hK8t, EU formal investigation</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario C -->
+      <div id="s1c" class="scenario-card anim-fade-up delay-4" style="margin-top:1.25rem;">
+        <div class="scenario-card-header">
+          <span class="scenario-card-title">Escenario C: Disrupcion Supply Chain Semiconductores</span>
+          <span class="badge badge--critical">CATASTROFICO</span>
+        </div>
+        <div class="scenario-card-body">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table>
+              <tbody>
+                <tr><td style="width:180px;"><strong>Probabilidad</strong></td><td>10% (severa), 30% (moderada)</td></tr>
+                <tr><td><strong>Trigger</strong></td><td>Terremoto L_tW3rB7, conflicto Estrecho L_tW3rB7, pandemia, desastre natural</td></tr>
+                <tr><td><strong>Impacto Ht4pL9a</strong></td><td><span class="badge badge--critical">CATASTROFICO</span> &mdash; 99% de fabricacion IA en Dq3fB7s</td></tr>
+                <tr><td><strong>Mitigacion</strong></td><td>Dq3fB7sA (limitada), inventory buffers</td></tr>
+                <tr><td><strong>Indicadores</strong></td><td>Movimientos militares PLA, Dq3fB7s diversification pace, ASM inventory levels</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario D -->
+      <div id="s1d" class="scenario-card anim-fade-up delay-5" style="margin-top:1.25rem;">
+        <div class="scenario-card-header">
+          <span class="scenario-card-title">Escenario D: Competencia IA Intensificada</span>
+          <span class="badge badge--medium">45% PROB</span>
+        </div>
+        <div class="scenario-card-body">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table>
+              <tbody>
+                <tr><td style="width:180px;"><strong>Probabilidad</strong></td><td>45% (24 meses)</td></tr>
+                <tr><td><strong>Trigger</strong></td><td>Sv2jG9c gana market share, hyperscalers internalizan diseno, Yp7kD4h/Lm5nR2x compiten en ASIC</td></tr>
+                <tr><td><strong>Impacto Ht4pL9a</strong></td><td><span class="badge badge--medium">MEDIO</span> &mdash; Market share puede bajar de 90% a 60% (X_src20db projection 2027)</td></tr>
+                <tr><td><strong>Factor atenuante</strong></td><td>Relaciones establecidas con hyperscalers, lead time de 2-3 anos para cambiar proveedor ASIC</td></tr>
+                <tr><td><strong>Indicadores</strong></td><td>Sv2jG9c design wins, hyperscaler in-house chip announcements, Lm5nR2xF growth</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario E -->
+      <div id="s1e" class="scenario-card anim-fade-up delay-6" style="margin-top:1.25rem;">
+        <div class="scenario-card-header">
+          <span class="scenario-card-title">Escenario E: Exodo Masivo de Clientes Nw6rT3e</span>
+          <span class="badge badge--high">ALTO</span>
+        </div>
+        <div class="scenario-card-body">
+          <div class="table-wrap" style="border:none; border-radius:0;">
+            <table>
+              <tbody>
+                <tr><td style="width:180px;"><strong>Probabilidad</strong></td><td>30% (24 meses para impacto material)</td></tr>
+                <tr><td><strong>Trigger</strong></td><td>Litigios exitosos establecen precedente, alternativas (Wt6mK3f, Bh4rN7d) maduran</td></tr>
+                <tr><td><strong>Impacto Ht4pL9a</strong></td><td><span class="badge badge--high">ALTO</span> &mdash; Infrastructure Software es ~50% del revenue</td></tr>
+                <tr><td><strong>Factor atenuante</strong></td><td>Lock-in tecnologico, costos de migracion altos, contratos gobierno a largo plazo</td></tr>
+                <tr><td><strong>Indicadores</strong></td><td>Wt6mK3f revenue growth rate, Nw6rT3e renewal rates, government contract renewals</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario Matrix -->
+      <h3 class="subsection-title" id="s1matrix" style="margin-top:2rem;">Matriz de Escenarios Integrada</h3>
+      <div class="code-block anim-fade-up delay-7">
+        <div class="code-block-header">Probability vs. Impact Matrix</div>
+        <pre>
+              <span class="hl-dim">IMPACTO</span>
+              <span class="hl-dim">BAJO      MEDIO       ALTO        CRITICO</span>
+         <span class="hl-dim">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</span>
+  <span class="hl-accent">ALTA</span>   <span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span> <span class="hl-bright">B:Antitrust</span><span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+  <span class="hl-accent">PROB</span>   <span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span> <span class="hl-bright">E:Nw6rT3e</span>   <span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+  <span class="hl-accent">(&gt;40%)</span> <span class="hl-dim">|</span>          <span class="hl-dim">|</span> <span class="hl-teal">D:Compet.</span> <span class="hl-dim">|</span> <span class="hl-bright"> exodus</span>    <span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+         <span class="hl-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
+  <span class="hl-accent">MEDIA</span>  <span class="hl-dim">|</span>          <span class="hl-dim">|</span> <span class="hl-teal">A:L_cN5rK2</span>   <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+  <span class="hl-accent">PROB</span>   <span class="hl-dim">|</span>          <span class="hl-dim">|</span> <span class="hl-teal"> export</span>   <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+  <span class="hl-accent">(20-40)</span><span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span>
+         <span class="hl-dim">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</span>
+  <span class="hl-accent">BAJA</span>   <span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span> <span class="hl-bright">C:Supply</span>  <span class="hl-dim">|</span>
+  <span class="hl-accent">PROB</span>   <span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span> <span class="hl-bright"> Chain</span>    <span class="hl-dim">|</span>
+  <span class="hl-accent">(&lt;20%)</span> <span class="hl-dim">|</span>          <span class="hl-dim">|</span>           <span class="hl-dim">|</span>           <span class="hl-dim">|</span> <span class="hl-bright"> L_tW3rB7</span>   <span class="hl-dim">|</span>
+         <span class="hl-dim">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</span></pre>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ============================================ -->
+    <!-- S2: EVALUACION DE CAPACIDAD DEL ACTOR       -->
+    <!-- ============================================ -->
+    <section class="section anim-fade-up delay-2" id="s2">
+      <div class="section-header">
+        <span class="section-num">S2</span>
+        <h2 class="section-title">Evaluacion de Capacidad del Actor (Ht4pL9a)</h2>
+      </div>
+
+      <!-- 2.1 Capacidades por Dominio -->
+      <h3 class="subsection-title" id="s2cap">2.1 Capacidades por Dominio</h3>
+
+      <div class="kpi-row anim-fade-scale delay-3">
+        <div class="kpi-card kpi-card--hero">
+          <div class="kpi-value">9/10</div>
+          <div class="kpi-label">Capacidad Economica</div>
+        </div>
+        <div class="kpi-card kpi-card--hero">
+          <div class="kpi-value">9/10</div>
+          <div class="kpi-label">Capacidad Tecnologica</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">8/10</div>
+          <div class="kpi-label">Capital Humano</div>
+        </div>
+        <div class="kpi-card kpi-card--hero">
+          <div class="kpi-value">9/10</div>
+          <div class="kpi-label">Influencia Mercado</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" style="color: var(--status-high);">6/10</div>
+          <div class="kpi-label">Influencia Politica</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" style="color: var(--status-high);">5/10</div>
+          <div class="kpi-label">Resiliencia Operativa</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" style="color: var(--status-high);">5/10</div>
+          <div class="kpi-label">Reputacion / Brand</div>
+        </div>
+      </div>
+
+      <div class="table-wrap anim-fade-up delay-4">
+        <table>
+          <thead>
+            <tr>
+              <th>Dominio</th>
+              <th>Rating</th>
+              <th>Justificacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Capacidad economica</strong></td>
+              <td><span class="rating rating--high">9/10</span></td>
+              <td>$XX.XB-r1 revenue, $XX.XB-f1 FCF, M&amp;A firepower</td>
+            </tr>
+            <tr>
+              <td><strong>Capacidad tecnologica</strong></td>
+              <td><span class="rating rating--high">9/10</span></td>
+              <td>90% custom ASIC, dominancia networking, IP extenso</td>
+            </tr>
+            <tr>
+              <td><strong>Capital humano</strong></td>
+              <td><span class="rating rating--high">8/10</span></td>
+              <td>I+D en 5+ paises, talento top-tier</td>
+            </tr>
+            <tr>
+              <td><strong>Influencia de mercado</strong></td>
+              <td><span class="rating rating--high">9/10</span></td>
+              <td>Proveedor critico para G_DOD8c5, hyperscalers, telecoms</td>
+            </tr>
+            <tr>
+              <td><strong>Influencia politica</strong></td>
+              <td><span class="rating rating--med">6/10</span></td>
+              <td>Lobbying moderado ($X.XM-l1), relaciones gobierno via contratos</td>
+            </tr>
+            <tr>
+              <td><strong>Resiliencia operativa</strong></td>
+              <td><span class="rating rating--low">5/10</span></td>
+              <td>Dependencia Dq3fB7s critica, concentracion supply chain</td>
+            </tr>
+            <tr>
+              <td><strong>Reputacion/Brand</strong></td>
+              <td><span class="rating rating--low">5/10</span></td>
+              <td>Dano por litigios Nw6rT3e y practicas licensing agresivas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2.2 Ventajas Competitivas -->
+      <h3 class="subsection-title" id="s2comp">2.2 Ventajas Competitivas vs. Rivales</h3>
+      <div class="table-wrap table-compact anim-fade-up delay-5">
+        <table>
+          <thead>
+            <tr>
+              <th>vs. Zw3qT8b</th>
+              <th>vs. Lm5nR2x</th>
+              <th>vs. Yp7kD4h</th>
+              <th>vs. Sv2jG9c</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>No compite en GPUs</td>
+              <td>Ht4pL9a fabless vs Lm5nR2x foundry</td>
+              <td>Diferentes segmentos</td>
+              <td>Competidor directo ASIC</td>
+            </tr>
+            <tr>
+              <td>Custom ASIC vs GPU standar</td>
+              <td>Ht4pL9a dominante networking</td>
+              <td>Yp7kD4h no compite en custom ASIC</td>
+              <td>Ht4pL9a 90% vs Sv2jG9c 8%</td>
+            </tr>
+            <tr>
+              <td>Complementarios en ecosistema</td>
+              <td>Lm5nR2x perdiendo share rapido</td>
+              <td>Yp7kD4h gana en datacenter CPUs</td>
+              <td>Lead time 2-3 anos ventaja</td>
+            </tr>
+            <tr>
+              <td>Networking es fortaleza unica</td>
+              <td>Lm5nR2xF incipiente</td>
+              <td>No solapamiento Nw6rT3e</td>
+              <td>Sv2jG9c carece de software stack</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2.3 Vulnerabilidades -->
+      <h3 class="subsection-title" id="s2vuln">2.3 Vulnerabilidades Estrategicas</h3>
+      <div class="table-wrap anim-fade-up delay-6">
+        <table>
+          <thead>
+            <tr>
+              <th>Vulnerabilidad</th>
+              <th>Severidad</th>
+              <th>Explotabilidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Single foundry dependency (Dq3fB7s)</strong></td>
+              <td><span class="badge badge--critical">CRITICA</span></td>
+              <td>Baja (requiere evento geopolitico)</td>
+            </tr>
+            <tr>
+              <td><strong>Modelo licensing agresivo (Nw6rT3e)</strong></td>
+              <td><span class="badge badge--high">ALTA</span></td>
+              <td>Alta (ya siendo explotada por litigantes)</td>
+            </tr>
+            <tr>
+              <td><strong>Concentracion clientes IA (3-4 hyperscalers)</strong></td>
+              <td><span class="badge badge--high">ALTA</span></td>
+              <td>Media (hyperscalers tienen alternativas a largo plazo)</td>
+            </tr>
+            <tr>
+              <td><strong>Carga de deuda post-M&amp;A</strong></td>
+              <td><span class="badge badge--medium">MEDIA</span></td>
+              <td>Baja (FCF solido)</td>
+            </tr>
+            <tr>
+              <td><strong>Reputacion deteriorada</strong></td>
+              <td><span class="badge badge--medium">MEDIA</span></td>
+              <td>Alta (afecta retension y acquisition de clientes)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ============================================ -->
+    <!-- S3: PROYECCION DE IMPACTO ESTRATEGICO       -->
+    <!-- ============================================ -->
+    <section class="section anim-fade-up delay-2" id="s3">
+      <div class="section-header">
+        <span class="section-num">S3</span>
+        <h2 class="section-title">Proyeccion de Impacto Estrategico</h2>
+      </div>
+
+      <!-- 3.1 Nw6rT3e -->
+      <h3 class="subsection-title" id="s3Nw6rT3e">3.1 Impacto del Modelo Nw6rT3e en Ecosistema</h3>
+      <div class="table-wrap anim-fade-up delay-3">
+        <table>
+          <thead>
+            <tr>
+              <th>Horizonte</th>
+              <th>Impacto</th>
+              <th>Confianza</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Inmediato (0-6m)</strong></td>
+              <td>Litigios continuan, algunos settlements. Revenue Nw6rT3e crece por precio, no volumen.</td>
+              <td><span class="confidence confidence--high">90%</span></td>
+            </tr>
+            <tr>
+              <td><strong>Corto plazo (6-18m)</strong></td>
+              <td>Fallos judiciales establecen precedentes. Algunos clientes migran a Wt6mK3f/alternativas. EU puede imponer remedios.</td>
+              <td><span class="confidence confidence--med">70%</span></td>
+            </tr>
+            <tr>
+              <td><strong>Medio plazo (18-36m)</strong></td>
+              <td>Mercado se estabiliza. Clientes que quedan estan locked-in. Los que se van ya se fueron. Revenue neto puede bajar 10-15% pero margenes mejoran.</td>
+              <td><span class="confidence confidence--med">60%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3.2 IA Custom Silicon -->
+      <h3 class="subsection-title" id="s3ia">3.2 Impacto de Dominancia en IA Custom Silicon</h3>
+      <div class="table-wrap anim-fade-up delay-4">
+        <table>
+          <thead>
+            <tr>
+              <th>Horizonte</th>
+              <th>Impacto</th>
+              <th>Confianza</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Inmediato</strong></td>
+              <td>Revenue IA acelera (+74% YoY). Backlog $XX.XB-b1 garantiza crecimiento.</td>
+              <td><span class="confidence confidence--high">90%</span></td>
+            </tr>
+            <tr>
+              <td><strong>Corto plazo</strong></td>
+              <td>Ht4pL9a consolida relaciones con Fd8qW2m, Jt6pR4c, Ks3nV7h para chips custom. Market share se mantiene &gt;60%.</td>
+              <td><span class="confidence confidence--high">80%</span></td>
+            </tr>
+            <tr>
+              <td><strong>Medio plazo</strong></td>
+              <td>Competencia intensifica (Sv2jG9c, in-house designs). Share baja a 50-60% pero mercado total crece. Revenue IA sigue creciendo en terminos absolutos.</td>
+              <td><span class="confidence confidence--med">65%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3.3 Geopolitico -->
+      <h3 class="subsection-title" id="s3geo">3.3 Impacto Geopolitico (Semiconductor Sovereignty)</h3>
+      <div class="table-wrap anim-fade-up delay-5">
+        <table>
+          <thead>
+            <tr>
+              <th>Actor</th>
+              <th>Impacto</th>
+              <th>Implicacion para Ht4pL9a</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>EE.UU. (G_USchps)</strong></td>
+              <td>$XXB-us1 en subsidios domesticos</td>
+              <td>Beneficio indirecto &mdash; Dq3fB7sA fab</td>
+            </tr>
+            <tr>
+              <td><strong>EU (G_EUchps)</strong></td>
+              <td>XXX XXB-eu1 en inversiones</td>
+              <td>Potencial nueva capacidad foundry en Europa</td>
+            </tr>
+            <tr>
+              <td><strong>L_cN5rK2</strong></td>
+              <td>Aceleracion self-sufficiency</td>
+              <td>Mercado chino se cierra gradualmente</td>
+            </tr>
+            <tr>
+              <td><strong>L_tW3rB7</strong></td>
+              <td>Mayor presion geopolitica</td>
+              <td>Riesgo existencial para supply chain Ht4pL9a</td>
+            </tr>
+            <tr>
+              <td><strong>L_jP4wT8/L_kR6nJ2</strong></td>
+              <td>Expansion foundry (Xk3nJ7v, Rk8mW4n)</td>
+              <td>Alternativas a Dq3fB7s a largo plazo (2028+)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ============================================ -->
+    <!-- S4: ANALISIS DE TENDENCIAS MULTI-FACTOR     -->
+    <!-- ============================================ -->
+    <section class="section anim-fade-up delay-2" id="s4">
+      <div class="section-header">
+        <span class="section-num">S4</span>
+        <h2 class="section-title">Analisis de Tendencias Multi-Factor</h2>
+      </div>
+
+      <!-- 4.1 Trends Table -->
+      <h3 class="subsection-title" id="s4trends">4.1 Tendencias Identificadas</h3>
+      <div class="table-wrap anim-fade-up delay-3">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tendencia</th>
+              <th>Direccion</th>
+              <th>Impacto Ht4pL9a</th>
+              <th>Confianza</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>T1</strong></td>
+              <td>Consolidacion industria semiconductores</td>
+              <td><span class="trend-down">Desacelerando</span> (regulacion)</td>
+              <td>Limita futuras M&amp;A</td>
+              <td><span class="confidence confidence--high">85%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T2</strong></td>
+              <td>Reshoring/nearshoring fabricacion</td>
+              <td><span class="trend-up">Acelerando</span></td>
+              <td>Positivo &mdash; reduce riesgo Dq3fB7s a largo plazo</td>
+              <td><span class="confidence confidence--med">70%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T3</strong></td>
+              <td>IA como driver de demanda chips</td>
+              <td><span class="trend-up">Acelerando fuertemente</span></td>
+              <td>Muy positivo &mdash; core business</td>
+              <td><span class="confidence confidence--high">90%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T4</strong></td>
+              <td>Soberania tecnologica global</td>
+              <td><span class="trend-up">Acelerando</span></td>
+              <td><span class="trend-mixed">Mixto</span> &mdash; oportunidad + fragmentacion</td>
+              <td><span class="confidence confidence--med">75%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T5</strong></td>
+              <td>Regulacion tech agresiva</td>
+              <td><span class="trend-up">Acelerando</span></td>
+              <td>Negativo &mdash; G_n4hK8t, EU, pricing scrutiny</td>
+              <td><span class="confidence confidence--high">85%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T6</strong></td>
+              <td>Custom silicon vs. GPU general</td>
+              <td><span class="trend-up">Acelerando</span></td>
+              <td>Muy positivo &mdash; Ht4pL9a es lider</td>
+              <td><span class="confidence confidence--high">80%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T7</strong></td>
+              <td>Open source virtualizacion</td>
+              <td><span class="trend-up">Creciendo</span></td>
+              <td>Negativo &mdash; amenaza Nw6rT3e a largo plazo</td>
+              <td><span class="confidence confidence--med">60%</span></td>
+            </tr>
+            <tr>
+              <td><strong>T8</strong></td>
+              <td>Fragmentacion standards tech</td>
+              <td><span class="trend-mixed">Emergente</span></td>
+              <td>Negativo &mdash; complejidad operativa</td>
+              <td><span class="confidence confidence--low">55%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4.2 Interactions -->
+      <h3 class="subsection-title" id="s4interactions">4.2 Interacciones entre Tendencias</h3>
+      <div class="code-block anim-fade-up delay-4">
+        <div class="code-block-header">Trend Interaction Map</div>
+        <pre>
+<span class="hl-bright">T3</span> <span class="hl-dim">(IA demanda)</span> <span class="hl-accent">&#9472;&#9472;refuerza&#9472;&#9472;&#9654;</span> <span class="hl-bright">T6</span> <span class="hl-dim">(Custom silicon)</span> <span class="hl-accent">&#9472;&#9472;beneficia&#9472;&#9472;&#9654;</span> <span class="hl-teal">Ht4pL9a</span>
+       <span class="hl-dim">|</span>                            <span class="hl-dim">|</span>
+       <span class="hl-accent">&#9492;&#9472;&#9472;refuerza&#9472;&#9472;&#9654;</span> <span class="hl-bright">T4</span> <span class="hl-dim">(Soberania)</span> <span class="hl-accent">&#9472;&#9472;genera&#9472;&#9472;&#9654;</span> <span class="hl-bright">T2</span> <span class="hl-dim">(Reshoring)</span>
+                                                       <span class="hl-dim">|</span>
+                                              <span class="hl-teal">reduce riesgo Dq3fB7s</span>
+
+<span class="hl-bright">T5</span> <span class="hl-dim">(Regulacion)</span> <span class="hl-accent">&#9472;&#9472;limita&#9472;&#9472;&#9654;</span> <span class="hl-bright">T1</span> <span class="hl-dim">(Consolidacion M&amp;A)</span>
+       <span class="hl-dim">|</span>
+       <span class="hl-accent">&#9492;&#9472;&#9472;amenaza&#9472;&#9472;&#9654;</span> <span class="hl-dim">Modelo Nw6rT3e licensing</span>
+                           <span class="hl-dim">|</span>
+                  <span class="hl-bright">T7</span> <span class="hl-dim">(Open source)</span> <span class="hl-accent">&#9472;&#9472;compite&#9472;&#9472;&#9654;</span> <span class="hl-dim">Nw6rT3e</span>
+
+<span class="hl-accent">CONVERGENCIA:</span> <span class="hl-bright">T3+T6</span> son vientos de cola fuertes.
+              <span class="hl-bright">T5+T7</span> son vientos en contra para el segmento software.
+              Neto: <span class="hl-teal">POSITIVO</span> a corto plazo, <span class="hl-accent">INCIERTO</span> a largo plazo.</pre>
+      </div>
+    </section>
+
+    <!-- RESULT CALLOUT -->
+    <div class="callout anim-fade-up delay-5" id="result">
+      <div class="callout-label">// RESULT</div>
+      <div class="callout-text">
+        Suite estrategica completa. Escenario de mayor riesgo: <strong>Accion antimonopolio (55% prob, impacto ALTO)</strong>. Tendencias netas: <strong>positivas a corto plazo por IA</strong>, <strong>inciertas a largo plazo por regulacion</strong>.
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
+      <span class="meta-tag" style="font-size: 0.62rem;">R3x8kW2 // P4 Strategic Assessment // Generated 2026-03-07 // UNCLASSIFIED</span>
+      <br><span style="font-size:0.7rem;color:#6c6c80;">CC BY 4.0 &mdash; Art. 6(1)(f) RGPD &mdash; Derechos ARSALPO: <a href="mailto:corvusdossiers@proton.me" style="color:#5a3d8f;">corvusdossiers@proton.me</a></span>
+    </footer>
+
+  </main>
+</div>
+
+<!-- Sidebar active state tracking -->
+<script>
+  (function() {
+    const sections = document.querySelectorAll('.section, .report-header, .callout');
+    const navLinks = document.querySelectorAll('.sidebar nav a');
+
+    if (!sections.length || !navLinks.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            if (!id) return;
+            navLinks.forEach(link => {
+              link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+
+    sections.forEach(section => {
+      if (section.id) observer.observe(section);
+    });
+  })();
+</script>
+
+</body>
+</html>

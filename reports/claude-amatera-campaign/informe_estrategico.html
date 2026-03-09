@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Estrat&eacute;gico-Ejecutivo: Campa&ntilde;a InstallFix / Amatera Stealer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* TLP Banner */
+  .tlp-banner {
+    background: #1a1e24;
+    border: 1px solid #30363d;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #f0f6fc;
+  }
+  .tlp-banner span {
+    color: #f0f6fc;
+    background: #238636;
+    padding: 2px 10px;
+    border-radius: 3px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #010409;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+    height: 48px;
+  }
+  .nav-bar a {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 24px;
+    transition: color 0.2s, background 0.2s;
+    border-bottom: 2px solid transparent;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .nav-bar a:hover {
+    color: #c9d1d9;
+    background: #161b22;
+  }
+  .nav-bar a.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+    background: #161b22;
+  }
+
+  /* Main container */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* Header */
+  .report-header {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid #21262d;
+    margin-bottom: 40px;
+  }
+  .report-header h1 {
+    color: #58a6ff;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .report-header .subtitle {
+    color: #8b949e;
+    font-size: 16px;
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  .report-meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .meta-item {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .meta-item strong { color: #c9d1d9; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-critical { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .badge-high { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .badge-warning { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+  .badge-low { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+  .badge-info { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
+  .badge-tlp { background: #fff; color: #000; font-weight: 800; }
+
+  /* Sections */
+  .section {
+    margin-bottom: 36px;
+  }
+  .section-title {
+    color: #58a6ff;
+    font-size: 20px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #21262d;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-number {
+    background: #58a6ff;
+    color: #0d1117;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Cards */
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card p { margin-bottom: 14px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* Threat assessment box */
+  .threat-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-left: 4px solid #f85149;
+    border-radius: 8px;
+    padding: 24px;
+  }
+  .threat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .threat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .threat-label {
+    font-size: 12px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .threat-value {
+    font-size: 14px;
+    color: #c9d1d9;
+  }
+
+  /* Severity indicator */
+  .severity-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .severity-bar {
+    height: 8px;
+    border-radius: 4px;
+    flex: 1;
+    max-width: 200px;
+  }
+  .severity-high .severity-bar {
+    background: linear-gradient(90deg, #f85149 0%, #f85149 80%, #30363d 80%);
+  }
+
+  /* Kill chain diagram */
+  .kill-chain {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 20px 0;
+    justify-content: center;
+  }
+  .kill-step {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #c9d1d9;
+    text-align: center;
+    min-width: 110px;
+    position: relative;
+  }
+  .kill-step .step-label {
+    font-size: 10px;
+    color: #8b949e;
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .kill-arrow {
+    color: #f85149;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .kill-step.initial { border-color: #d29922; }
+  .kill-step.delivery { border-color: #58a6ff; }
+  .kill-step.exploit { border-color: #f85149; }
+  .kill-step.payload { border-color: #f85149; border-width: 2px; }
+
+  /* Tables */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead {
+    background: #0d1117;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    color: #58a6ff;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #30363d;
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #21262d;
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(88,166,255,0.04); }
+  .mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    color: #79c0ff;
+  }
+
+  /* Lists */
+  .card ol, .card ul {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+  .card li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  /* Impact items */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .impact-item {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .impact-icon {
+    color: #f85149;
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .impact-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Recommendations */
+  .rec-list {
+    counter-reset: rec-counter;
+    list-style: none;
+    padding: 0;
+  }
+  .rec-list li {
+    counter-increment: rec-counter;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 14px 16px 14px 52px;
+    margin-bottom: 8px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .rec-list li::before {
+    content: counter(rec-counter);
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    background: #58a6ff;
+    color: #0d1117;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Admiralty explanation */
+  .admiralty-note {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.7;
+  }
+  .admiralty-note strong { color: #c9d1d9; }
+
+  /* References */
+  .ref-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: ref-counter;
+  }
+  .ref-list li {
+    counter-increment: ref-counter;
+    padding: 10px 0 10px 36px;
+    border-bottom: 1px solid #21262d;
+    position: relative;
+    font-size: 14px;
+  }
+  .ref-list li:last-child { border-bottom: none; }
+  .ref-list li::before {
+    content: "[" counter(ref-counter) "]";
+    position: absolute;
+    left: 0;
+    color: #58a6ff;
+    font-weight: 600;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+  }
+  .ref-list a {
+    color: #58a6ff;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .ref-list a:hover { text-decoration: underline; }
+  .ref-source {
+    color: #c9d1d9;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid #21262d;
+    padding: 32px 0;
+    text-align: center;
+    margin-top: 40px;
+  }
+  .footer p {
+    font-size: 13px;
+    color: #484f58;
+    margin-bottom: 6px;
+  }
+  .footer .pub-date {
+    color: #8b949e;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* CVE link style */
+  .cve-id {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    color: #f85149;
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { padding: 16px 12px 40px; }
+    .report-header h1 { font-size: 22px; }
+    .threat-grid { grid-template-columns: 1fr; }
+    .impact-grid { grid-template-columns: 1fr; }
+    .kill-chain { flex-direction: column; }
+    .kill-arrow { transform: rotate(90deg); }
+    .nav-inner { overflow-x: auto; }
+    .meta-item { font-size: 12px; padding: 6px 12px; }
+  }
+
+  /* Vuln explanation */
+  .vuln-explanation {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-left: 3px solid #d29922;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #8b949e;
+    line-height: 1.7;
+  }
+  .vuln-explanation strong { color: #d29922; }
+
+  /* Context bullets */
+  .context-list {
+    list-style: none;
+    padding: 0;
+  }
+  .context-list li {
+    padding: 8px 0 8px 20px;
+    position: relative;
+    font-size: 14px;
+    border-bottom: 1px solid #21262d;
+  }
+  .context-list li:last-child { border-bottom: none; }
+  .context-list li::before {
+    content: "\25B8";
+    position: absolute;
+    left: 0;
+    color: #58a6ff;
+  }
+  .context-label {
+    color: #8b949e;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar">
+  <a href="informe_estrategico.html" class="active">Informe Estrat&eacute;gico</a>
+  <a href="informe_tactico.html">Informe T&aacute;ctico-T&eacute;cnico</a>
+  <a href="stix_taxii_iocs.html">STIX/TAXII &mdash; IOCs</a>
+</nav>
+
+<!-- TLP Classification Banner -->
+<div class="tlp-banner">TLP: <span>CLEAR</span></div>
+
+<div class="container">
+
+  <!-- 1. CABECERA DEL INFORME -->
+  <header class="report-header">
+    <h1>Informe Estrat&eacute;gico-Ejecutivo:<br>Campa&ntilde;a InstallFix / Amatera Stealer</h1>
+    <p class="subtitle">Amenaza activa contra herramientas de desarrollo con IA</p>
+    <div class="report-meta">
+      <div class="meta-item"><strong>Clasificaci&oacute;n:</strong>&nbsp; <span class="badge badge-tlp">TLP:CLEAR</span></div>
+      <div class="meta-item"><strong>Fecha:</strong>&nbsp; 12 de marzo de 2026</div>
+      <div class="meta-item"><strong>Nivel de amenaza:</strong>&nbsp; <span class="badge badge-high">ALTO</span></div>
+      <div class="meta-item"><strong>Tipo:</strong>&nbsp; Informe estrat&eacute;gico-ejecutivo</div>
+    </div>
+  </header>
+
+  <!-- 2. RESUMEN EJECUTIVO -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">1</span> Resumen Ejecutivo</h2>
+    <div class="card">
+      <p>Se ha identificado una campa&ntilde;a activa de distribuci&oacute;n de malware denominada <strong>&laquo;InstallFix&raquo;</strong> que explota la pr&aacute;ctica habitual de copiar y pegar comandos de instalaci&oacute;n desde p&aacute;ginas web. Los atacantes han creado r&eacute;plicas casi perfectas de la p&aacute;gina de instalaci&oacute;n de Claude Code de Anthropic, distribuy&eacute;ndolas a trav&eacute;s de resultados patrocinados en motores de b&uacute;squeda. Los dominios maliciosos se alojan en infraestructura leg&iacute;tima &mdash;como Cloudflare Pages, Squarespace y Tencent EdgeOne&mdash; para evadir los filtros de reputaci&oacute;n web y aparentar legitimidad.</p>
+      <p>El payload final es <strong>Amatera Stealer</strong>, un infostealer evolucionado de ACR Stealer que se comercializa como Malware-as-a-Service (MaaS). Este malware est&aacute; dise&ntilde;ado para robar credenciales almacenadas en navegadores, cookies de sesi&oacute;n, tokens de autenticaci&oacute;n e informaci&oacute;n detallada del sistema. Su modelo de suscripci&oacute;n facilita que actores de amenaza con capacidades t&eacute;cnicas limitadas puedan ejecutar campa&ntilde;as sofisticadas de robo de informaci&oacute;n.</p>
+      <p>Adicionalmente, se han descubierto dos vulnerabilidades cr&iacute;ticas en Claude Code (<span class="cve-id">CVE-2025-59536</span> y <span class="cve-id">CVE-2026-21852</span>) que permiten ejecuci&oacute;n de c&oacute;digo no autorizado y robo de credenciales API mediante archivos de configuraci&oacute;n de repositorios manipulados. Estas vulnerabilidades agravan significativamente el riesgo para organizaciones que utilizan herramientas de desarrollo con inteligencia artificial sin controles de seguridad adecuados.</p>
+    </div>
+  </section>
+
+  <!-- 3. EVALUACION DE LA AMENAZA -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">2</span> Evaluaci&oacute;n de la Amenaza</h2>
+    <div class="threat-box">
+      <div class="severity-indicator severity-high" style="margin-bottom: 20px;">
+        <span style="font-size: 13px; font-weight: 700; color: #f85149; text-transform: uppercase; letter-spacing: 1px;">Nivel de amenaza: ALTO</span>
+        <div class="severity-bar"></div>
+      </div>
+      <div class="threat-grid">
+        <div class="threat-item">
+          <span class="threat-label">Tipo de amenaza</span>
+          <span class="threat-value">Campa&ntilde;a coordinada de malvertising + infostealer</span>
+        </div>
+        <div class="threat-item">
+          <span class="threat-label">Sector objetivo</span>
+          <span class="threat-value">Desarrolladores de software, empresas tecnol&oacute;gicas, usuarios de herramientas IA</span>
+        </div>
+        <div class="threat-item">
+          <span class="threat-label">Plataforma afectada</span>
+          <span class="threat-value">Windows (primario)</span>
+        </div>
+        <div class="threat-item">
+          <span class="threat-label">Modelo de negocio</span>
+          <span class="threat-value">Malware-as-a-Service (suscripci&oacute;n)</span>
+        </div>
+        <div class="threat-item">
+          <span class="threat-label">Coordinaci&oacute;n</span>
+          <span class="threat-value">M&uacute;ltiples sitios ejecutando binarios id&eacute;nticos confirman coordinaci&oacute;n</span>
+        </div>
+        <div class="threat-item">
+          <span class="threat-label">Estado</span>
+          <span class="threat-value"><span class="badge badge-high">Campa&ntilde;a activa</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CONTEXTO DE LA CAMPANA -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">3</span> Contexto de la Campa&ntilde;a</h2>
+    <div class="card">
+      <ul class="context-list">
+        <li>
+          <span class="context-label">T&eacute;cnica &laquo;InstallFix&raquo;</span>
+          Clonaci&oacute;n de p&aacute;ginas de instalaci&oacute;n leg&iacute;timas de Claude Code. Las r&eacute;plicas son visualmente indistinguibles del sitio oficial, replicando tipograf&iacute;a, colores e instrucciones de instalaci&oacute;n.
+        </li>
+        <li>
+          <span class="context-label">Vector de distribuci&oacute;n</span>
+          Resultados patrocinados en motores de b&uacute;squeda, posicionados para consultas como &laquo;Claude Code install&raquo;, &laquo;Claude Code CLI&raquo;, &laquo;Claude Code download&raquo;.
+        </li>
+        <li>
+          <span class="context-label">Infraestructura</span>
+          Abuso de servicios leg&iacute;timos (Cloudflare Pages, Squarespace, Tencent EdgeOne) para alojar las p&aacute;ginas clonadas, dificultando el bloqueo por reputaci&oacute;n.
+        </li>
+        <li>
+          <span class="context-label">Persistencia</span>
+          El modelo MaaS permite a los operadores mantener y actualizar la infraestructura de forma continuada con m&iacute;nima inversi&oacute;n t&eacute;cnica.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Kill Chain Diagram -->
+    <div class="card" style="text-align: center;">
+      <p style="font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 16px;">Cadena de ataque simplificada</p>
+      <div class="kill-chain">
+        <div class="kill-step initial">
+          <span class="step-label">Fase 1</span>
+          Anuncio<br>malicioso
+        </div>
+        <span class="kill-arrow">&rarr;</span>
+        <div class="kill-step delivery">
+          <span class="step-label">Fase 2</span>
+          P&aacute;gina<br>clonada
+        </div>
+        <span class="kill-arrow">&rarr;</span>
+        <div class="kill-step delivery">
+          <span class="step-label">Fase 3</span>
+          Comando<br><code style="color:#79c0ff;font-size:11px;">curl</code> malicioso
+        </div>
+        <span class="kill-arrow">&rarr;</span>
+        <div class="kill-step exploit">
+          <span class="step-label">Fase 4</span>
+          <code style="color:#79c0ff;font-size:11px;">cmd.exe</code>
+        </div>
+        <span class="kill-arrow">&rarr;</span>
+        <div class="kill-step exploit">
+          <span class="step-label">Fase 5</span>
+          <code style="color:#79c0ff;font-size:11px;">mshta.exe</code>
+        </div>
+        <span class="kill-arrow">&rarr;</span>
+        <div class="kill-step payload">
+          <span class="step-label">Payload</span>
+          Amatera<br>Stealer
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. IMPACTO POTENCIAL -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">4</span> Impacto Potencial</h2>
+    <div class="impact-grid">
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>Robo de credenciales corporativas y tokens de API</strong> &mdash; Compromiso de cuentas de servicio, accesos a infraestructura cloud y sistemas internos.</span>
+      </div>
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>Compromiso de entornos de desarrollo</strong> &mdash; Acceso no autorizado a repositorios de c&oacute;digo, pipelines CI/CD y entornos de staging/producci&oacute;n.</span>
+      </div>
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>Exfiltraci&oacute;n de propiedad intelectual</strong> &mdash; C&oacute;digo fuente propietario, algoritmos y datos sensibles accesibles desde la estaci&oacute;n de trabajo del desarrollador.</span>
+      </div>
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>Riesgo en la cadena de suministro de software</strong> &mdash; Un desarrollador comprometido puede introducir c&oacute;digo malicioso en productos distribuidos a clientes.</span>
+      </div>
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>P&eacute;rdida de confianza en herramientas de IA</strong> &mdash; Impacto reputacional para organizaciones que adoptan herramientas de desarrollo con inteligencia artificial.</span>
+      </div>
+      <div class="impact-item">
+        <span class="impact-icon">&#9888;</span>
+        <span class="impact-text"><strong>Impacto financiero sostenido</strong> &mdash; El modelo MaaS por suscripci&oacute;n permite ataques continuados con bajo coste operativo para el adversario.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. VULNERABILIDADES ASOCIADAS -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">5</span> Vulnerabilidades Asociadas</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>CVE</th>
+            <th>Descripci&oacute;n</th>
+            <th>Severidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cve-id">CVE-2025-59536</span></td>
+            <td>Ejecuci&oacute;n de c&oacute;digo no autorizado a trav&eacute;s de archivos de configuraci&oacute;n de repositorio (Hooks/MCP). Permite la ejecuci&oacute;n de comandos arbitrarios cuando un desarrollador abre un repositorio malicioso.</td>
+            <td><span class="badge badge-critical">Cr&iacute;tica</span></td>
+          </tr>
+          <tr>
+            <td><span class="cve-id">CVE-2026-21852</span></td>
+            <td>Robo de credenciales API mediante redirecci&oacute;n de headers de autenticaci&oacute;n. Permite la exfiltraci&oacute;n de tokens de API a servidores controlados por el atacante.</td>
+            <td><span class="badge badge-critical">Cr&iacute;tica</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="vuln-explanation">
+      <strong>Nota:</strong> Estas vulnerabilidades permiten a los atacantes convertir archivos de configuraci&oacute;n de repositorios en vectores de ataque. Un desarrollador que clone un repositorio manipulado puede ver comprometidas sus credenciales API antes de que el sistema solicite confirmaci&oacute;n de confianza. La combinaci&oacute;n de estas vulnerabilidades con la campa&ntilde;a InstallFix multiplica la superficie de ataque significativamente.
+    </div>
+  </section>
+
+  <!-- 7. RECOMENDACIONES ESTRATEGICAS -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">6</span> Recomendaciones Estrat&eacute;gicas</h2>
+    <div class="card" style="padding: 16px;">
+      <ol class="rec-list">
+        <li>Emitir alerta interna sobre la campa&ntilde;a InstallFix dirigida a herramientas de desarrollo con inteligencia artificial, informando espec&iacute;ficamente a los equipos de desarrollo e ingenier&iacute;a.</li>
+        <li>Prohibir la instalaci&oacute;n de software mediante resultados patrocinados de motores de b&uacute;squeda. Establecer como pol&iacute;tica corporativa el acceso directo a sitios oficiales para descarga de herramientas.</li>
+        <li>Implementar controles de reputaci&oacute;n de dominio y filtrado DNS en toda la organizaci&oacute;n, bloqueando dominios reci&eacute;n registrados y categor&iacute;as de riesgo.</li>
+        <li>Desplegar soluci&oacute;n EDR con capacidad de monitorizaci&oacute;n de l&iacute;nea de comandos y cadenas de procesos, con alertas espec&iacute;ficas para ejecuciones <code class="mono">mshta.exe</code> y descargas <code class="mono">curl</code> sospechosas.</li>
+        <li>Auditar entornos de desarrollo para detectar archivos de configuraci&oacute;n manipulados (Hooks, MCP), especialmente en repositorios clonados de fuentes externas.</li>
+        <li>Establecer verificaci&oacute;n obligatoria de URLs y comandos antes de su ejecuci&oacute;n en terminal, incluyendo comprobaci&oacute;n de certificados y dominios.</li>
+        <li>Evaluar el riesgo de adopci&oacute;n de herramientas de IA sin controles de seguridad adecuados, integrando estas evaluaciones en los procesos de gesti&oacute;n de riesgos existentes.</li>
+        <li>Monitorizar los indicadores de compromiso (IOCs) proporcionados en el documento <a href="stix_taxii_iocs.html" style="color:#58a6ff;">STIX/TAXII adjunto</a> e integrarlos en las plataformas de inteligencia de amenazas de la organizaci&oacute;n.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 8. CLASIFICACION DE FUENTES (ADMIRALTY CODE) -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">7</span> Clasificaci&oacute;n de Fuentes (Admiralty Code)</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Fiabilidad</th>
+            <th>Credibilidad</th>
+            <th>C&oacute;digo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>IBM X-Force</td>
+            <td>A &ndash; Completamente fiable</td>
+            <td>1 &ndash; Confirmada por otras fuentes</td>
+            <td><span class="badge badge-info">A1</span></td>
+          </tr>
+          <tr>
+            <td>Proofpoint Threat Insight</td>
+            <td>A &ndash; Completamente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">A2</span></td>
+          </tr>
+          <tr>
+            <td>FortiGuard Labs</td>
+            <td>A &ndash; Completamente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">A2</span></td>
+          </tr>
+          <tr>
+            <td>eSecurity Planet</td>
+            <td>B &ndash; Normalmente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">B2</span></td>
+          </tr>
+          <tr>
+            <td>SecurityOnline / Daily CyberSecurity</td>
+            <td>B &ndash; Normalmente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">B2</span></td>
+          </tr>
+          <tr>
+            <td>CybersecurityNews</td>
+            <td>B &ndash; Normalmente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">B2</span></td>
+          </tr>
+          <tr>
+            <td>Feedly AI</td>
+            <td>B &ndash; Normalmente fiable</td>
+            <td>2 &ndash; Probablemente verdadera</td>
+            <td><span class="badge badge-info">B2</span></td>
+          </tr>
+          <tr>
+            <td>VirusTotal</td>
+            <td>B &ndash; Normalmente fiable</td>
+            <td>1 &ndash; Confirmada por otras fuentes</td>
+            <td><span class="badge badge-info">B1</span></td>
+          </tr>
+          <tr>
+            <td>CVE Details / NVD</td>
+            <td>A &ndash; Completamente fiable</td>
+            <td>1 &ndash; Confirmada por otras fuentes</td>
+            <td><span class="badge badge-info">A1</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="admiralty-note">
+      <strong>Sistema de Evaluaci&oacute;n Admiralty (NATO):</strong> El c&oacute;digo Admiralty es un sistema est&aacute;ndar utilizado por las comunidades de inteligencia de la OTAN y aliados para evaluar fuentes de informaci&oacute;n. Combina dos escalas independientes:
+      <br><br>
+      <strong>Fiabilidad de la fuente (A-F):</strong> A &ndash; Completamente fiable; B &ndash; Normalmente fiable; C &ndash; Bastante fiable; D &ndash; No suele ser fiable; E &ndash; No fiable; F &ndash; No se puede juzgar.
+      <br><br>
+      <strong>Credibilidad de la informaci&oacute;n (1-6):</strong> 1 &ndash; Confirmada por otras fuentes; 2 &ndash; Probablemente verdadera; 3 &ndash; Posiblemente verdadera; 4 &ndash; Dudosa; 5 &ndash; Improbable; 6 &ndash; No se puede juzgar.
+      <br><br>
+      La combinaci&oacute;n de ambas escalas (ej. A1, B2) proporciona una evaluaci&oacute;n r&aacute;pida y estandarizada de la calidad de cada fuente de inteligencia.
+    </div>
+  </section>
+
+  <!-- 9. REFERENCIAS -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-number">8</span> Referencias</h2>
+    <div class="card">
+      <ol class="ref-list">
+        <li>
+          <span class="ref-source">IBM X-Force &mdash; InstallFix Report:</span><br>
+          <a href="https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991" target="_blank" rel="noopener noreferrer">https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991</a>
+        </li>
+        <li>
+          <span class="ref-source">SecurityOnline &mdash; The Vibe-Coding Trap:</span><br>
+          <a href="https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/" target="_blank" rel="noopener noreferrer">https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/</a>
+        </li>
+        <li>
+          <span class="ref-source">eSecurity Planet &mdash; Fake Claude Code Install Pages:</span><br>
+          <a href="https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/" target="_blank" rel="noopener noreferrer">https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/</a>
+        </li>
+        <li>
+          <span class="ref-source">CybersecurityNews &mdash; Claude Code Vulnerabilities:</span><br>
+          <a href="https://cybersecuritynews.com/claude-code-vulnerabilities/" target="_blank" rel="noopener noreferrer">https://cybersecuritynews.com/claude-code-vulnerabilities/</a>
+        </li>
+        <li>
+          <span class="ref-source">Feedly Threat Intelligence</span> &mdash; Seguimiento de InstallFix / Amatera Stealer
+        </li>
+        <li>
+          <span class="ref-source">VirusTotal</span> &mdash; An&aacute;lisis de muestras de malware
+        </li>
+        <li>
+          <span class="ref-source">CVE Details / NVD</span> &mdash; CVE-2025-59536, CVE-2026-21852
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="pub-date">Fecha de publicaci&oacute;n: 12 de marzo de 2026</p>
+    <p>Este documento est&aacute; destinado exclusivamente a los destinatarios autorizados.<br>Su distribuci&oacute;n, reproducci&oacute;n o uso fuera del &aacute;mbito autorizado queda prohibido.</p>
+    <p style="margin-top: 10px;">Clasificaci&oacute;n: TLP:CLEAR &mdash; La informaci&oacute;n puede ser compartida libremente.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

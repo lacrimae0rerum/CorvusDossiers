@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STIX/TAXII — Indicadores de Compromiso: Smishing SEUR / Kit k468</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #0d1117;
+    --bg-card: #161b22;
+    --border: #30363d;
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-heading: #e6edf3;
+    --accent-blue: #58a6ff;
+    --accent-red: #f85149;
+    --accent-orange: #d29922;
+    --accent-green: #3fb950;
+    --accent-purple: #bc8cff;
+    --tlp-amber: #d29922;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #010409;
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 24px;
+  }
+  .nav-bar a {
+    display: inline-block;
+    padding: 14px 18px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .nav-bar a:hover {
+    color: var(--text-primary);
+    border-bottom-color: var(--border);
+  }
+  .nav-bar a.active {
+    color: var(--accent-blue);
+    border-bottom-color: var(--accent-blue);
+  }
+
+  /* ── TLP Banner ── */
+  .tlp-banner {
+    background: var(--tlp-amber);
+    color: #000;
+    text-align: center;
+    padding: 6px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── Main Container ── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── Report Header ── */
+  .report-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+  }
+  .report-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    font-size: 13.5px;
+  }
+  .header-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .header-meta .meta-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .header-meta .meta-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-critical {
+    background: rgba(248, 81, 73, 0.15);
+    color: var(--accent-red);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+  }
+  .badge-high {
+    background: rgba(210, 153, 34, 0.15);
+    color: var(--accent-orange);
+    border: 1px solid rgba(210, 153, 34, 0.3);
+  }
+  .badge-tlp {
+    background: rgba(210, 153, 34, 0.2);
+    color: var(--tlp-amber);
+    border: 1px solid rgba(210, 153, 34, 0.4);
+    font-family: var(--font-mono);
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .section-number {
+    color: var(--text-secondary);
+    margin-right: 8px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Stats Grid ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+  }
+  .stat-card .stat-label {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .stat-card.stat-total {
+    border-color: var(--accent-blue);
+    border-width: 2px;
+  }
+  .stat-card.stat-total .stat-number {
+    color: var(--text-heading);
+    font-size: 32px;
+  }
+
+  /* ── Tables ── */
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .table-wrapper.scrollable {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  th {
+    background: #1c2128;
+    color: var(--text-heading);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  tr:hover td {
+    background: rgba(88, 166, 255, 0.04);
+  }
+  td.mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    word-break: break-all;
+  }
+  td.mono-sm {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    word-break: break-all;
+  }
+
+  /* ── Type Tags ── */
+  .type-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .type-domain { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
+  .type-ip { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+  .type-ns { background: rgba(188,140,255,0.15); color: var(--accent-purple); }
+  .type-url { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+  .type-ws { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+  .type-kit { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+  .type-hash { background: rgba(88,166,255,0.1); color: var(--accent-blue); }
+  .type-pii { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+  .type-fin { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+  .type-otp { background: rgba(188,140,255,0.15); color: var(--accent-purple); }
+  .type-event { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+
+  /* ── Direction Tags ── */
+  .dir-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+  .dir-s2c { background: rgba(248,81,73,0.12); color: var(--accent-red); }
+
+  /* ── Search Input ── */
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .search-box input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input:focus {
+    border-color: var(--accent-blue);
+  }
+  .search-box input::placeholder {
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+  }
+  .search-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  /* ── STIX JSON Block ── */
+  .stix-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .stix-header {
+    background: #1c2128;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .stix-header span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-heading);
+  }
+  .stix-code {
+    max-height: 600px;
+    overflow: auto;
+    padding: 18px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre;
+    tab-size: 2;
+  }
+
+  /* ── Download Button ── */
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(88, 166, 255, 0.12);
+    color: var(--accent-blue);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+    text-decoration: none;
+  }
+  .btn-download:hover {
+    background: rgba(88, 166, 255, 0.2);
+    border-color: var(--accent-blue);
+  }
+
+  /* ── Admiralty Table ── */
+  .admiralty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .admiralty-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .admiralty-card h4 {
+    font-size: 12px;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .admiralty-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .admiralty-card .code {
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: 600;
+  }
+
+  /* ── References ── */
+  .ref-list {
+    list-style: none;
+    padding: 0;
+  }
+  .ref-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .ref-list li:last-child { border-bottom: none; }
+  .ref-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-blue);
+    font-weight: 700;
+    min-width: 24px;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+  .toc h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 4px 24px;
+  }
+  .toc-list a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .toc-list a:hover { color: var(--text-heading); }
+  .toc-list .toc-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    min-width: 24px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+  .footer p { margin-bottom: 4px; }
+
+  /* ── Utility ── */
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .text-secondary { color: var(--text-secondary); }
+  .text-heading { color: var(--text-heading); }
+  .text-red { color: var(--accent-red); }
+  .text-orange { color: var(--accent-orange); }
+  .text-green { color: var(--accent-green); }
+  .text-blue { color: var(--accent-blue); }
+  .text-mono { font-family: var(--font-mono); }
+
+  /* ── Part Divider ── */
+  .part-divider {
+    text-align: center;
+    margin: 48px 0 32px;
+    padding: 20px;
+    border-top: 2px solid var(--accent-blue);
+    border-bottom: 2px solid var(--accent-blue);
+    background: rgba(88, 166, 255, 0.04);
+    border-radius: 4px;
+  }
+  .part-divider h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .part-divider p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 48px; }
+    .report-header h1 { font-size: 20px; }
+    .stats-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    .nav-inner { padding: 0 12px; }
+    .nav-bar a { padding: 12px 10px; font-size: 12px; }
+    .toc-list { grid-template-columns: 1fr; }
+    table { font-size: 12px; }
+    td, th { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     NAVIGATION BAR
+     ══════════════════════════════════════════════════════════════════════ -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="seur_smishing_12-03_SITREP.html">Informe Estrat&eacute;gico</a>
+    <a href="seur_smishing_12-03_OPTACT.html">Informe T&aacute;ctico-T&eacute;cnico</a>
+    <a href="seur_smishing_12-03_stix_taxii_iocs.html" class="active">STIX/TAXII &mdash; IOCs</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TLP BANNER
+     ══════════════════════════════════════════════════════════════════════ -->
+<div class="tlp-banner">TLP:AMBER &mdash; Distribuci&oacute;n restringida. No divulgar fuera de la organizaci&oacute;n receptora.</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- Report Header -->
+  <header class="report-header">
+    <h1>STIX/TAXII &mdash; Indicadores de Compromiso</h1>
+    <p class="subtitle">Campa&ntilde;a de Smishing Suplantando SEUR / Kit de Phishing k468</p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <span class="meta-label">Referencia:</span>
+        <span class="meta-value">SMISH-SEUR-2026-0312</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Fecha:</span>
+        <span class="meta-value">12 de marzo de 2026</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Clasificaci&oacute;n:</span>
+        <span class="badge badge-tlp">TLP:AMBER</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Formato:</span>
+        <span class="meta-value">STIX 2.1</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Severidad:</span>
+        <span class="badge badge-critical">CR&Iacute;TICA</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Summary Stats -->
+  <div class="section">
+    <h2 class="section-title"><span class="section-number">0.</span> Resumen de Indicadores</h2>
+    <div class="stats-grid">
+      <div class="stat-card stat-total">
+        <div class="stat-number">~37</div>
+        <div class="stat-label">IOCs Totales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Dominio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Direcci&oacute;n IP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">2</div>
+        <div class="stat-label">Nameservers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">4</div>
+        <div class="stat-label">URLs/Endpoints</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Kit ID</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Panel Path</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">26</div>
+        <div class="stat-label">Hashes SHA-256</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <nav class="toc">
+    <h3>&Iacute;ndice de Contenidos</h3>
+    <ul class="toc-list">
+      <li><a href="#infra"><span class="toc-num">1</span> Infraestructura de Red</a></li>
+      <li><a href="#urls"><span class="toc-num">2</span> URLs y Endpoints</a></li>
+      <li><a href="#kit-ids"><span class="toc-num">3</span> Identificadores del Kit</a></li>
+      <li><a href="#ws-events"><span class="toc-num">4</span> Eventos WebSocket (C2)</a></li>
+      <li><a href="#data-fields"><span class="toc-num">5</span> Datos Recolectados por el Kit</a></li>
+      <li><a href="#hashes"><span class="toc-num">6</span> Hashes de Archivos (SHA-256)</a></li>
+      <li><a href="#stix-bundle"><span class="toc-num">B</span> STIX 2.1 Bundle JSON</a></li>
+      <li><a href="#admiralty"><span class="toc-num">C</span> Escala Admiralty</a></li>
+      <li><a href="#references"><span class="toc-num">D</span> Referencias</a></li>
+    </ul>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       PART A — IOC TABLES
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <h2>Parte A &mdash; Tablas de Indicadores de Compromiso</h2>
+    <p>Representaci&oacute;n legible de todos los IOCs identificados durante el an&aacute;lisis</p>
+  </div>
+
+  <!-- 1. Network Infrastructure -->
+  <div class="section" id="infra">
+    <h2 class="section-title"><span class="section-number">1.</span> Infraestructura de Red</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Indicador</th>
+            <th>Tipo</th>
+            <th>Descripci&oacute;n</th>
+            <th>Fuente [Admiralty]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">seurtjm.cv</td>
+            <td><span class="type-tag type-domain">Dominio</span></td>
+            <td>Dominio principal del sitio de phishing (ccTLD Cabo Verde)</td>
+            <td>An&aacute;lisis directo <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">50.114.184.241</td>
+            <td><span class="type-tag type-ip">IPv4</span></td>
+            <td>IP del servidor de phishing (Ace Data Centers / IPXO LLC, CIDR 50.114.184.0/24)</td>
+            <td>WHOIS <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">ns1.dyna-ns.net</td>
+            <td><span class="type-tag type-ns">Nameserver</span></td>
+            <td>Servidor DNS primario (Dynadot)</td>
+            <td>WHOIS <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">ns2.dyna-ns.net</td>
+            <td><span class="type-tag type-ns">Nameserver</span></td>
+            <td>Servidor DNS secundario (Dynadot)</td>
+            <td>WHOIS <span class="text-green">[A1]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2. URLs and Endpoints -->
+  <div class="section" id="urls">
+    <h2 class="section-title"><span class="section-number">2.</span> URLs y Endpoints</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Tipo</th>
+            <th>Descripci&oacute;n</th>
+            <th>Fuente [Admiralty]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">https://seurtjm.cv/es</td>
+            <td><span class="type-tag type-url">Landing page</span></td>
+            <td>P&aacute;gina principal del phishing (r&eacute;plica SEUR)</td>
+            <td>An&aacute;lisis directo <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">https://seurtjm.cv/CNIXMQnPlR/api/input</td>
+            <td><span class="type-tag type-url">API exfiltraci&oacute;n</span></td>
+            <td>Endpoint principal de exfiltraci&oacute;n de datos</td>
+            <td>An&aacute;lisis JS <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">https://seurtjm.cv/api/confirm-delivery</td>
+            <td><span class="type-tag type-url">API flujo</span></td>
+            <td>Endpoint de confirmaci&oacute;n de entrega</td>
+            <td>An&aacute;lisis JS <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">wss://seurtjm.cv/ws</td>
+            <td><span class="type-tag type-ws">WebSocket C2</span></td>
+            <td>Canal de comando y control bidireccional en tiempo real</td>
+            <td>An&aacute;lisis JS <span class="text-green">[A1]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. Kit Identifiers -->
+  <div class="section" id="kit-ids">
+    <h2 class="section-title"><span class="section-number">3.</span> Identificadores del Kit</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Indicador</th>
+            <th>Tipo</th>
+            <th>Descripci&oacute;n</th>
+            <th>Fuente [Admiralty]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">k468_es_post_seur_index</td>
+            <td><span class="type-tag type-kit">Kit ID</span></td>
+            <td>Identificador del kit de phishing (PhaaS)</td>
+            <td>An&aacute;lisis del c&oacute;digo <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">/CNIXMQnPlR/</td>
+            <td><span class="type-tag type-kit">Panel path</span></td>
+            <td>Ruta oculta del panel de administraci&oacute;n</td>
+            <td>An&aacute;lisis JS <span class="text-green">[A1]</span></td>
+          </tr>
+          <tr>
+            <td class="mono">CNIXMQnPlR</td>
+            <td><span class="type-tag type-kit">Token API</span></td>
+            <td>Prefijo de las rutas API del operador</td>
+            <td>An&aacute;lisis JS <span class="text-green">[A1]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4. WebSocket Events (C2) -->
+  <div class="section" id="ws-events">
+    <h2 class="section-title"><span class="section-number">4.</span> Eventos WebSocket (C2)</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Direcci&oacute;n</th>
+            <th>Funci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">otp-valid</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Operador valida OTP capturado</td>
+          </tr>
+          <tr>
+            <td class="mono">custom-otp-valid</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Validaci&oacute;n OTP personalizada</td>
+          </tr>
+          <tr>
+            <td class="mono">app-valid</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Validaci&oacute;n desde app bancaria</td>
+          </tr>
+          <tr>
+            <td class="mono">kickOut</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Expulsar a la v&iacute;ctima del flujo</td>
+          </tr>
+          <tr>
+            <td class="mono">block</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Bloquear a la v&iacute;ctima</td>
+          </tr>
+          <tr>
+            <td class="mono">otpFail</td>
+            <td><span class="dir-tag dir-s2c">Servidor &#8594; Cliente</span></td>
+            <td>Forzar reintento de OTP</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. Data Fields Collected -->
+  <div class="section" id="data-fields">
+    <h2 class="section-title"><span class="section-number">5.</span> Datos Recolectados por el Kit</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Tipo</th>
+            <th>Categor&iacute;a</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">firstName</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">lastName</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">email</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">phone</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">phone1</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">address</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">address2</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">city</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">zipCode</td>
+            <td>String</td>
+            <td><span class="type-tag type-pii">PII</span></td>
+          </tr>
+          <tr>
+            <td class="mono">cardNumber</td>
+            <td>String (16-19 d&iacute;gitos)</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">expires</td>
+            <td>String</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">cvv</td>
+            <td>String</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">cardBIN</td>
+            <td>String</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">cardType</td>
+            <td>String (VISA/MC/AMEX/DISCOVER/JCB/MAESTRO/MIR)</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">cardNumberLast4</td>
+            <td>String</td>
+            <td><span class="type-tag type-fin">Financiero</span></td>
+          </tr>
+          <tr>
+            <td class="mono">verifyCode</td>
+            <td>String</td>
+            <td><span class="type-tag type-otp">OTP/3DS</span></td>
+          </tr>
+          <tr>
+            <td class="mono">verifyCode1</td>
+            <td>String</td>
+            <td><span class="type-tag type-otp">OTP/3DS</span></td>
+          </tr>
+          <tr>
+            <td class="mono">verifyCode2</td>
+            <td>String</td>
+            <td><span class="type-tag type-otp">OTP/3DS</span></td>
+          </tr>
+          <tr>
+            <td class="mono">appVerifyCode</td>
+            <td>String</td>
+            <td><span class="type-tag type-otp">OTP/3DS</span></td>
+          </tr>
+          <tr>
+            <td class="mono">customOtpData</td>
+            <td>String</td>
+            <td><span class="type-tag type-otp">OTP/3DS</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 6. File Hashes (SHA-256) -->
+  <div class="section" id="hashes">
+    <h2 class="section-title"><span class="section-number">6.</span> Hashes de Archivos del Kit (SHA-256)</h2>
+    <div class="search-box">
+      <input type="text" id="hashSearch" placeholder="Filtrar por nombre de archivo, hash o descripci&oacute;n..." oninput="filterHashes()">
+      <span class="search-count" id="hashCount">26 de 26</span>
+    </div>
+    <div class="table-wrapper scrollable">
+      <table id="hashTable">
+        <thead>
+          <tr>
+            <th>Archivo</th>
+            <th>Hash SHA-256</th>
+            <th>Tama&ntilde;o</th>
+            <th>Descripci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">es-raw.html</td>
+            <td class="mono-sm">21f6dcf22be8b44d4e54d49f963cc9dd8ce1e943cbdf5de4a8e1a871bb108a46</td>
+            <td>568 KB</td>
+            <td>P&aacute;gina principal HTML</td>
+          </tr>
+          <tr>
+            <td class="mono">index-284bfe89.js</td>
+            <td class="mono-sm">179e87d143bc07cfd8f22a6a1557359b064bcacbcc79ba4a5bab77619d5abbd9</td>
+            <td>466 KB</td>
+            <td>Bundle JS principal (Vue+Axios+l&oacute;gica phishing)</td>
+          </tr>
+          <tr>
+            <td class="mono">index-9766d7ac.css</td>
+            <td class="mono-sm">9766d7ac6187ec134308165407ffa1d64d5c12d6737c886ae867391bfe965057</td>
+            <td>34 KB</td>
+            <td>CSS framework Vue</td>
+          </tr>
+          <tr>
+            <td class="mono">logo.png</td>
+            <td class="mono-sm">677bbd5328d59f7d728fc62a38e2b37ecfcae8c15aa0a2be53ddf4e177b5603d</td>
+            <td>11 KB</td>
+            <td>Logo oficial SEUR robado</td>
+          </tr>
+          <tr>
+            <td class="mono">bc.png</td>
+            <td class="mono-sm">cb0a32507c72d7bd2c763c1c1e5f80ae4000f7e81e24ac522e7e9b2cc1eac749</td>
+            <td>155 KB</td>
+            <td>Banner corporativo SEUR robado</td>
+          </tr>
+          <tr>
+            <td class="mono">seur.css</td>
+            <td class="mono-sm">51167d98ff37f00135834c7f94503939b0e78c30b3f9cb358c11fa3fa6df1475</td>
+            <td>134 KB</td>
+            <td>CSS corporativo SEUR robado</td>
+          </tr>
+          <tr>
+            <td class="mono">favicon.jpg</td>
+            <td class="mono-sm">b37e8c0e3341acbe6c7235120ba0ab4dd3a6f824cba36a8f8d997f04223a739b</td>
+            <td>2 KB</td>
+            <td>Favicon del kit</td>
+          </tr>
+          <tr>
+            <td class="mono">mir-a02fe0b1.jpg</td>
+            <td class="mono-sm">a02fe0b1ea3401e73c9905652c88c20a5a4a8ba3d1927dc4009da1f4857c4e55</td>
+            <td>26 KB</td>
+            <td>Logo red MIR (Rusia)</td>
+          </tr>
+          <tr>
+            <td class="mono">cardloading.svg</td>
+            <td class="mono-sm">56af3b63c02fca54cc3bcea72a744d03a5de21f69fd5358e641261c29ee3c6ce</td>
+            <td>2 KB</td>
+            <td>SVG animaci&oacute;n de carga</td>
+          </tr>
+          <tr>
+            <td class="mono">btlocaliza.png</td>
+            <td class="mono-sm">59c7979aea38a3d477bdce985f6d5d728f2171d351ba80c4286e9a4153b53f25</td>
+            <td>0.5 KB</td>
+            <td>Bot&oacute;n &quot;Localiza&quot; SEUR</td>
+          </tr>
+          <tr>
+            <td class="mono">calendar.svg</td>
+            <td class="mono-sm">623ffd99ab23341bc6f7d9658866f7ed192a118cae320e4465dcf0aec7902398</td>
+            <td>1.6 KB</td>
+            <td>Icono calendario</td>
+          </tr>
+          <tr>
+            <td class="mono">flechaderecha.png</td>
+            <td class="mono-sm">8c6c6ff4701fee67f05af52ecbe64f4a1ebf3fc16d873477d5d857afd1f3035f</td>
+            <td>0.2 KB</td>
+            <td>Icono flecha derecha</td>
+          </tr>
+          <tr>
+            <td class="mono">flechadeslide.png</td>
+            <td class="mono-sm">289cbea22b4ad70be6e3eff51a576e1f6993f35fbfe6c0ef170a77c163328a74</td>
+            <td>0.1 KB</td>
+            <td>Icono flecha slide</td>
+          </tr>
+          <tr>
+            <td class="mono">flechaizslide.png</td>
+            <td class="mono-sm">63d5d4c169bd06ddb77e0fbc70afb34e67d6d597411d0171f92872bc8172c77b</td>
+            <td>0.1 KB</td>
+            <td>Icono flecha izquierda</td>
+          </tr>
+          <tr>
+            <td class="mono">iconTienda.png</td>
+            <td class="mono-sm">75e7aa5282df233faa3563c49a97080e5647af238cf1a6ba8c9f4801a10d43a0</td>
+            <td>0.6 KB</td>
+            <td>Icono tiendas SEUR Pickup</td>
+          </tr>
+          <tr>
+            <td class="mono">PlutoSansDPDLight.otf</td>
+            <td class="mono-sm">bc2d0863394405ab3d4c9c6422a99c44abc7030ae3d8f2a2aeab95b90f60efa0</td>
+            <td>84 KB</td>
+            <td>Fuente DPD/SEUR robada</td>
+          </tr>
+          <tr>
+            <td class="mono">PlutoSansLight.woff2</td>
+            <td class="mono-sm">e0ab628e66309c89d43c1fe7ac6f64d24c2e5da927fbc657fa17a81a42dec70a</td>
+            <td>24 KB</td>
+            <td>Fuente DPD/SEUR robada</td>
+          </tr>
+          <tr>
+            <td class="mono">PlutoSansRegular.woff2</td>
+            <td class="mono-sm">a88d9ebb6a866c2d93096cb99f2e41aa904c0b2d748ccac11c34b267199cc1ba</td>
+            <td>24 KB</td>
+            <td>Fuente DPD/SEUR robada</td>
+          </tr>
+          <tr>
+            <td class="mono">fuentes.css</td>
+            <td class="mono-sm">8d6e544394e61592dcd761fb406cfdc6c7f3af3d96f23368ad17d035bd26c81c</td>
+            <td>3 KB</td>
+            <td>CSS definici&oacute;n fuentes</td>
+          </tr>
+          <tr>
+            <td class="mono">slidemigh.css</td>
+            <td class="mono-sm">df440a6aded0ba7c047c8b8458dedd4c778fb3a4bf04ce2276fc8db79d2e9969</td>
+            <td>2 KB</td>
+            <td>CSS slider</td>
+          </tr>
+          <tr>
+            <td class="mono">animate.min.css</td>
+            <td class="mono-sm">d3557300717eea06f84dd44bfd9235f7eb11e43291935dc784f33db309bb3b77</td>
+            <td>56 KB</td>
+            <td>CSS animaciones</td>
+          </tr>
+          <tr>
+            <td class="mono">mightyslider.animate.css</td>
+            <td class="mono-sm">630de1fe187215d9690866e207162510cdd21f2ce4d6ebe487a638fcb30f816f</td>
+            <td>7 KB</td>
+            <td>CSS slider animaciones</td>
+          </tr>
+          <tr>
+            <td class="mono">mightyslider.css</td>
+            <td class="mono-sm">ef1a2d224f7f2ea0cfbfbf37bcc56a47148845d8ceb642d32ab958af052ca88f</td>
+            <td>4 KB</td>
+            <td>CSS slider base</td>
+          </tr>
+          <tr>
+            <td class="mono">1a32e1333fcfa-1a32e133.svg</td>
+            <td class="mono-sm">1a32e1334123f8d42cc940fea7a84f71f5c903132ea10441cf02e47da19e95bc</td>
+            <td>0.9 KB</td>
+            <td>SVG icono pago</td>
+          </tr>
+          <tr>
+            <td class="mono">272b931f3fcfa-272b931f.svg</td>
+            <td class="mono-sm">272b931f00a7cf2e1f603aa218844f96278cc890011fc43a08ae2d42aeb9a84c</td>
+            <td>8.7 KB</td>
+            <td>SVG icono pago</td>
+          </tr>
+          <tr>
+            <td class="mono">80066acd3fcfa-80066acd.svg</td>
+            <td class="mono-sm">80066acd2096893762dab64b37b03c9de576e948372ac516f05d25f2b1cc988f</td>
+            <td>1.3 KB</td>
+            <td>SVG icono pago</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       PART B — STIX 2.1 BUNDLE JSON
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider" id="stix-bundle">
+    <h2>Parte B &mdash; STIX 2.1 Bundle JSON</h2>
+    <p>Bundle completo en formato STIX 2.1 para ingesta automatizada en plataformas TAXII/TIP</p>
+  </div>
+
+  <div class="section">
+    <div style="margin-bottom: 16px;">
+      <button class="btn-download" onclick="downloadStix()">&#11015; Descargar JSON STIX 2.1</button>
+    </div>
+
+    <div class="stix-block">
+      <div class="stix-header">
+        <span>SMISH-SEUR-2026-0312_stix_bundle.json</span>
+        <span class="text-secondary" style="font-size:12px;">STIX 2.1 &middot; spec_version 2.1</span>
+      </div>
+      <div class="stix-code" id="stixJson"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       ADMIRALTY CODE
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="admiralty">
+    <h2 class="section-title"><span class="section-number">C.</span> Escala de Evaluaci&oacute;n Admiralty (NATO)</h2>
+    <p class="text-secondary mb-16">Todos los indicadores de este informe han sido clasificados con el c&oacute;digo Admiralty <strong class="text-green">A1</strong> &mdash; Fuente completamente fiable, informaci&oacute;n confirmada.</p>
+    <div class="admiralty-grid">
+      <div class="admiralty-card">
+        <h4>Fiabilidad de la Fuente</h4>
+        <p><span class="code">A</span> &mdash; Completamente fiable. An&aacute;lisis t&eacute;cnico directo del sitio de phishing y su infraestructura mediante herramientas OSINT verificadas.</p>
+      </div>
+      <div class="admiralty-card">
+        <h4>Credibilidad de la Informaci&oacute;n</h4>
+        <p><span class="code">1</span> &mdash; Confirmada. Todos los IOCs han sido extra&iacute;dos directamente del c&oacute;digo fuente, registros WHOIS y an&aacute;lisis de tr&aacute;fico de red. Verificaci&oacute;n cruzada aplicada.</p>
+      </div>
+      <div class="admiralty-card">
+        <h4>M&eacute;todo de Obtenci&oacute;n</h4>
+        <p>An&aacute;lisis est&aacute;tico del c&oacute;digo fuente (HTML, JavaScript, CSS), consultas WHOIS/DNS, y fingerprinting de la infraestructura del kit de phishing.</p>
+      </div>
+      <div class="admiralty-card">
+        <h4>Escala Completa</h4>
+        <p><span class="code">A</span> Completamente fiable &middot; <span class="code">B</span> Normalmente fiable &middot; <span class="code">C</span> Bastante fiable &middot; <span class="code">D</span> No normalmente fiable &middot; <span class="code">E</span> No fiable &middot; <span class="code">F</span> No evaluable</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       REFERENCES
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="references">
+    <h2 class="section-title"><span class="section-number">D.</span> Referencias</h2>
+    <div class="card">
+      <ul class="ref-list">
+        <li><span class="ref-num">[1]</span> OASIS, &laquo;STIX Version 2.1 &mdash; OASIS Standard&raquo;, 10 junio 2021.</li>
+        <li><span class="ref-num">[2]</span> MITRE ATT&amp;CK, &laquo;Phishing: Spearphishing Link (T1566.002)&raquo;, MITRE Corporation.</li>
+        <li><span class="ref-num">[3]</span> MITRE ATT&amp;CK, &laquo;Input Capture: Web Portal Capture (T1056.003)&raquo;, MITRE Corporation.</li>
+        <li><span class="ref-num">[4]</span> MITRE ATT&amp;CK, &laquo;Adversary-in-the-Middle (T1557)&raquo;, MITRE Corporation.</li>
+        <li><span class="ref-num">[5]</span> MITRE ATT&amp;CK, &laquo;Financial Theft (T1657)&raquo;, MITRE Corporation.</li>
+        <li><span class="ref-num">[6]</span> FIRST, &laquo;Traffic Light Protocol (TLP) Version 2.0&raquo;, Forum of Incident Response and Security Teams.</li>
+        <li><span class="ref-num">[7]</span> NATO, &laquo;Admiralty Code / NATO System for Evaluation of Intelligence&raquo;, STANAG 2022.</li>
+        <li><span class="ref-num">[8]</span> WHOIS Lookup, registro de dominio seurtjm.cv &mdash; consulta realizada el 12 de marzo de 2026.</li>
+        <li><span class="ref-num">[9]</span> An&aacute;lisis est&aacute;tico del c&oacute;digo fuente del kit k468 (mirror local), 12 de marzo de 2026.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <p><strong>SMISH-SEUR-2026-0312</strong> &mdash; STIX/TAXII &mdash; Indicadores de Compromiso</p>
+    <p>Fecha de emisi&oacute;n: 12 de marzo de 2026 &middot; Clasificaci&oacute;n: TLP:AMBER</p>
+    <p style="margin-top: 8px;">Documento generado a partir del an&aacute;lisis t&eacute;cnico del sitio de phishing seurtjm.cv y su infraestructura asociada.</p>
+  </footer>
+
+</div><!-- /.container -->
+
+<!-- TLP Banner Bottom -->
+<div class="tlp-banner">TLP:AMBER &mdash; Distribuci&oacute;n restringida. No divulgar fuera de la organizaci&oacute;n receptora.</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── STIX 2.1 Bundle ──
+var stixBundle = {
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-5678-4e9f-b012-3456789abcde",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--f1a23b45-6789-4cde-a012-bcdef1234567",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Analista OSINT",
+      "description": "Autor del informe de indicadores de compromiso para la campaña de smishing SEUR / kit k468.",
+      "identity_class": "individual",
+      "roles": ["analyst"],
+      "lang": "es"
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Operador PhaaS k468 (Desconocido)",
+      "description": "Actor de amenaza no identificado que opera el kit de phishing k468. Indicios de origen rusófono: inclusión de la red de pago MIR (exclusiva de Rusia), cadenas en ruso en el código fuente, y patrones de infraestructura consistentes con operaciones PhaaS de Europa del Este.",
+      "threat_actor_types": ["criminal"],
+      "aliases": ["k468 Operator"],
+      "roles": ["agent"],
+      "sophistication": "intermediate",
+      "resource_level": "organization",
+      "primary_motivation": "personal-gain",
+      "lang": "es"
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Smishing SEUR - SMISH-SEUR-2026-0312",
+      "description": "Campaña de smishing (phishing por SMS) que suplanta a la empresa de mensajería SEUR (Grupo Geopost/DPD) para capturar datos personales, credenciales de tarjetas de pago y códigos OTP/3DS. Utiliza el kit de phishing k468 desplegado en el dominio seurtjm.cv (ccTLD de Cabo Verde).",
+      "first_seen": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "infrastructure",
+      "spec_version": "2.1",
+      "id": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Infraestructura de phishing seurtjm.cv",
+      "description": "Infraestructura del sitio de phishing que incluye dominio seurtjm.cv (.cv = Cabo Verde), IP 50.114.184.241 (Ace Data Centers / IPXO LLC), nameservers ns1/ns2.dyna-ns.net (Dynadot), panel de administración en /CNIXMQnPlR/, API de exfiltración y canal WebSocket C2 bidireccional.",
+      "infrastructure_types": ["hosting"],
+      "lang": "es"
+    },
+    {
+      "type": "tool",
+      "spec_version": "2.1",
+      "id": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit de Phishing k468",
+      "description": "Kit de phishing como servicio (PhaaS) identificado como k468_es_post_seur_index. Construido con Vue.js y Axios. Implementa flujo multi-etapa: captura de datos personales, datos de tarjeta bancaria, interceptación de OTP/3DS, y canal WebSocket para control en tiempo real por el operador. Soporta redes VISA, Mastercard, AMEX, Discover, JCB, Maestro y MIR.",
+      "tool_types": ["exploitation"],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a1234567-8901-4bcd-ef23-456789abcde0",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Phishing: Spearphishing Link",
+      "description": "Envío de SMS fraudulentos (smishing) con enlace al dominio seurtjm.cv que redirige a una réplica del sitio web de SEUR para engañar a la víctima.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.002",
+          "url": "https://attack.mitre.org/techniques/T1566/002/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--b2345678-9012-4cde-f034-56789abcdef1",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Input Capture: Web Portal Capture",
+      "description": "Captura de credenciales, datos personales y financieros mediante formularios web fraudulentos que replican la interfaz de SEUR. Incluye captura de números de tarjeta, CVV, fecha de caducidad y códigos OTP.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1056.003",
+          "url": "https://attack.mitre.org/techniques/T1056/003/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--c3456789-0123-4def-a145-6789abcdef02",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Adversary-in-the-Middle",
+      "description": "Interceptación en tiempo real de códigos OTP/3DS mediante canal WebSocket bidireccional (wss://seurtjm.cv/ws). El operador actúa como intermediario entre la víctima y la entidad bancaria, retransmitiendo códigos de verificación en tiempo real.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1557",
+          "url": "https://attack.mitre.org/techniques/T1557/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--d4567890-1234-4ef0-b256-789abcdef013",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Financial Theft",
+      "description": "Objetivo final de la campaña: robo financiero mediante el uso fraudulento de datos de tarjetas bancarias y códigos de autenticación capturados a las víctimas.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1657",
+          "url": "https://attack.mitre.org/techniques/T1657/"
+        }
+      ],
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Dominio de phishing SEUR - seurtjm.cv",
+      "description": "Dominio principal del sitio de phishing que suplanta a SEUR. Registrado con ccTLD de Cabo Verde (.cv).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'seurtjm.cv']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "IP del servidor de phishing",
+      "description": "Dirección IPv4 del servidor que aloja el sitio de phishing. Ace Data Centers / IPXO LLC, CIDR 50.114.184.0/24.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '50.114.184.241']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Nameserver primario - ns1.dyna-ns.net",
+      "description": "Servidor DNS primario del dominio de phishing (Dynadot).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'ns1.dyna-ns.net']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Nameserver secundario - ns2.dyna-ns.net",
+      "description": "Servidor DNS secundario del dominio de phishing (Dynadot).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'ns2.dyna-ns.net']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Landing page del phishing",
+      "description": "Página principal del sitio de phishing, réplica de la web de SEUR.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'https://seurtjm.cv/es']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "API de exfiltración de datos",
+      "description": "Endpoint principal de exfiltración donde el kit envía los datos capturados de las víctimas.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'https://seurtjm.cv/CNIXMQnPlR/api/input']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "API de confirmación de entrega",
+      "description": "Endpoint del flujo de confirmación de entrega, parte del engaño de suplantación de SEUR.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'https://seurtjm.cv/api/confirm-delivery']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "WebSocket C2 - Canal de comando y control",
+      "description": "Canal WebSocket bidireccional para control en tiempo real del operador sobre las sesiones de las víctimas.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'wss://seurtjm.cv/ws']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000101",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: es-raw.html",
+      "description": "Página HTML principal del kit de phishing.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '21f6dcf22be8b44d4e54d49f963cc9dd8ce1e943cbdf5de4a8e1a871bb108a46']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000102",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: index-284bfe89.js",
+      "description": "Bundle JavaScript principal con lógica de phishing (Vue.js + Axios).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '179e87d143bc07cfd8f22a6a1557359b064bcacbcc79ba4a5bab77619d5abbd9']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000103",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Kit core: index-9766d7ac.css",
+      "description": "CSS del framework Vue del kit de phishing.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '9766d7ac6187ec134308165407ffa1d64d5c12d6737c886ae867391bfe965057']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000201",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: logo.png",
+      "description": "Logo oficial de SEUR robado utilizado en el kit.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '677bbd5328d59f7d728fc62a38e2b37ecfcae8c15aa0a2be53ddf4e177b5603d']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000202",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: bc.png",
+      "description": "Banner corporativo de SEUR robado.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'cb0a32507c72d7bd2c763c1c1e5f80ae4000f7e81e24ac522e7e9b2cc1eac749']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000203",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: seur.css",
+      "description": "CSS corporativo de SEUR robado.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '51167d98ff37f00135834c7f94503939b0e78c30b3f9cb358c11fa3fa6df1475']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000204",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: favicon.jpg",
+      "description": "Favicon del kit de phishing.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'b37e8c0e3341acbe6c7235120ba0ab4dd3a6f824cba36a8f8d997f04223a739b']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000205",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: mir-a02fe0b1.jpg",
+      "description": "Logo de la red de pago MIR (Rusia), indicador de origen rusófono.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'a02fe0b1ea3401e73c9905652c88c20a5a4a8ba3d1927dc4009da1f4857c4e55']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000206",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: btlocaliza.png",
+      "description": "Botón 'Localiza' de SEUR robado.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '59c7979aea38a3d477bdce985f6d5d728f2171d351ba80c4286e9a4153b53f25']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000207",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Branding: iconTienda.png",
+      "description": "Icono de tiendas SEUR Pickup.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '75e7aa5282df233faa3563c49a97080e5647af238cf1a6ba8c9f4801a10d43a0']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000301",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: cardloading.svg",
+      "description": "SVG de animación de carga del kit.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '56af3b63c02fca54cc3bcea72a744d03a5de21f69fd5358e641261c29ee3c6ce']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000302",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: calendar.svg",
+      "description": "Icono de calendario del kit.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '623ffd99ab23341bc6f7d9658866f7ed192a118cae320e4465dcf0aec7902398']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000303",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechaderecha.png",
+      "description": "Icono de flecha derecha.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '8c6c6ff4701fee67f05af52ecbe64f4a1ebf3fc16d873477d5d857afd1f3035f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000304",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechadeslide.png",
+      "description": "Icono de flecha para slider.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '289cbea22b4ad70be6e3eff51a576e1f6993f35fbfe6c0ef170a77c163328a74']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000305",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Assets: flechaizslide.png",
+      "description": "Icono de flecha izquierda para slider.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '63d5d4c169bd06ddb77e0fbc70afb34e67d6d597411d0171f92872bc8172c77b']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000401",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansDPDLight.otf",
+      "description": "Fuente DPD/SEUR robada (OTF).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'bc2d0863394405ab3d4c9c6422a99c44abc7030ae3d8f2a2aeab95b90f60efa0']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000402",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansLight.woff2",
+      "description": "Fuente DPD/SEUR robada (WOFF2 Light).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'e0ab628e66309c89d43c1fe7ac6f64d24c2e5da927fbc657fa17a81a42dec70a']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000403",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: PlutoSansRegular.woff2",
+      "description": "Fuente DPD/SEUR robada (WOFF2 Regular).",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'a88d9ebb6a866c2d93096cb99f2e41aa904c0b2d748ccac11c34b267199cc1ba']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000404",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: fuentes.css",
+      "description": "CSS de definición de fuentes del kit.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '8d6e544394e61592dcd761fb406cfdc6c7f3af3d96f23368ad17d035bd26c81c']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000405",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: slidemigh.css",
+      "description": "CSS del componente slider.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'df440a6aded0ba7c047c8b8458dedd4c778fb3a4bf04ce2276fc8db79d2e9969']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000406",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: animate.min.css",
+      "description": "Librería CSS de animaciones.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'd3557300717eea06f84dd44bfd9235f7eb11e43291935dc784f33db309bb3b77']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000407",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: mightyslider.animate.css",
+      "description": "CSS de animaciones del slider.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '630de1fe187215d9690866e207162510cdd21f2ce4d6ebe487a638fcb30f816f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000408",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CSS/Fonts: mightyslider.css",
+      "description": "CSS base del componente slider.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'ef1a2d224f7f2ea0cfbfbf37bcc56a47148845d8ceb642d32ab958af052ca88f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000501",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 1a32e1333fcfa-1a32e133.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '1a32e1334123f8d42cc940fea7a84f71f5c903132ea10441cf02e47da19e95bc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000502",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 272b931f3fcfa-272b931f.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '272b931f00a7cf2e1f603aa218844f96278cc890011fc43a08ae2d42aeb9a84c']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--10000001-0312-4a00-b000-000000000503",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "SVG icons: 80066acd3fcfa-80066acd.svg",
+      "description": "SVG icono de pago.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '80066acd2096893762dab64b37b03c9de576e948372ac516f05d25f2b1cc988f']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-12T00:00:00.000Z",
+      "lang": "es"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "attributed-to",
+      "description": "La campaña de smishing SEUR está atribuida al operador PhaaS k468.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña utiliza el kit de phishing k468.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña utiliza la infraestructura de phishing en seurtjm.cv.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica de Spearphishing Link.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--a1234567-8901-4bcd-ef23-456789abcde0"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica de Web Portal Capture.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--b2345678-9012-4cde-f034-56789abcdef1"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña emplea la técnica Adversary-in-the-Middle mediante WebSocket.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--c3456789-0123-4def-a145-6789abcdef02"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campaña tiene como objetivo el robo financiero.",
+      "source_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef",
+      "target_ref": "attack-pattern--d4567890-1234-4ef0-b256-789abcdef013"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El dominio seurtjm.cv indica la campaña de smishing SEUR.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000001",
+      "target_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000009",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "La IP 50.114.184.241 indica la infraestructura de la campaña.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000002",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000010",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "Los hashes de archivos del kit indican el uso de la herramienta k468.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000101",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000011",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El bundle JS principal indica el uso de la herramienta k468.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000102",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000012",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "El endpoint WebSocket C2 indica la infraestructura de la campaña.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000008",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000013",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "La API de exfiltración indica la campaña de smishing SEUR.",
+      "source_ref": "indicator--10000001-0312-4a00-b000-000000000006",
+      "target_ref": "campaign--b2c3d4e5-6789-4fab-0123-456789abcdef"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000014",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "hosts",
+      "description": "La infraestructura aloja el kit de phishing k468.",
+      "source_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef",
+      "target_ref": "tool--e5f6a7b8-9012-4cde-3456-7890abcdef01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--r0000001-0312-4a00-b000-000000000015",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "owns",
+      "description": "El actor de amenaza controla la infraestructura de phishing.",
+      "source_ref": "threat-actor--d4e5f6a7-8901-4bcd-e234-567890abcdef",
+      "target_ref": "infrastructure--c3d4e5f6-7890-4abc-1234-567890abcdef"
+    }
+  ]
+};
+
+// Render STIX JSON
+document.getElementById('stixJson').textContent = JSON.stringify(stixBundle, null, 2);
+
+// Download STIX JSON
+function downloadStix() {
+  var json = JSON.stringify(stixBundle, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'SMISH-SEUR-2026-0312_stix_bundle.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Hash Table Filter
+function filterHashes() {
+  var input = document.getElementById('hashSearch');
+  var filter = input.value.toLowerCase();
+  var table = document.getElementById('hashTable');
+  var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+  var visible = 0;
+  var total = rows.length;
+
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName('td');
+    var text = '';
+    for (var j = 0; j < cells.length; j++) {
+      text += cells[j].textContent.toLowerCase() + ' ';
+    }
+    if (text.indexOf(filter) > -1) {
+      rows[i].style.display = '';
+      visible++;
+    } else {
+      rows[i].style.display = 'none';
+    }
+  }
+
+  document.getElementById('hashCount').textContent = visible + ' de ' + total;
+}
+</script>
+
+</body>
+</html>

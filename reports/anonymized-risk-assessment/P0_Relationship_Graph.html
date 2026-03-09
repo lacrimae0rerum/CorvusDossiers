@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSINT Lm5nR2xligence Network — Relationship Graph</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0e14;
+  --surface: #12171f;
+  --surface-elevated: #181e28;
+  --surface-recessed: #090c11;
+  --border: rgba(255,255,255,0.06);
+  --border-accent: rgba(212,167,58,0.2);
+  --text: #c8cdd5;
+  --text-bright: #e8ecf0;
+  --text-dim: #6b7280;
+  --accent-gold: #d4a73a;
+  --accent-gold-dim: rgba(212,167,58,0.10);
+  --accent-red: #dc2626;
+  --accent-amber: #d97706;
+  --accent-teal: #0891b2;
+  --accent-green: #059669;
+  --accent-blue: #2d5a8a;
+  --accent-purple: #7e57c2;
+  --accent-rose: #be123c;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:#f0f1f4;--surface:#ffffff;--surface-elevated:#ffffff;
+    --surface-recessed:#e8eaef;--border:rgba(0,0,0,0.08);
+    --border-accent:rgba(30,58,95,0.2);--text:#2c3040;
+    --text-bright:#111827;--text-dim:#6b7280;
+    --accent-gold:#b8922e;--accent-gold-dim:rgba(184,146,46,0.08);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(212,167,58,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(212,167,58,0.012) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:-1}
+.topnav{position:sticky;top:0;z-index:500;background:var(--surface-recessed);border-bottom:1px solid var(--border-accent);display:flex;align-items:center;gap:2px;padding:4px 12px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--text-dim);text-decoration:none;padding:6px 10px;border-radius:4px;white-space:nowrap;transition:color .2s,background .2s}
+.topnav a:hover{color:var(--text-bright);background:rgba(255,255,255,0.04)}
+.topnav a.active{color:var(--accent-gold);background:var(--accent-gold-dim)}
+.nav-arrow{font-size:16px;padding:6px 8px!important;font-weight:700}
+.nav-spacer{flex:1;min-width:4px}
+.page-header{text-align:center;padding:36px 24px 12px}
+.page-header h1{font-size:clamp(20px,3vw,28px);font-weight:700;color:var(--text-bright);letter-spacing:-0.5px;margin-bottom:4px}
+.page-header h1 span{color:var(--accent-gold)}
+.page-header .subtitle{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);letter-spacing:1px}
+.classification-bar{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accent-green);background:rgba(5,150,105,0.12);padding:3px 14px;border-radius:3px;display:inline-block;margin-top:6px}
+.legend-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;padding:8px 24px;max-width:1100px;margin:0 auto}
+.legend-item{display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;color:var(--text-dim)}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.legend-line{width:22px;height:0;flex-shrink:0}
+.graph-wrap{width:100%;overflow:auto;padding:8px 12px 20px}
+#graphSvg{display:block;margin:0 auto}
+.page-footer{text-align:center;padding:24px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="P0_Executive_Summary.html" class="nav-arrow">&larr;</a>
+  <a href="P0_Executive_Summary.html">P0 Summary</a>
+  <a href="P0_Relationship_Graph.html" class="active">P0 Graph</a>
+  <a href="P1_Lm5nR2xligence_Intake_Assessment.html">P1 Intake</a>
+  <a href="P2_OSINT_Collection_Report.html">P2 OSINT</a>
+  <a href="P3_Economic_Analysis.html">P3 Economic</a>
+  <a href="P4_Strategic_Assessment.html">P4 Strategic</a>
+  <a href="P5_Infrastructure_Risk_Map.html">P5 Infra</a>
+  <a href="P6_FINAL_OSINT_Lm5nR2xligence_Assessment.html">P6 Final</a>
+  <span class="nav-spacer"></span>
+  <a href="P0_Executive_Summary.html" class="nav-arrow">&larr;</a>
+  <a href="P1_Lm5nR2xligence_Intake_Assessment.html" class="nav-arrow">&rarr;</a>
+</nav>
+
+<header class="page-header">
+  <h1>OSINT Lm5nR2xligence <span>Network Graph</span></h1>
+  <div class="subtitle">R3x8kW2 &bull; RED DE RELACIONES &bull; MODO SOCIAL</div>
+  <div class="classification-bar">UNCLASSIFIED &bull; 2026-03-07</div>
+</header>
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#d4a73a"></div>Central / Subsidiarias</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>Supply Chain</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Reguladores / Legal</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0891b2"></div>Clientes</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7e57c2"></div>Competidores</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#059669"></div>Inversores</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#be123c"></div>Amenazas Ciber</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2d5a8a"></div>Geopolítica</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8d6e63"></div>Persona Clave</div>
+  <div class="legend-item"><div class="legend-line" style="border-top:2px dashed #d97706"></div>Litigio</div>
+  <div class="legend-item"><div class="legend-line" style="border-top:3px solid #dc2626"></div>Dependencia Crítica</div>
+</div>
+
+<div class="graph-wrap">
+  <svg id="graphSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<footer class="page-footer">
+  R3x8kW2 &bull; Qv7nJ4m &bull; UNCLASSIFIED &bull; 2026-03-07
+  <br><span style="font-size:0.7rem;color:#6c6c80;">CC BY 4.0 &mdash; Art. 6(1)(f) RGPD &mdash; Derechos ARSALPO: <a href="mailto:corvusdossiers@proton.me" style="color:#5a3d8f;">corvusdossiers@proton.me</a></span>
+</footer>
+
+<script>
+// ===================================================================
+// STATIC ORTHOGONAL NETWORK GRAPH
+// ===================================================================
+
+const W = 3000, H = 2200;
+const CX = W / 2, CY = H / 2;
+
+const CAT_COLORS = {
+  central:'#d4a73a', subsidiary:'#c49530', supply:'#dc2626',
+  regulator:'#d97706', customer:'#0891b2', competitor:'#7e57c2',
+  investor:'#059669', threat:'#be123c', geo:'#2d5a8a', person:'#8d6e63'
+};
+
+// Node box dimensions per category [width, height]
+const BOX = {
+  central:[300,108], subsidiary:[240,78], supply:[240,78],
+  regulator:[240,74], customer:[240,74], competitor:[220,70],
+  investor:[210,66], threat:[230,74], geo:[210,66], person:[240,78]
+};
+
+// Character limits for description line (monospace 9px ≈ 5.2px/char)
+function maxChars(cat) {
+  return Math.floor((BOX[cat][0] - 24) / 5.2);
+}
+
+// ---- NODES with FIXED radial positions ----
+function polar(deg, r) {
+  const a = (deg - 90) * Math.PI / 180;
+  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
+}
+
+const nodes = [
+  // CENTER
+  { id:'Ht4pL9a', name:'Ht4pL9a', cat:'central',
+    lines:['Revenue $XX.XB-r1 | EBITDA 67%','FCF $XX.XB-f1 | Deuda $XX.XB-d1'],
+    x: CX, y: CY },
+
+  // CEO
+  { id:'hocktan', name:'P_k4mR7w', cat:'person',
+    lines:['Chairman & CEO desde 2006','ED_mt7Kn + ED_hv4mba | SPOF-2 key-man'],
+    ...polar(305, 240) },
+
+  // SUBSIDIARIES (west, 260-320°)
+  { id:'Nw6rT3e', name:'Nw6rT3e', cat:'subsidiary',
+    lines:['Adq. $XX.XB-a1 (2023) | Virtualización','5+ litigios | Cambio modelo licensing'],
+    ...polar(280, 420) },
+  { id:'avago', name:'Kd6pM1z', cat:'subsidiary',
+    lines:['Fusión inversa $37B (2016)','Origen L_sG7mK3 → L_v6dJ3h'],
+    ...polar(318, 460) },
+  { id:'ca_tech', name:'Fm3wP7c', cat:'subsidiary',
+    lines:['Adq. $18.9B (2018)','Mainframe software'],
+    ...polar(262, 520) },
+  { id:'Gp4vL6t', name:'Gp4vL6t', cat:'subsidiary',
+    lines:['Adq. $10.7B (2019)','Ciberseguridad enterprise'],
+    ...polar(248, 420) },
+  { id:'brocade', name:'Tn2dF9q', cat:'subsidiary',
+    lines:['Adq. $5.9B (2017)','Networking / storage'],
+    ...polar(290, 560) },
+
+  // SUPPLY CHAIN (north, 345-15°)
+  { id:'tsmc', name:'Dq3fB7s', cat:'supply',
+    lines:['99% fabricación chips IA','SPOF-1 EXISTENCIAL | 3nm/5nm'],
+    ...polar(0, 440) },
+  { id:'asml', name:'Fp6tL2v', cat:'supply',
+    lines:['Monopolio global EUV','Depend. indirecta vía Dq3fB7s'],
+    ...polar(20, 620) },
+  { id:'samsung_f', name:'Rk8mW4n', cat:'supply',
+    lines:['Backup secundario','Yield inferior | Solo nodos legacy'],
+    ...polar(340, 620) },
+
+  // GEO (northeast, 30-55°)
+  { id:'taiwan', name:'L_tW3rB7', cat:'geo',
+    lines:['Ubicación Dq3fB7s | Prob. 5%','Conflicto = interrupción total'],
+    ...polar(38, 500) },
+  { id:'china', name:'L_cN5rK2', cat:'geo',
+    lines:['60% tierras raras','Export controls | Retaliación'],
+    ...polar(52, 660) },
+
+  // INVESTORS (east-north, 65-95°)
+  { id:'vanguard', name:'Rw4pM8d', cat:'investor',
+    lines:['Mayor accionista | 10.16%'],
+    ...polar(68, 480) },
+  { id:'blackrock', name:'Qv6nL3w', cat:'investor',
+    lines:['2° accionista | ~8%'],
+    ...polar(80, 560) },
+  { id:'statestreet', name:'Sx9hN5f', cat:'investor',
+    lines:['3° accionista | ~4%','Total inst.: 76.4%'],
+    ...polar(92, 480) },
+
+  // COMPETITORS (east, 105-140°)
+  { id:'intel', name:'Lm5nR2x', cat:'competitor',
+    lines:['Networking + foundry','2 ex-EVPs en Board Ht4pL9a'],
+    ...polar(110, 500) },
+  { id:'marvell', name:'Sv2jG9c', cat:'competitor',
+    lines:['ASIC IA directo | ~8%','Erosión 90%→60% share 2027'],
+    ...polar(124, 440) },
+  { id:'nutanix', name:'Wt6mK3f', cat:'competitor',
+    lines:['Alternativa Nw6rT3e','Beneficiario éxodo clientes'],
+    ...polar(138, 540) },
+
+  // CUSTOMERS HYPERSCALERS (south-east, 148-195°)
+  { id:'dod', name:'G_G_DOD8c58c5 / Army / Navy', cat:'customer',
+    lines:['Army $XXXM-g1 | Navy $XXXM-g2','G_h6rL3p D_k7rN5d | Seg. Nacional'],
+    ...polar(150, 440) },
+  { id:'google', name:'Fd8qW2m', cat:'customer',
+    lines:['Custom IA ASIC (TPU)','Top hyperscaler | Lead 2-3 años'],
+    ...polar(164, 540) },
+  { id:'meta', name:'Jt6pR4c', cat:'customer',
+    lines:['Custom IA chips','CEO Ht4pL9a en Board Jt6pR4c'],
+    ...polar(178, 440) },
+  { id:'bytedance', name:'Ks3nV7h', cat:'customer',
+    lines:['Custom networking','Riesgo geopolítico (L_cN5rK2)'],
+    ...polar(192, 540) },
+
+  // CUSTOMERS LITIGANTS (south, 205-242°)
+  { id:'fidelity', name:'Pq2kN8t', cat:'customer',
+    lines:['$XX.XT-c1 AUM | Litigio Nw6rT3e','Riesgo sistémico'],
+    ...polar(207, 470) },
+  { id:'att', name:'Cm9rF5b', cat:'customer',
+    lines:['Telecom | Settlement Nw6rT3e','Aumento +1,050%'],
+    ...polar(218, 560) },
+  { id:'tesco', name:'Wn4jH6r', cat:'customer',
+    lines:['Retail UK | XXX XXX+-t1','Litigio licencia perpetua'],
+    ...polar(230, 470) },
+  { id:'uhc', name:'Bk7mT3d', cat:'customer',
+    lines:['Healthcare | Ws8nH2j','Litigio pricing Abr 2025'],
+    ...polar(240, 570) },
+
+  // REGULATORS (southwest, 248-298°)
+  { id:'ftc', name:'G_n4hK8t', cat:'regulator',
+    lines:['Cargos monopolio Ene 2026','Prob. 55% | CRÍTICO'],
+    ...polar(250, 430) },
+  { id:'eu_com', name:'G_p7mR3w', cat:'regulator',
+    lines:['Investig. Nw6rT3e Feb 2026','Licensing + bundling | CRÍTICO'],
+    ...polar(262, 620) },
+  { id:'cispe', name:'G_d5kF2n', cat:'regulator',
+    lines:['Proveedores cloud EU','Demanda revisión fusión Nw6rT3e'],
+    ...polar(275, 700) },
+  { id:'kftc', name:'G_v3nT9d', cat:'regulator',
+    lines:['Korea G_n4hK8t','Investig. prácticas comerciales'],
+    ...polar(245, 650) },
+  { id:'rws', name:'G_G_RWS4n84n8', cat:'regulator',
+    lines:['Gob. L_nL9hM5 | Sentencia','XXX X.XM-n1/año + XXX XXM-n2/día'],
+    ...polar(255, 540) },
+
+  // CYBER THREATS (northwest, near Nw6rT3e)
+  { id:'unc5174', name:'TA_r3kW7n', cat:'threat',
+    lines:['Estado-nación L_cN5rK2','Exploit Jk2mD8v >1 año'],
+    ...polar(320, 640) },
+  { id:'cl0p', name:'TA_m5hT2d', cat:'threat',
+    lines:['Ransomware/Extorsión','Data breach Ht4pL9a Nov 2025'],
+    ...polar(335, 500) },
+];
+
+const nmap = {};
+nodes.forEach(n => nmap[n.id] = n);
+
+// ---- EDGES ----
+const edges = [
+  // Subsidiaries (gold, solid)
+  { from:'Ht4pL9a', to:'Nw6rT3e',    label:'Adquisición $XX.XB-a1', color:'#c49530', w:2.5 },
+  { from:'Ht4pL9a', to:'ca_tech',   label:'Adq. $18.9B', color:'#c49530', w:2 },
+  { from:'Ht4pL9a', to:'Gp4vL6t',  label:'Adq. $10.7B', color:'#c49530', w:2 },
+  { from:'Ht4pL9a', to:'avago',     label:'Fusión $37B', color:'#c49530', w:2 },
+  { from:'Ht4pL9a', to:'brocade',   label:'Adq. $5.9B', color:'#c49530', w:1.5 },
+
+  // Supply (red, solid thick)
+  { from:'tsmc', to:'Ht4pL9a', label:'99% fabricación IA', color:'#dc2626', w:4 },
+  { from:'asml', to:'tsmc', label:'EUV monopolio', color:'#dc2626', w:2.5 },
+  { from:'samsung_f', to:'Ht4pL9a', label:'Backup inferior', color:'#dc2626', w:1.5, dash:true },
+
+  // Regulators → target (amber, dashed)
+  { from:'ftc', to:'Ht4pL9a', label:'Monopolio 55%', color:'#d97706', w:3, dash:true },
+  { from:'eu_com', to:'Nw6rT3e', label:'Investig. licensing', color:'#d97706', w:2.5, dash:true },
+  { from:'cispe', to:'eu_com', label:'Demanda fusión', color:'#d97706', w:1.5, dash:true },
+  { from:'kftc', to:'Ht4pL9a', label:'Investigación', color:'#d97706', w:1.5, dash:true },
+  { from:'rws', to:'Ht4pL9a', label:'XXX XXM-n2/día', color:'#d97706', w:2, dash:true },
+
+  // Litigation (amber, dashed)
+  { from:'Nw6rT3e', to:'fidelity', label:'Litigio licensing', color:'#d97706', w:2, dash:true },
+  { from:'Nw6rT3e', to:'att', label:'+1,050%', color:'#d97706', w:1.5, dash:true },
+  { from:'Nw6rT3e', to:'tesco', label:'XXX XXX+-t1', color:'#d97706', w:1.5, dash:true },
+  { from:'ca_tech', to:'uhc', label:'Litigio mainframe', color:'#d97706', w:1.5, dash:true },
+
+  // Customers (teal, solid)
+  { from:'Ht4pL9a', to:'google', label:'Custom IA ASIC', color:'#0891b2', w:2.5 },
+  { from:'Ht4pL9a', to:'meta', label:'Custom IA chips', color:'#0891b2', w:2.5 },
+  { from:'Ht4pL9a', to:'bytedance', label:'Custom networking', color:'#0891b2', w:2 },
+  { from:'Ht4pL9a', to:'dod', label:'Contratos $650M+', color:'#0891b2', w:3 },
+
+  // Competitors (purple, solid)
+  { from:'marvell', to:'Ht4pL9a', label:'Compite ASIC IA', color:'#7e57c2', w:2 },
+  { from:'nutanix', to:'Nw6rT3e', label:'Alt. infra', color:'#7e57c2', w:2 },
+  { from:'intel', to:'Ht4pL9a', label:'Compite networking', color:'#7e57c2', w:1.5 },
+
+  // Investors (green, solid thin)
+  { from:'vanguard', to:'Ht4pL9a', label:'10.16%', color:'#059669', w:1.5 },
+  { from:'blackrock', to:'Ht4pL9a', label:'~8%', color:'#059669', w:1.5 },
+  { from:'statestreet', to:'Ht4pL9a', label:'~4%', color:'#059669', w:1.5 },
+
+  // Threats (rose)
+  { from:'unc5174', to:'Nw6rT3e', label:'Exploit >1 año', color:'#be123c', w:2.5 },
+  { from:'cl0p', to:'Ht4pL9a', label:'Data breach', color:'#be123c', w:2 },
+
+  // Geo (blue)
+  { from:'taiwan', to:'tsmc', label:'Sede Dq3fB7s', color:'#2d5a8a', w:2 },
+  { from:'china', to:'taiwan', label:'Tensión militar', color:'#2d5a8a', w:2.5, dash:true },
+  { from:'china', to:'bytedance', label:'Jurisdicción', color:'#2d5a8a', w:1.5 },
+
+  // Person (brown)
+  { from:'hocktan', to:'Ht4pL9a', label:'CEO desde 2006', color:'#8d6e63', w:2.5 },
+  { from:'hocktan', to:'meta', label:'Board member', color:'#8d6e63', w:1.5, dash:true },
+];
+
+// ===================================================================
+// FORCE SIMULATION — stronger repulsion, more spread
+// ===================================================================
+
+nodes.forEach(n => { n.vx = 0; n.vy = 0; });
+
+for (let iter = 0; iter < 600; iter++) {
+  const decay = 1 - iter / 600;
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      // Strong collision — min distance based on box sizes
+      const bA = BOX[a.cat], bB = BOX[b.cat];
+      const minDist = (Math.max(bA[0], bA[1]) + Math.max(bB[0], bB[1])) * 0.65;
+      if (dist < minDist) dist = minDist * 0.5;
+      const force = 200000 / (dist * dist) * decay;
+      const fx = (dx / dist) * force;
+      const fy = (dy / dist) * force;
+      a.vx -= fx; a.vy -= fy;
+      b.vx += fx; b.vy += fy;
+    }
+  }
+
+  edges.forEach(e => {
+    const a = nmap[e.from], b = nmap[e.to];
+    if (!a || !b) return;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const ideal = (a.id === 'Ht4pL9a' || b.id === 'Ht4pL9a') ? 400 : 280;
+    const force = (dist - ideal) * 0.006 * decay;
+    const fx = (dx / dist) * force;
+    const fy = (dy / dist) * force;
+    if (a.id !== 'Ht4pL9a') { a.vx += fx; a.vy += fy; }
+    if (b.id !== 'Ht4pL9a') { b.vx -= fx; b.vy -= fy; }
+  });
+
+  nodes.forEach(n => {
+    if (n.id === 'Ht4pL9a') return;
+    n.vx += (CX - n.x) * 0.001 * decay;
+    n.vy += (CY - n.y) * 0.001 * decay;
+    n.x += n.vx * 0.35;
+    n.y += n.vy * 0.35;
+    n.vx *= 0.55;
+    n.vy *= 0.55;
+    const b = BOX[n.cat];
+    n.x = Math.max(b[0]/2 + 30, Math.min(W - b[0]/2 - 30, n.x));
+    n.y = Math.max(b[1]/2 + 30, Math.min(H - b[1]/2 - 30, n.y));
+  });
+}
+
+// ===================================================================
+// ORTHOGONAL EDGE ROUTING
+// ===================================================================
+
+// Determine exit/entry side for each edge
+function getSide(ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const absDx = Math.abs(dx), absDy = Math.abs(dy);
+  if (absDx > absDy) return dx > 0 ? 'right' : 'left';
+  return dy > 0 ? 'bottom' : 'top';
+}
+
+// Build port allocation: for each (node, side), how many edges and in what order
+const portAlloc = {};
+edges.forEach((e, idx) => {
+  const a = nmap[e.from], b = nmap[e.to];
+  e._exitSide = getSide(a.x, a.y, b.x, b.y);
+  e._entrySide = getSide(b.x, b.y, a.x, a.y);
+
+  const kA = e.from + '_' + e._exitSide;
+  const kB = e.to + '_' + e._entrySide;
+  if (!portAlloc[kA]) portAlloc[kA] = [];
+  if (!portAlloc[kB]) portAlloc[kB] = [];
+  portAlloc[kA].push(idx);
+  portAlloc[kB].push(idx);
+});
+
+// Get port position on a node's side
+function portPos(nodeId, side, edgeIdx) {
+  const n = nmap[nodeId];
+  const b = BOX[n.cat];
+  const w = b[0], h = b[1];
+  const key = nodeId + '_' + side;
+  const group = portAlloc[key] || [edgeIdx];
+  const i = group.indexOf(edgeIdx);
+  const total = group.length;
+
+  // Spread ports along the side (max 60% of side length)
+  const sideLen = (side === 'top' || side === 'bottom') ? w : h;
+  const spread = Math.min(sideLen * 0.6, total * 22);
+  const offset = total > 1 ? (i / (total - 1) - 0.5) * spread : 0;
+
+  switch (side) {
+    case 'top':    return [n.x + offset, n.y - h/2];
+    case 'bottom': return [n.x + offset, n.y + h/2];
+    case 'left':   return [n.x - w/2, n.y + offset];
+    case 'right':  return [n.x + w/2, n.y + offset];
+  }
+}
+
+// Build orthogonal path with right-angle turns
+function orthoPath(sx, sy, exitSide, tx, ty, entrySide, edgeIdx) {
+  const STUB = 25 + (edgeIdx % 5) * 6; // Stagger stubs to reduce overlap
+
+  // Extend stub from exit
+  let ax = sx, ay = sy;
+  switch (exitSide) {
+    case 'right':  ax = sx + STUB; break;
+    case 'left':   ax = sx - STUB; break;
+    case 'bottom': ay = sy + STUB; break;
+    case 'top':    ay = sy - STUB; break;
+  }
+
+  // Extend stub from entry
+  let bx = tx, by = ty;
+  switch (entrySide) {
+    case 'left':   bx = tx - STUB; break;
+    case 'right':  bx = tx + STUB; break;
+    case 'top':    by = ty - STUB; break;
+    case 'bottom': by = ty + STUB; break;
+  }
+
+  // Route from (ax,ay) to (bx,by) with right angles
+  const isExitH = (exitSide === 'left' || exitSide === 'right');
+  const isEntryH = (entrySide === 'left' || entrySide === 'right');
+
+  let pts = [[sx, sy], [ax, ay]];
+
+  if (isExitH && isEntryH) {
+    // Both horizontal → Z-shape: H → V → H
+    const midX = (ax + bx) / 2;
+    pts.push([midX, ay], [midX, by]);
+  } else if (!isExitH && !isEntryH) {
+    // Both vertical → Z-shape: V → H → V
+    const midY = (ay + by) / 2;
+    pts.push([ax, midY], [bx, midY]);
+  } else if (isExitH && !isEntryH) {
+    // Exit H, entry V → L-shape
+    pts.push([bx, ay]);
+  } else {
+    // Exit V, entry H → L-shape
+    pts.push([ax, by]);
+  }
+
+  pts.push([bx, by], [tx, ty]);
+  return pts;
+}
+
+// ===================================================================
+// RENDER SVG
+// ===================================================================
+
+const svg = document.getElementById('graphSvg');
+
+// Compute bounding box
+let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+nodes.forEach(n => {
+  const b = BOX[n.cat];
+  minX = Math.min(minX, n.x - b[0]/2 - 60);
+  maxX = Math.max(maxX, n.x + b[0]/2 + 60);
+  minY = Math.min(minY, n.y - b[1]/2 - 60);
+  maxY = Math.max(maxY, n.y + b[1]/2 + 60);
+});
+const vw = maxX - minX, vh = maxY - minY;
+svg.setAttribute('viewBox', `${minX} ${minY} ${vw} ${vh}`);
+svg.setAttribute('width', '100%');
+svg.style.maxWidth = Math.min(vw, 2800) + 'px';
+
+// Helper: create SVG element
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+// Helper: truncate text
+function truncate(text, max) {
+  return text.length > max ? text.substring(0, max - 1) + '…' : text;
+}
+
+const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0b0e14';
+const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#12171f';
+const textBright = getComputedStyle(document.documentElement).getPropertyValue('--text-bright').trim() || '#e8ecf0';
+const textDim = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#6b7280';
+
+// ---- EDGES ----
+const edgesG = svgEl('g', {});
+svg.appendChild(edgesG);
+
+edges.forEach((e, idx) => {
+  const a = nmap[e.from], b = nmap[e.to];
+  if (!a || !b) return;
+
+  const [sx, sy] = portPos(e.from, e._exitSide, idx);
+  const [tx, ty] = portPos(e.to, e._entrySide, idx);
+  const pts = orthoPath(sx, sy, e._exitSide, tx, ty, e._entrySide, idx);
+
+  // Build polyline path with L commands
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    d += ` L${pts[i][0]},${pts[i][1]}`;
+  }
+
+  const path = svgEl('path', {
+    d, fill: 'none', stroke: e.color,
+    'stroke-width': e.w, 'stroke-linecap': 'square',
+    opacity: '0.5'
+  });
+  if (e.dash) path.setAttribute('stroke-dasharray', '10 6');
+  edgesG.appendChild(path);
+
+  // Arrow at the last segment
+  const last = pts[pts.length - 1], prev = pts[pts.length - 2];
+  const adx = last[0] - prev[0], ady = last[1] - prev[1];
+  const alen = Math.sqrt(adx*adx + ady*ady) || 1;
+  const ux = adx/alen, uy = ady/alen;
+  const arrowSize = 6;
+  const ax1 = last[0] - ux*arrowSize - uy*arrowSize*0.5;
+  const ay1 = last[1] - uy*arrowSize + ux*arrowSize*0.5;
+  const ax2 = last[0] - ux*arrowSize + uy*arrowSize*0.5;
+  const ay2 = last[1] - uy*arrowSize - ux*arrowSize*0.5;
+  edgesG.appendChild(svgEl('polygon', {
+    points: `${last[0]},${last[1]} ${ax1},${ay1} ${ax2},${ay2}`,
+    fill: e.color, opacity: '0.5'
+  }));
+
+  // Label at midpoint of the path
+  if (e.label) {
+    const midIdx = Math.floor(pts.length / 2);
+    const mp1 = pts[midIdx - 1], mp2 = pts[midIdx];
+    const lx = (mp1[0] + mp2[0]) / 2;
+    const ly = (mp1[1] + mp2[1]) / 2;
+    const isVertSeg = Math.abs(mp2[0] - mp1[0]) < 2;
+
+    const labelW = e.label.length * 5.2 + 16;
+    edgesG.appendChild(svgEl('rect', {
+      x: lx - labelW/2, y: ly - 8, width: labelW, height: 16,
+      rx: 3, fill: bgColor, opacity: '0.92'
+    }));
+
+    const txt = svgEl('text', {
+      x: lx, y: ly + 1, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+      'font-family': "'IBM Plex Mono', monospace", 'font-size': '9',
+      fill: e.color, opacity: '0.85'
+    });
+    txt.textContent = e.label;
+
+    // Rotate label if on a vertical segment for readability
+    if (isVertSeg && Math.abs(mp2[1] - mp1[1]) > 80) {
+      txt.setAttribute('transform', `rotate(-90, ${lx}, ${ly})`);
+      const bgR = edgesG.lastChild.previousSibling;
+      // Re-center bg for rotated label
+      bgR.setAttribute('x', lx - 8);
+      bgR.setAttribute('y', ly - labelW/2);
+      bgR.setAttribute('width', 16);
+      bgR.setAttribute('height', labelW);
+    }
+
+    edgesG.appendChild(txt);
+  }
+});
+
+// ---- NODES ----
+const nodesG = svgEl('g', {});
+svg.appendChild(nodesG);
+
+nodes.forEach(n => {
+  const b = BOX[n.cat];
+  const w = b[0], h = b[1];
+  const rx = n.x - w/2, ry = n.y - h/2;
+  const color = CAT_COLORS[n.cat];
+  const mc = maxChars(n.cat);
+
+  const g = svgEl('g', {});
+
+  // Shadow
+  g.appendChild(svgEl('rect', {
+    x: rx+2, y: ry+2, width: w, height: h, rx: 8,
+    fill: 'rgba(0,0,0,0.25)'
+  }));
+
+  // Background
+  g.appendChild(svgEl('rect', {
+    x: rx, y: ry, width: w, height: h, rx: 8,
+    fill: n.cat === 'central' ? '#151c28' : surfaceColor,
+    stroke: color, 'stroke-width': n.cat === 'central' ? 2.5 : 1.5
+  }));
+
+  // Clip path for text
+  const clipId = 'clip-' + n.id;
+  const clipPath = svgEl('clipPath', { id: clipId });
+  clipPath.appendChild(svgEl('rect', { x: rx+4, y: ry+2, width: w-8, height: h-4, rx: 6 }));
+  g.appendChild(clipPath);
+
+  const textG = svgEl('g', { 'clip-path': `url(#${clipId})` });
+
+  // Left accent bar (non-central)
+  if (n.cat !== 'central') {
+    textG.appendChild(svgEl('rect', {
+      x: rx, y: ry+6, width: 3, height: h-12, rx: 1.5,
+      fill: color, opacity: '0.7'
+    }));
+  }
+
+  const pad = n.cat === 'central' ? 0 : 14;
+  const anchor = n.cat === 'central' ? 'middle' : 'start';
+  const textX = n.cat === 'central' ? n.x : rx + pad;
+
+  // Category label
+  const catNames = {
+    central:'ENTIDAD CENTRAL', subsidiary:'SUBSIDIARIA', supply:'SUPPLY CHAIN',
+    regulator:'REGULADOR / LEGAL', customer:'CLIENTE', competitor:'COMPETIDOR',
+    investor:'INVERSOR', threat:'AMENAZA CIBER', geo:'GEOPOLÍTICA', person:'PERSONA CLAVE'
+  };
+  const catT = svgEl('text', {
+    x: textX, y: ry + 14, 'text-anchor': anchor,
+    'font-family': "'IBM Plex Mono', monospace", 'font-size': '8',
+    'font-weight': '600', 'letter-spacing': '1', fill: color
+  });
+  catT.textContent = catNames[n.cat] || n.cat;
+  textG.appendChild(catT);
+
+  // Name
+  const nameT = svgEl('text', {
+    x: textX, y: ry + (n.cat === 'central' ? 42 : 32),
+    'text-anchor': anchor,
+    'font-family': "'IBM Plex Sans', sans-serif",
+    'font-size': n.cat === 'central' ? '18' : '14',
+    'font-weight': '600',
+    fill: n.cat === 'central' ? '#d4a73a' : textBright
+  });
+  nameT.textContent = truncate(n.name, mc);
+  textG.appendChild(nameT);
+
+  // Description lines
+  if (n.lines) {
+    n.lines.forEach((line, i) => {
+      const yOff = n.cat === 'central' ? 58 + i * 13 : 47 + i * 13;
+      if (ry + yOff > ry + h - 4) return; // Don't overflow
+      const lt = svgEl('text', {
+        x: textX, y: ry + yOff, 'text-anchor': anchor,
+        'font-family': "'IBM Plex Mono', monospace", 'font-size': '9',
+        fill: textDim
+      });
+      lt.textContent = truncate(line, mc);
+      textG.appendChild(lt);
+    });
+  }
+
+  g.appendChild(textG);
+  nodesG.appendChild(g);
+});
+
+</script>
+</body>
+</html>

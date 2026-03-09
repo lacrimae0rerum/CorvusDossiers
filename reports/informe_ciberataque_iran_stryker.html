@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe de Inteligencia — Ciberataque vinculado a Irán contra Stryker Corporation</title>
+<style>
+:root {
+  --primary: #1a2744;
+  --secondary: #2c4a7c;
+  --accent: #c8102e;
+  --bg: #ffffff;
+  --bg-alt: #f4f6f9;
+  --border: #d1d5db;
+  --text: #1f2937;
+  --text-light: #6b7280;
+  --text-white: #ffffff;
+  --success: #15803d;
+  --warning: #b45309;
+  --danger: #dc2626;
+  --info: #1d4ed8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.7;
+  font-size: 14px;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+
+/* COVER */
+.cover {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 60px 0;
+  margin-bottom: 0;
+}
+.cover-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+.cover-classification {
+  background: var(--accent);
+  display: inline-block;
+  padding: 4px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.cover h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.cover-subtitle {
+  font-size: 16px;
+  opacity: 0.85;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+.cover-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 24px;
+}
+.cover-meta-item label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+.cover-meta-item span {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* NAV */
+.toc-bar {
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.toc-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.toc-bar a {
+  color: var(--secondary);
+  text-decoration: none;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+.toc-bar a:hover { background: var(--border); }
+
+/* SECTIONS */
+.section {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-of-type { border-bottom: none; }
+.section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.section h2 {
+  font-size: 22px;
+  color: var(--primary);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+.section h3 {
+  font-size: 16px;
+  color: var(--primary);
+  margin: 24px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.section h4 {
+  font-size: 14px;
+  color: var(--secondary);
+  margin: 16px 0 8px;
+  font-weight: 600;
+}
+p { margin-bottom: 12px; }
+ul, ol { padding-left: 22px; margin-bottom: 12px; }
+li { margin-bottom: 4px; }
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+}
+th {
+  background: var(--primary);
+  color: white;
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: var(--bg-alt); }
+tr:hover td { background: #e8ecf1; }
+
+/* BADGES */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.b-red { background: #fde8e8; color: var(--danger); }
+.b-orange { background: #fef3cd; color: var(--warning); }
+.b-green { background: #d1fae5; color: var(--success); }
+.b-blue { background: #dbeafe; color: var(--info); }
+.b-purple { background: #ede9fe; color: #7c3aed; }
+.b-gold { background: #fef9c3; color: #92400e; border: 1px solid #fbbf24; }
+.b-gray { background: #f3f4f6; color: #4b5563; }
+
+/* CARDS */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 14px 0;
+}
+.card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+/* CALLOUTS */
+.callout {
+  border-left: 4px solid var(--secondary);
+  background: var(--bg-alt);
+  padding: 16px 20px;
+  margin: 14px 0;
+  border-radius: 0 4px 4px 0;
+}
+.callout.critical {
+  border-left-color: var(--accent);
+  background: #fef2f2;
+}
+.callout.warning {
+  border-left-color: var(--warning);
+  background: #fffbeb;
+}
+.callout.info {
+  border-left-color: var(--info);
+  background: #eff6ff;
+}
+.callout-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.callout.critical .callout-label { color: var(--accent); }
+.callout.warning .callout-label { color: var(--warning); }
+
+/* PROGRESS BARS */
+.pbar {
+  background: #e5e7eb;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+.pbar-fill { height: 100%; border-radius: 4px; }
+.pbar-high { background: var(--success); }
+.pbar-med { background: var(--warning); }
+.pbar-low { background: var(--danger); }
+
+/* TIMELINE */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+  margin: 16px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -24px; top: 16px;
+  width: 10px; height: 10px;
+  background: var(--secondary);
+  border-radius: 50%;
+  border: 2px solid white;
+}
+.tl-date {
+  font-size: 11px;
+  color: var(--secondary);
+  font-weight: 700;
+}
+.tl-text { font-size: 13px; margin-top: 4px; }
+
+/* SCENARIOS */
+.scenario {
+  border-left: 4px solid var(--secondary);
+  padding: 14px 18px;
+  margin: 10px 0;
+  background: var(--bg-alt);
+  border-radius: 0 4px 4px 0;
+}
+.scenario.high { border-left-color: var(--success); }
+.scenario.med { border-left-color: var(--warning); }
+.scenario.low { border-left-color: var(--danger); }
+.scenario.vlow { border-left-color: var(--info); }
+.scenario-title { font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.scenario-prob { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+
+/* DIAGRAM */
+.diagram {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 24px;
+  margin: 14px 0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  overflow-x: auto;
+}
+.diagram pre { margin: 0; line-height: 1.8; color: var(--text); }
+
+/* MATRIX CELLS */
+.mx-crit { background: #fde8e8; color: var(--danger); font-weight: 700; text-align: center; }
+.mx-high { background: #fef3cd; color: var(--warning); font-weight: 700; text-align: center; }
+.mx-med { background: #fef9c3; color: #92400e; font-weight: 700; text-align: center; }
+.mx-low { background: #d1fae5; color: var(--success); font-weight: 700; text-align: center; }
+
+/* FOOTER */
+.footer {
+  background: var(--primary);
+  color: rgba(255,255,255,0.7);
+  padding: 30px 0;
+  margin-top: 40px;
+  font-size: 12px;
+  text-align: center;
+}
+.footer strong { color: white; }
+
+/* PRINT */
+@media print {
+  .toc-bar { display: none; }
+  .cover { padding: 40px 0; }
+  .section { break-inside: avoid; }
+  body { font-size: 11pt; }
+}
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-classification">NO CLASIFICADO // USO OFICIAL EXCLUSIVO</div>
+    <h1>Ciberataque de Grupo Vinculado a Irán contra Stryker Corporation</h1>
+    <div class="cover-subtitle">Evaluación Integral de Inteligencia — Equipo Handala / Ministerio de Inteligencia y Seguridad de Irán (MOIS)</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <label>ID del Informe</label>
+        <span>INT-2026-12M-0001</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Fecha del Informe</label>
+        <span>12 de marzo de 2026</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Confianza Analítica</label>
+        <span>PROBABLE (55–80%)</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Prioridad</label>
+        <span>ALTA</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVEGACIÓN -->
+<div class="toc-bar">
+  <div class="toc-bar-inner">
+    <a href="#exec">Resumen Ejecutivo</a>
+    <a href="#fuentes">Evaluación de Fuentes</a>
+    <a href="#datos">Datos y Entidades</a>
+    <a href="#correlacion">Correlación</a>
+    <a href="#actor">Actor de Amenaza</a>
+    <a href="#escenarios">Escenarios</a>
+    <a href="#impacto">Impacto Estratégico</a>
+    <a href="#tendencias">Tendencias</a>
+    <a href="#economico">Evaluación Económica</a>
+    <a href="#comercio">Impacto Comercial</a>
+    <a href="#recursos">Recursos Críticos</a>
+    <a href="#financiero">Estabilidad Financiera</a>
+    <a href="#infra">Infraestructura</a>
+    <a href="#depend">Dependencias</a>
+    <a href="#vuln">Vulnerabilidades</a>
+    <a href="#matriz">Matriz de Fuentes</a>
+    <a href="#calidad">Calidad de Fuentes</a>
+    <a href="#osint">Recopilación OSINT</a>
+    <a href="#acciones">Próximos Pasos</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 1. RESUMEN EJECUTIVO -->
+<div class="section" id="exec">
+  <div class="section-label">Sección 1</div>
+  <h2>Resumen Ejecutivo</h2>
+
+  <p>En torno al 11 de marzo de 2026, el grupo de hackers vinculado a Irán <strong>Equipo Handala</strong> — atribuido por la firma de ciberseguridad Sophos al <strong>Ministerio de Inteligencia y Seguridad de Irán (MOIS)</strong> — ejecutó un ciberataque destructivo contra <strong>Stryker Corporation</strong>, empresa de tecnología médica con sede en Michigan, EE.UU. El ataque comprometió el entorno de gestión de dispositivos móviles <strong>Microsoft Intune</strong> de Stryker y borró remotamente los dispositivos de empleados restaurándolos a configuración de fábrica, interrumpiendo las comunicaciones internas y las operaciones a nivel global.</p>
+
+  <div class="callout critical">
+    <div class="callout-label">Evaluación Clave</div>
+    <p>Este incidente representa el <strong>primer ciberataque destructivo significativo</strong> atribuido a un grupo vinculado al Estado iraní contra una corporación estadounidense desde el inicio de las hostilidades entre Estados Unidos e Irán. Señala una posible escalada desde las operaciones centradas en espionaje y de bajo impacto observadas previamente durante el conflicto.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title"><span class="badge b-red">QUÉ</span></div>
+      <p>Ataque destructivo tipo wiper mediante compromiso del MDM Microsoft Intune. Dispositivos de empleados borrados remotamente a configuración de fábrica. Entorno global de Microsoft afectado.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-orange">QUIÉN</span></div>
+      <p><strong>Actor de amenaza:</strong> Equipo Handala (vinculado a Irán/MOIS)<br><strong>Víctima:</strong> Stryker Corporation (NYSE: SYK), dispositivos y tecnología médica, sede en Kalamazoo, MI.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-blue">CÓMO</span></div>
+      <p>Acceso a la consola de gestión Microsoft Intune → activación de la función de borrado remoto en dispositivos corporativos registrados. No se detectaron indicadores de ransomware o malware según Stryker.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-purple">IMPLICACIONES</span></div>
+      <p>Escalada de operaciones cibernéticas iraníes de espionaje a destrucción contra el sector privado de EE.UU. Sector de tecnología médica como objetivo estratégico. Potencial de operaciones de imitación contra empresas dependientes de MDM.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 2. EVALUACIÓN DE FUENTES — ESCALA ADMIRALTY -->
+<div class="section" id="fuentes">
+  <div class="section-label">Sección 2</div>
+  <h2>Evaluación de Fuentes — Escala Admiralty (NATO 6x6)</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Escala de Fiabilidad (Fuente)</div>
+      <ul>
+        <li><strong>A</strong> — Completamente Fiable</li>
+        <li><strong>B</strong> — Normalmente Fiable</li>
+        <li><strong>C</strong> — Bastante Fiable</li>
+        <li><strong>D</strong> — No Normalmente Fiable</li>
+        <li><strong>E</strong> — No Fiable</li>
+        <li><strong>F</strong> — Fiabilidad No Evaluable</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Escala de Credibilidad (Información)</div>
+      <ul>
+        <li><strong>1</strong> — Confirmada por Otras Fuentes</li>
+        <li><strong>2</strong> — Probablemente Verdadera</li>
+        <li><strong>3</strong> — Posiblemente Verdadera</li>
+        <li><strong>4</strong> — Dudosamente Verdadera</li>
+        <li><strong>5</strong> — Improbable</li>
+        <li><strong>6</strong> — Veracidad No Evaluable</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Evaluación Fuente por Fuente</h3>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Fuente</th><th>Tipo</th><th>Fiabilidad</th><th>Credibilidad</th><th>Admiralty</th><th>Justificación</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>[1]</strong></td>
+        <td>NBC News — División de Noticias de EE.UU.</td>
+        <td><span class="badge b-blue">Medio Principal</span></td>
+        <td><strong>B</strong></td>
+        <td><strong>2</strong></td>
+        <td><span class="badge b-gold">B2</span></td>
+        <td>Cadena televisiva de referencia con estándares editoriales establecidos. El artículo cita a un experto identificado (Rafe Pilling, Director de Inteligencia de Amenazas de Sophos), testimonio directo de un empleado y declaración corporativa oficial de Stryker.</td>
+      </tr>
+      <tr>
+        <td><strong>[1a]</strong></td>
+        <td>Rafe Pilling — Sophos, Inteligencia de Amenazas</td>
+        <td><span class="badge b-green">Fuente Experta</span></td>
+        <td><strong>B</strong></td>
+        <td><strong>2</strong></td>
+        <td><span class="badge b-gold">B2</span></td>
+        <td>Director de Inteligencia de Amenazas en Sophos, firma de ciberseguridad reconocida. Sophos ha establecido previamente vínculos de atribución entre Handala y el MOIS iraní. La explicación técnica del vector de ataque (abuso de Intune MDM) es consistente con los indicadores observados.</td>
+      </tr>
+      <tr>
+        <td><strong>[1b]</strong></td>
+        <td>Stryker Corporation — Declaración Oficial</td>
+        <td><span class="badge b-purple">Fuente Primaria / Corporativa</span></td>
+        <td><strong>A</strong></td>
+        <td><strong>2</strong></td>
+        <td><span class="badge b-gold">A2</span></td>
+        <td>Confirmación directa del ciberataque que afectó al entorno global de Microsoft. Fuente primaria fiable. Nota: las declaraciones corporativas pueden minimizar el alcance por razones reputacionales — credibilidad limitada a 2.</td>
+      </tr>
+      <tr>
+        <td><strong>[1c]</strong></td>
+        <td>Equipo Handala — Publicaciones en Telegram/X</td>
+        <td><span class="badge b-red">Reivindicación Adversaria</span></td>
+        <td><strong>D</strong></td>
+        <td><strong>3</strong></td>
+        <td><span class="badge b-gold">D3</span></td>
+        <td>Autoatribución del adversario vía redes sociales. Handala publica habitualmente sus acciones y tiene un historial documentado de reivindicaciones precisas, pero también infla el impacto con fines propagandísticos. La reivindicación gana credibilidad por la corroboración de Stryker y la atribución de Sophos. Cuentas eliminadas previamente.</td>
+      </tr>
+      <tr>
+        <td><strong>[1d]</strong></td>
+        <td>Empleado de Stryker — Testimonio Anónimo</td>
+        <td><span class="badge b-orange">Fuente Humana</span></td>
+        <td><strong>C</strong></td>
+        <td><strong>2</strong></td>
+        <td><span class="badge b-gold">C2</span></td>
+        <td>Relato de testigo presencial sobre el impacto operacional (teléfonos que dejaron de funcionar). Fuente anónima individual; fiabilidad limitada, pero el testimonio es consistente con el análisis técnico de la capacidad de borrado de Intune.</td>
+      </tr>
+      <tr>
+        <td><strong>[1e]</strong></td>
+        <td>Google y Proofpoint — Contexto de Fondo</td>
+        <td><span class="badge b-green">Inteligencia del Sector</span></td>
+        <td><strong>B</strong></td>
+        <td><strong>2</strong></td>
+        <td><span class="badge b-gold">B2</span></td>
+        <td>Referenciados para contexto sobre operaciones cibernéticas iraníes durante el conflicto (actividad centrada en espionaje). Ambas son firmas de tecnología/ciberseguridad con programas de inteligencia de amenazas establecidos.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-label" style="color:var(--info);">Evaluación Compuesta de Fuentes</div>
+    <p>La cadena de información para este incidente alcanza una <strong>calificación compuesta de B2</strong> (Normalmente Fiable / Probablemente Verdadera). El informe primario (NBC News) está corroborado internamente por múltiples subfuentes, incluyendo un experto en ciberseguridad identificado, una declaración corporativa oficial y testimonio directo de un empleado. El elemento más débil es la reivindicación adversaria (D3), compensada por la corroboración independiente. No existe dependencia de fuente única para los hechos centrales del incidente.</p>
+    <div class="pbar" style="margin-top:10px;">
+      <div class="pbar-fill pbar-high" style="width:72%;"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-light); margin-top:4px;">
+      <span>Baja Confianza</span>
+      <span style="color:var(--success); font-weight:700;">72% — PROBABLE</span>
+      <span>Alta Confianza</span>
+    </div>
+  </div>
+</div>
+
+<!-- 3. DATOS Y ENTIDADES -->
+<div class="section" id="datos">
+  <div class="section-label">Sección 3</div>
+  <h2>Reconocimiento de Datos y Extracción de Entidades</h2>
+
+  <h3>Entidades Identificadas</h3>
+  <table>
+    <thead>
+      <tr><th>Entidad</th><th>Tipo</th><th>Clasificación</th><th>Notas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Stryker Corporation</td><td>Organización — Víctima</td><td>Tecnología Médica (EE.UU.)</td><td>NYSE: SYK, sede en Kalamazoo, MI. Equipamiento y tecnología médica.</td></tr>
+      <tr><td>Equipo Handala</td><td>Actor de Amenaza</td><td>APT/Hacktivista vinculado a Irán</td><td>Vinculado al MOIS según atribución de Sophos. Publica operaciones en Telegram y X.</td></tr>
+      <tr><td>MOIS de Irán</td><td>Agencia Estatal</td><td>Ministerio de Inteligencia y Seguridad</td><td>Servicio de inteligencia iraní. Vinculado a Handala por Sophos.</td></tr>
+      <tr><td>Rafe Pilling</td><td>Persona — Fuente Experta</td><td>Director de Inteligencia de Amenazas, Sophos</td><td>Experto en ciberseguridad identificado que proporciona atribución técnica.</td></tr>
+      <tr><td>Sophos</td><td>Organización — Ciberseguridad</td><td>Empresa de Ciberseguridad (Reino Unido)</td><td>Ha establecido atribución entre Handala y el MOIS iraní.</td></tr>
+      <tr><td>Microsoft Intune</td><td>Plataforma Tecnológica</td><td>MDM / Gestión Empresarial</td><td>Vector de ataque — capacidad de borrado remoto explotada.</td></tr>
+      <tr><td>Saudi Aramco (2012)</td><td>Referencia Histórica</td><td>Ataque Wiper Shamoon</td><td>Precedente de ataque wiper iraní — +30.000 dispositivos destruidos.</td></tr>
+      <tr><td>Sands Casino (2014)</td><td>Referencia Histórica</td><td>Ataque Wiper Iraní</td><td>Represalia por comentarios anti-iraníes de Sheldon Adelson.</td></tr>
+      <tr><td>Google / Proofpoint</td><td>Organizaciones — Ciberseguridad</td><td>Proveedores de Inteligencia de Amenazas</td><td>Informaron sobre operaciones iraníes de espionaje durante el conflicto.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Disciplinas de Recopilación</h3>
+  <table>
+    <thead><tr><th>Disciplina</th><th>Relevancia</th><th>Confianza</th><th>Aplicación</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CYBINT</strong></td><td><span class="badge b-red">PRIMARIA</span></td><td>95%</td><td>Atribución de actores de amenaza, análisis de TTPs, vector de ataque, evaluación de seguridad MDM</td></tr>
+      <tr><td><strong>OSINT</strong></td><td><span class="badge b-red">PRIMARIA</span></td><td>90%</td><td>Análisis de medios, monitorización de redes sociales, análisis de divulgación corporativa</td></tr>
+      <tr><td><strong>TECHINT</strong></td><td><span class="badge b-orange">SECUNDARIA</span></td><td>75%</td><td>Metodología de explotación de Intune, vulnerabilidades de arquitectura MDM</td></tr>
+      <tr><td><strong>HUMINT</strong></td><td><span class="badge b-blue">APOYO</span></td><td>40%</td><td>Testimonio de empleados, vectores potenciales de ingeniería social</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cronología del Incidente</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">~11 de marzo de 2026 — Ejecución del Ataque</div>
+      <div class="tl-text">El Equipo Handala obtiene acceso a la consola Microsoft Intune de Stryker. Se activa el borrado remoto en dispositivos corporativos registrados. Los empleados reportan fallos en dispositivos y paralización de las comunicaciones.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">~11 de marzo de 2026 — Reivindicación del Adversario</div>
+      <div class="tl-text">El Equipo Handala reivindica la responsabilidad a través de sus cuentas de Telegram y X. Se publican evidencias del acceso a los sistemas de Stryker.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">~11–12 de marzo de 2026 — Respuesta Corporativa</div>
+      <div class="tl-text">Stryker reconoce el ciberataque en una declaración oficial. Confirma impacto en el entorno global de Microsoft. Declara que no se detectó ransomware ni malware y que cree que el incidente está contenido.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">12 de marzo de 2026 — Cobertura Mediática</div>
+      <div class="tl-text">NBC News publica un informe detallado con análisis del experto de Sophos, testimonio de un empleado y contexto sobre las operaciones cibernéticas iraníes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. CORRELACIÓN -->
+<div class="section" id="correlacion">
+  <div class="section-label">Sección 4</div>
+  <h2>Análisis de Correlación</h2>
+
+  <h3>Matriz de Correlación Multifuente</h3>
+  <table>
+    <thead><tr><th>Tipo de Correlación</th><th>Hallazgo</th><th>Confianza</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Temporal</strong></td>
+        <td>El ataque coincide con las hostilidades en curso entre EE.UU. e Irán. Representa una escalada tras un período de operaciones limitadas a espionaje y desfiguraciones menores de sitios web por grupos pro-iraníes.</td>
+        <td><span class="badge b-green">ALTA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Conductual</strong></td>
+        <td>El uso de tácticas destructivas tipo wiper por Handala es consistente con la doctrina cibernética iraní histórica (Shamoon/Saudi Aramco 2012, Sands Casino 2014). La transición de espionaje a destrucción sigue el libro de jugadas de escalada iraní documentado.</td>
+        <td><span class="badge b-green">ALTA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Técnica</strong></td>
+        <td>La explotación de la funcionalidad de borrado remoto de Microsoft Intune MDM representa una técnica "living-off-the-land" (LotL) — abusando de herramientas empresariales legítimas en lugar de desplegar malware personalizado.</td>
+        <td><span class="badge b-green">ALTA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Atribución</strong></td>
+        <td>Sophos ha vinculado previamente a Handala con el MOIS de Irán. La autoatribución de Handala es consistente con sus patrones de reivindicación pública. No existe atribución contradictoria.</td>
+        <td><span class="badge b-orange">MODERADA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Semántica</strong></td>
+        <td>El ataque al sector de tecnología médica de Stryker no se alinea con la selección de objetivos cibernéticos iraníes anteriores (energía, juego/hostelería, finanzas). Puede indicar ampliación del alcance o explotación oportunista de acceso.</td>
+        <td><span class="badge b-orange">MODERADA</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Análisis de Hipótesis Competidoras (ACH)</h3>
+  <table>
+    <thead><tr><th>Hipótesis</th><th>Evidencia a Favor</th><th>Evidencia en Contra</th><th>Evaluación</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>H1: Operación dirigida por el MOIS</strong></td>
+        <td>Atribución de Sophos al MOIS; temporalidad con la escalada bélica; capacidad destructiva consistente con recursos estatales; acceso a admin de Intune sugiere sofisticación</td>
+        <td>Sin evidencia directa de mandato del MOIS; la publicidad de Handala en redes sociales es atípica de operaciones estatales</td>
+        <td><span class="badge b-green">PROBABLE</span></td>
+      </tr>
+      <tr>
+        <td><strong>H2: Operación proxy tolerada por el MOIS</strong></td>
+        <td>La presencia pública y el alarde en redes sociales de Handala son más consistentes con comportamiento hacktivista/proxy; ataques previos menores sugieren nivel de capacidad inferior; el MOIS podría proporcionar acceso/herramientas sin dirección directa</td>
+        <td>La escala y sofisticación del compromiso de Intune sugiere más que capacidad hacktivista</td>
+        <td><span class="badge b-orange">MODERADAMENTE PROBABLE</span></td>
+      </tr>
+      <tr>
+        <td><strong>H3: Operación hacktivista independiente</strong></td>
+        <td>Comportamiento propagandístico público de Handala; sin evidencia confirmada de dirección estatal</td>
+        <td>Atribución de Sophos al MOIS; nivel de capacidad del compromiso MDM; ataques wiper históricamente a nivel estatal</td>
+        <td><span class="badge b-blue">IMPROBABLE</span></td>
+      </tr>
+      <tr>
+        <td><strong>H4: Falsa bandera / error de atribución</strong></td>
+        <td>La atribución se basa principalmente en la evaluación de Sophos y la auto-reivindicación</td>
+        <td>No se identifica motivo para falsa bandera; Stryker confirmó el ataque; múltiples puntos de corroboración; sin reivindicaciones competidoras</td>
+        <td><span class="badge b-gray">REMOTA</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 5. ACTOR DE AMENAZA -->
+<div class="section" id="actor">
+  <div class="section-label">Sección 5</div>
+  <h2>Evaluación de Capacidades del Actor de Amenaza</h2>
+
+  <p><em>Nota: Esta evaluación se basa en información de fuentes abiertas disponible e inferencia analítica. Las capacidades reales pueden diferir de las evaluadas.</em></p>
+
+  <h3>Perfil del Equipo Handala</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Identidad y Afiliación</div>
+      <ul>
+        <li><strong>Nombre:</strong> Equipo Handala (&#1581;&#1606;&#1592;&#1604;&#1607;)</li>
+        <li><strong>Tipo:</strong> Grupo cibernético vinculado al Estado / modelo híbrido hacktivista</li>
+        <li><strong>Patrocinador estatal:</strong> Irán — MOIS (según atribución de Sophos)</li>
+        <li><strong>Motivación:</strong> Ideológica (pro-liderazgo iraní) + tasking estratégico</li>
+        <li><strong>Denominación:</strong> Referencia probable a Handala, figura de caricatura política palestina — señalización de identidad anti-Israel/anti-Occidental</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Comunicación y OPSEC</div>
+      <ul>
+        <li><strong>Plataformas:</strong> Telegram, X (antes Twitter)</li>
+        <li><strong>Comportamiento:</strong> Publica rutinariamente sus operaciones en redes sociales</li>
+        <li><strong>OPSEC:</strong> Baja-Moderada — la publicidad reduce la seguridad operacional</li>
+        <li><strong>Persistencia de cuentas:</strong> Cuentas previas eliminadas; el grupo recrea su presencia</li>
+        <li><strong>Valor propagandístico:</strong> Alto — utiliza ataques para guerra de información</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Análisis de Dominios de Capacidad</h3>
+  <table>
+    <thead><tr><th>Dominio</th><th>Capacidad Evaluada</th><th>Evidencia</th><th>Confianza</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Acceso Inicial</strong></td>
+        <td><span class="badge b-orange">MODERADA-ALTA</span></td>
+        <td>Comprometió con éxito el entorno Microsoft Intune de Stryker. Método de acceso inicial no revelado — probable robo de credenciales, phishing o compromiso de cadena de suministro.</td>
+        <td>Moderada</td>
+      </tr>
+      <tr>
+        <td><strong>Operaciones Destructivas</strong></td>
+        <td><span class="badge b-red">ALTA</span></td>
+        <td>Ejecutó borrado masivo de dispositivos vía Intune. Consistente con la tradición iraní de wipers (Shamoon, ZeroCleare, Dustman). Disposición a causar disrupción operacional.</td>
+        <td>Alta</td>
+      </tr>
+      <tr>
+        <td><strong>Persistencia y Sigilo</strong></td>
+        <td><span class="badge b-blue">BAJA-MODERADA</span></td>
+        <td>La reivindicación pública inmediata sugiere operación tipo "golpe y huida". Sin embargo, la profundidad del acceso a Intune implica algún tiempo de permanencia.</td>
+        <td>Baja</td>
+      </tr>
+      <tr>
+        <td><strong>Explotación Cloud/SaaS</strong></td>
+        <td><span class="badge b-orange">MODERADA-ALTA</span></td>
+        <td>El abuso de funciones administrativas de Microsoft Intune demuestra comprensión de plataformas de gestión empresarial en la nube. Enfoque LotL (living-off-the-land).</td>
+        <td>Moderada</td>
+      </tr>
+      <tr>
+        <td><strong>Operaciones de Información</strong></td>
+        <td><span class="badge b-red">ALTA</span></td>
+        <td>Reivindicación pública rápida en múltiples plataformas. Historial documentado de propaganda. El ataque cumple doble propósito (disrupción + impacto psicológico).</td>
+        <td>Alta</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Contexto Comparativo — Panorama de Amenazas Cibernéticas Iraníes</h3>
+  <table>
+    <thead><tr><th>Actor</th><th>Atribución</th><th>Operaciones Destacadas</th><th>Relación con Handala</th></tr></thead>
+    <tbody>
+      <tr><td>APT33 (Elfin)</td><td>MOIS</td><td>Variantes de Shamoon, sector energético</td><td>Posible compartición de recursos / solapamiento de tasking</td></tr>
+      <tr><td>APT34 (OilRig)</td><td>MOIS</td><td>Espionaje en Oriente Medio, web shells</td><td>Misma afiliación al MOIS; diferente nivel operacional</td></tr>
+      <tr><td>APT35 (Charming Kitten)</td><td>IRGC</td><td>Robo de credenciales, objetivos académicos</td><td>Cadena de mando diferente (IRGC vs MOIS)</td></tr>
+      <tr><td>MuddyWater</td><td>MOIS</td><td>Telecomunicaciones, espionaje gubernamental</td><td>Grupo par vinculado al MOIS</td></tr>
+      <tr><td><strong>Equipo Handala</strong></td><td><strong>MOIS</strong></td><td><strong>Borrado de Stryker, desfiguraciones previas</strong></td><td><strong>Nivel inferior a grupos APT; modelo híbrido hacktivista/estatal</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 6. ESCENARIOS ESTRATÉGICOS -->
+<div class="section" id="escenarios">
+  <div class="section-label">Sección 6</div>
+  <h2>Modelado de Escenarios Estratégicos</h2>
+  <p><em>Nota: Los escenarios son constructos analíticos basados en información disponible y patrones históricos. No representan predicciones de resultados específicos.</em></p>
+
+  <h3>Factores Impulsores Clave</h3>
+  <ul>
+    <li>Trayectoria de escalada del conflicto EE.UU.-Irán</li>
+    <li>Cambio de doctrina cibernética iraní de espionaje a destrucción</li>
+    <li>Éxito de la operación Stryker como prueba de concepto para explotación de MDM</li>
+    <li>Postura disuasoria de EE.UU. y capacidad de represalia</li>
+    <li>Normas internacionales sobre operaciones cibernéticas durante conflictos armados</li>
+  </ul>
+
+  <div class="scenario high">
+    <div class="scenario-title">Escenario A: Escalada Controlada — Objetivos Ampliados, Destrucción Limitada</div>
+    <div class="scenario-prob" style="color:var(--success);">Probabilidad: 45–55% (APROXIMADAMENTE EQUIPROBABLE A PROBABLE)</div>
+    <p>Irán realiza ciberataques destructivos adicionales contra objetivos del sector privado de EE.UU., utilizando Stryker como modelo validado. Los objetivos se amplían a otras empresas de salud, manufactura y logística. Las operaciones se mantienen por debajo del umbral que provocaría represalia cinética. Handala y grupos proxy similares sirven como instrumentos con negabilidad plausible. Los ataques se dirigen principalmente a plataformas de gestión empresarial (MDM, AD, consolas admin cloud).</p>
+    <p><strong>Indicadores clave:</strong> Reivindicaciones adicionales de Handala en los próximos 30 días; TTPs similares de explotación MDM/cloud en otros sectores; mensajes de medios estatales iraníes enfatizando respuesta proporcional.</p>
+  </div>
+
+  <div class="scenario med">
+    <div class="scenario-title">Escenario B: Efecto Disuasorio — Retorno al Enfoque en Espionaje</div>
+    <div class="scenario-prob" style="color:var(--warning);">Probabilidad: 25–35% (IMPROBABLE A APROXIMADAMENTE EQUIPROBABLE)</div>
+    <p>La respuesta del gobierno de EE.UU. y del sector privado (sanciones, imputaciones, contraoperaciones cibernéticas) crea disuasión suficiente. Irán vuelve a operaciones de espionaje con menor visibilidad. El perfil público del Equipo Handala es suprimido o el grupo es redirigido a objetivos más blandos. El ataque a Stryker se mantiene como una escalada aislada.</p>
+    <p><strong>Indicadores clave:</strong> Atribución pública y sanciones del gobierno de EE.UU.; ausencia de ataques destructivos adicionales en 60 días; cuentas de Handala permanecen offline; aumento de actividad de espionaje iraní como sustituto.</p>
+  </div>
+
+  <div class="scenario low">
+    <div class="scenario-title">Escenario C: Escalada Significativa — Objetivos de Infraestructura Crítica</div>
+    <div class="scenario-prob" style="color:var(--danger);">Probabilidad: 10–20% (MUY IMPROBABLE A IMPROBABLE)</div>
+    <p>Irán escala las operaciones cibernéticas para atacar infraestructura crítica de EE.UU. (energía, agua, sistemas de atención sanitaria, finanzas). Las operaciones van más allá del borrado de dispositivos hacia la destrucción de datos, interrupción de tecnología operacional o compromiso de cadena de suministro. Múltiples grupos cibernéticos iraníes actúan simultáneamente.</p>
+    <p><strong>Indicadores clave:</strong> Múltiples ataques simultáneos en diferentes sectores; objetivos OT/ICS; coordinación entre múltiples grupos APT iraníes; escalada significativa del conflicto cinético.</p>
+  </div>
+
+  <div class="scenario vlow">
+    <div class="scenario-title">Escenario D: Desescalada — Resolución Diplomática</div>
+    <div class="scenario-prob" style="color:var(--info);">Probabilidad: 5–15% (MUY IMPROBABLE)</div>
+    <p>Un compromiso diplomático más amplio entre EE.UU. e Irán conduce a la desescalada tanto en el dominio cinético como en el cibernético. Las operaciones cibernéticas vuelven a niveles previos al conflicto. El Equipo Handala cesa operaciones o es disuelto.</p>
+    <p><strong>Indicadores clave:</strong> Negociaciones de alto el fuego; comunicaciones por canales secundarios; reducción de hostilidades cinéticas; declaraciones públicas de moderación del liderazgo iraní.</p>
+  </div>
+</div>
+
+<!-- 7. IMPACTO ESTRATÉGICO -->
+<div class="section" id="impacto">
+  <div class="section-label">Sección 7</div>
+  <h2>Proyección de Impacto Estratégico</h2>
+
+  <h3>Impactos de Primer Orden (Directos)</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title"><span class="badge b-red">Operacional</span></div>
+      <ul>
+        <li>Pérdida de dispositivos de empleados — teléfonos borrados a configuración de fábrica</li>
+        <li>Interrupción de comunicaciones internas — imposibilidad de contacto entre colegas</li>
+        <li>Entorno global de Microsoft afectado — impacto a escala empresarial</li>
+        <li>Costes de respuesta a incidentes — forense, reemplazo de dispositivos, restauración</li>
+        <li>Stryker evalúa el incidente como contenido; sin ransomware/malware detectado</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-orange">Reputacional</span></div>
+      <ul>
+        <li>Cobertura mediática nacional (NBC News) amplifica la visibilidad del incidente</li>
+        <li>Los clientes del sector de dispositivos médicos pueden cuestionar la seguridad de la cadena de suministro</li>
+        <li>Valor propagandístico para Handala — capacidad demostrada contra una gran empresa de EE.UU.</li>
+        <li>La capitalización bursátil de Stryker (~$130.000M+) proporciona alto valor como objetivo</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Impactos de Segundo Orden (Cascada)</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title"><span class="badge b-purple">A Nivel Sectorial</span></div>
+      <ul>
+        <li>Reevaluación del riesgo cibernético en el sector de salud/tecnología médica</li>
+        <li>Aumento de la demanda de auditorías de seguridad de plataformas MDM empresariales</li>
+        <li>Endurecimiento de configuraciones de seguridad de Microsoft Intune en todos los sectores</li>
+        <li>Ajustes de primas de seguros cibernéticos para empresas de tecnología médica</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge b-blue">Geopolítico</span></div>
+      <ul>
+        <li>Precedente establecido de escalada en el conflicto cibernético EE.UU.-Irán</li>
+        <li>Presión para respuesta del gobierno de EE.UU. (atribución, sanciones, contraoperaciones)</li>
+        <li>Reevaluación por naciones aliadas de la amenaza cibernética iraní al sector sanitario</li>
+        <li>Debate internacional sobre la orientación hacia empresas médicas civiles durante conflicto armado</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Proyección Temporal del Impacto</h3>
+  <table>
+    <thead><tr><th>Plazo</th><th>Impactos Proyectados</th><th>Confianza</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Corto plazo (0–30 días)</strong></td>
+        <td>Restauración de sistemas de Stryker y endurecimiento de seguridad; posibles ataques adicionales de Handala a otros objetivos; revisión de seguridad MDM a nivel sectorial; evaluación de la comunidad de inteligencia de EE.UU. y posible atribución</td>
+        <td><span class="badge b-green">ALTA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Medio plazo (1–6 meses)</strong></td>
+        <td>Evolución de mejores prácticas de seguridad MDM empresarial; posible acción regulatoria; aumento de primas de seguros cibernéticos para tecnología médica; posibles operaciones cibernéticas de represalia de EE.UU.</td>
+        <td><span class="badge b-orange">MODERADA</span></td>
+      </tr>
+      <tr>
+        <td><strong>Largo plazo (6+ meses)</strong></td>
+        <td>Normalización de ataques al sector privado en el conflicto cibernético EE.UU.-Irán; cambios estructurales en arquitectura de seguridad cloud empresarial; posible marco internacional para operaciones cibernéticas y protección de infraestructura civil</td>
+        <td><span class="badge b-blue">BAJA</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 8. TENDENCIAS -->
+<div class="section" id="tendencias">
+  <div class="section-label">Sección 8</div>
+  <h2>Análisis de Tendencias Multifactoriales</h2>
+
+  <table>
+    <thead><tr><th>Tendencia</th><th>Dirección</th><th>Impulsor</th><th>Interacción</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Escalada cibernética iraní</strong></td>
+        <td><span class="badge b-red">ACELERANDO &#8593;</span></td>
+        <td>Conflicto armado EE.UU.-Irán; éxito demostrado del ataque a Stryker; empoderamiento de grupos proxy</td>
+        <td>Refuerza Tendencias 2 y 3</td>
+      </tr>
+      <tr>
+        <td><strong>Explotación de plataformas MDM/Cloud admin</strong></td>
+        <td><span class="badge b-red">EMERGENTE &#8593;</span></td>
+        <td>Adopción empresarial de cloud; gestión centralizada = riesgo centralizado; evolución de técnicas LotL</td>
+        <td>Amplificada por Tendencia 1; alimenta Tendencia 5</td>
+      </tr>
+      <tr>
+        <td><strong>Operaciones cibernéticas híbridas estado-proxy</strong></td>
+        <td><span class="badge b-orange">CRECIENTE &#8593;</span></td>
+        <td>Ventajas de negabilidad; menor coste; valor propagandístico; dificultad de atribución definitiva</td>
+        <td>Habilita Tendencia 1; complica la disuasión</td>
+      </tr>
+      <tr>
+        <td><strong>Ciberataques al sector sanitario</strong></td>
+        <td><span class="badge b-orange">CRECIENTE &#8593;</span></td>
+        <td>Datos de alto valor; cadenas de suministro complejas; presión regulatoria; implicaciones de seguridad del paciente</td>
+        <td>Amplificada por Tendencias 1 y 2</td>
+      </tr>
+      <tr>
+        <td><strong>Adopción de arquitectura zero-trust empresarial</strong></td>
+        <td><span class="badge b-green">ACELERANDO &#8593;</span></td>
+        <td>Reactiva a incidentes como Stryker; requisitos regulatorios; mandatos de seguros</td>
+        <td>Contrarresta Tendencias 2 y 4</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-label" style="color:var(--info);">Evaluación de Punto de Inflexión</div>
+    <p>El ataque a Stryker representa un potencial <strong>punto de inflexión</strong> en las operaciones cibernéticas iraníes durante el conflicto con EE.UU. El cambio de espionaje y desfiguración de sitios web a ataques destructivos contra grandes corporaciones de EE.UU. señala una nueva fase operacional. Si se producen ataques de seguimiento exitosos en los próximos 30–60 días, este punto de inflexión se confirmará, estableciendo una nueva línea base de agresión cibernética iraní contra el sector privado estadounidense.</p>
+  </div>
+</div>
+
+<!-- 9. EVALUACIÓN ECONÓMICA -->
+<div class="section" id="economico">
+  <div class="section-label">Sección 9</div>
+  <h2>Evaluación de Vulnerabilidad Económica</h2>
+
+  <h3>Perfil de Exposición de Stryker Corporation</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Perfil Corporativo</div>
+      <ul>
+        <li><strong>NYSE:</strong> SYK</li>
+        <li><strong>Capitalización bursátil:</strong> ~$130.000M+ (Fortune 500)</li>
+        <li><strong>Sector:</strong> Dispositivos y Tecnología Médica</li>
+        <li><strong>Sede:</strong> Kalamazoo, Michigan</li>
+        <li><strong>Productos:</strong> Equipamiento quirúrgico, implantes, imagen médica, neurotecnología</li>
+        <li><strong>Presencia global:</strong> Operaciones en +75 países</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Factores de Vulnerabilidad</div>
+      <ul>
+        <li><strong>Dependencia digital:</strong> Alta — entorno global de Microsoft, dispositivos gestionados en cloud</li>
+        <li><strong>Riesgo de continuidad operacional:</strong> Moderado — el borrado interrumpe comunicaciones pero no la fabricación</li>
+        <li><strong>Exposición regulatoria:</strong> Alta — FDA, HIPAA, regulaciones internacionales de dispositivos médicos</li>
+        <li><strong>Complejidad de cadena de suministro:</strong> Alta — aprovisionamiento y distribución global</li>
+        <li><strong>Valor de PI:</strong> Muy Alto — tecnología médica propietaria y sistemas quirúrgicos</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Evaluación de Impacto Económico Sectorial</h3>
+  <table>
+    <thead><tr><th>Categoría de Impacto</th><th>Severidad</th><th>Evaluación</th></tr></thead>
+    <tbody>
+      <tr><td>Pérdida financiera directa (Stryker)</td><td><span class="badge b-orange">MODERADA</span></td><td>Costes de respuesta a incidentes, reemplazo de dispositivos, pérdida de productividad. La escala de Stryker absorbe los costes a corto plazo.</td></tr>
+      <tr><td>Impacto en confianza del sector</td><td><span class="badge b-orange">MODERADA</span></td><td>El sector de tecnología médica puede enfrentar escrutinio inversor sobre resiliencia cibernética. Las decisiones de adquisición hospitalaria podrían considerar la postura cibernética del proveedor.</td></tr>
+      <tr><td>Mercado de seguros cibernéticos</td><td><span class="badge b-orange">MODERADA</span></td><td>La explotación de MDM como vector de ataque puede provocar reevaluación de pólizas. Las primas del sector salud ya están elevadas; probables incrementos adicionales.</td></tr>
+      <tr><td>Costes de cumplimiento regulatorio</td><td><span class="badge b-red">ALTA</span></td><td>Posible aceleración de requisitos regulatorios (ciberseguridad FDA, aplicación HIPAA). Aumento de costes de cumplimiento a nivel sectorial.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 10. IMPACTO COMERCIAL -->
+<div class="section" id="comercio">
+  <div class="section-label">Sección 10</div>
+  <h2>Análisis de Impacto en Redes Comerciales</h2>
+
+  <table>
+    <thead><tr><th>Dimensión</th><th>Impacto</th><th>Evaluación</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Continuidad de fabricación</strong></td><td><span class="badge b-green">BAJO</span></td><td>Sin evidencia de compromiso OT/ICS. El ataque se dirigió a IT/comunicaciones (dispositivos gestionados por Intune), no a sistemas de fabricación.</td></tr>
+      <tr><td><strong>Distribución y logística</strong></td><td><span class="badge b-orange">MODERADO</span></td><td>La interrupción de comunicaciones puede retrasar el procesamiento de pedidos, la coordinación de envíos y el servicio al cliente.</td></tr>
+      <tr><td><strong>Entrega a clientes</strong></td><td><span class="badge b-blue">BAJO-MODERADO</span></td><td>Las entregas a hospitales y centros quirúrgicos pueden experimentar retrasos a corto plazo. Los pedidos de emergencia probablemente disponen de canales de comunicación redundantes.</td></tr>
+      <tr><td><strong>Comunicaciones con proveedores</strong></td><td><span class="badge b-orange">MODERADO</span></td><td>La interrupción del entorno global de Microsoft afecta la coordinación con proveedores. La gestión de inventario JIT puede enfrentar vacíos temporales.</td></tr>
+      <tr><td><strong>Operaciones internacionales</strong></td><td><span class="badge b-orange">MODERADO</span></td><td>El alcance global del compromiso del entorno Microsoft implica que las operaciones internacionales están igualmente afectadas.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p>El impacto del ataque en la red comercial se evalúa como <strong>contenido pero ilustrativo</strong>. Mientras que las operaciones de fabricación de Stryker parecen no verse afectadas, la interrupción de comunicaciones demuestra cómo los entornos empresariales gestionados en la nube crean puntos únicos de fallo en las operaciones comerciales globales.</p>
+  </div>
+</div>
+
+<!-- 11. RECURSOS CRÍTICOS -->
+<div class="section" id="recursos">
+  <div class="section-label">Sección 11</div>
+  <h2>Análisis de Seguridad de Recursos</h2>
+
+  <table>
+    <thead><tr><th>Categoría de Recurso</th><th>Nivel de Dependencia</th><th>Vulnerabilidad</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Servicios de plataforma cloud</strong> (Microsoft 365, Intune, Azure)</td><td><span class="badge b-red">CRÍTICO</span></td><td>Dependencia cloud de proveedor único crea riesgo concentrado. El compromiso de Intune demuestra que el acceso admin cloud puede ser armado para destrucción.</td></tr>
+      <tr><td><strong>Infraestructura de gestión de dispositivos</strong></td><td><span class="badge b-red">CRÍTICO</span></td><td>Los sistemas MDM diseñados para protección de activos (borrado remoto para dispositivos perdidos/robados) se convierten en vectores de ataque cuando el acceso admin se compromete.</td></tr>
+      <tr><td><strong>Comunicaciones digitales</strong></td><td><span class="badge b-red">ALTO</span></td><td>La dependencia empresarial en comunicaciones digitales (correo, Teams, teléfono) crea fragilidad cuando dispositivos/cuentas se comprometen simultáneamente.</td></tr>
+      <tr><td><strong>Seguridad de propiedad intelectual</strong></td><td><span class="badge b-orange">MODERADO</span></td><td>La PI de dispositivos médicos en dispositivos comprometidos puede haber sido exfiltrada antes del borrado. La declaración de Stryker no aborda el robo de datos.</td></tr>
+      <tr><td><strong>Productividad de la fuerza laboral</strong></td><td><span class="badge b-orange">MODERADO</span></td><td>La imposibilidad de trabajar de los empleados crea pérdida de productividad en cascada. El tiempo de recuperación para el aprovisionamiento de dispositivos extiende el impacto.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 12. ESTABILIDAD FINANCIERA -->
+<div class="section" id="financiero">
+  <div class="section-label">Sección 12</div>
+  <h2>Evaluación de Estabilidad Financiera</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Riesgo Sistémico — Nivel Corporativo</div>
+      <p><span class="badge b-green">BAJO</span> — Stryker es una empresa Fortune 500 financieramente robusta con capitalización bursátil de ~$130.000M+. El incidente es disruptivo pero no existencial. Los costes financieros directos se absorben dentro de presupuestos operacionales. Ausencia de demanda de rescate elimina exposición a extorsión.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Impacto en el Mercado</div>
+      <p><span class="badge b-blue">BAJO-MODERADO</span> — Se espera volatilidad a corto plazo en el precio de la acción, pero históricamente los ciberincidentes individuales contra empresas de gran capitalización producen impactos de mercado transitorios (típicamente &lt;5% de caída, recuperándose en semanas).</p>
+    </div>
+  </div>
+
+  <h3>Implicaciones Financieras a Nivel Sectorial</h3>
+  <table>
+    <thead><tr><th>Factor</th><th>Impacto</th><th>Evaluación</th></tr></thead>
+    <tbody>
+      <tr><td>Costes de seguros cibernéticos — sector tecnología médica</td><td><span class="badge b-orange">MODERADO &#8593;</span></td><td>Aumentos de primas esperados en salud/tecnología médica. La explotación MDM como evento cubierto puede provocar re-suscripción de pólizas.</td></tr>
+      <tr><td>Gasto en seguridad — empresarial</td><td><span class="badge b-orange">MODERADO &#8593;</span></td><td>Aumentos probables en gasto en seguridad MDM, arquitectura zero-trust y gestión de acceso privilegiado (PAM).</td></tr>
+      <tr><td>Inversión en cumplimiento regulatorio</td><td><span class="badge b-orange">MODERADO &#8593;</span></td><td>Requisitos de ciberseguridad de la FDA, acciones de aplicación HIPAA y posibles nuevos mandatos legislativos aumentarán la inversión en cumplimiento.</td></tr>
+      <tr><td>Impacto en due diligence de M&A</td><td><span class="badge b-blue">BAJO</span></td><td>La evaluación de riesgo cibernético en operaciones de M&A de tecnología médica recibirá mayor escrutinio.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 13. INFRAESTRUCTURA -->
+<div class="section" id="infra">
+  <div class="section-label">Sección 13</div>
+  <h2>Evaluación de Infraestructura</h2>
+
+  <table>
+    <thead><tr><th>Componente</th><th>Estado</th><th>Impacto</th><th>Evaluación de Recuperación</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Microsoft Intune (MDM)</strong></td>
+        <td><span class="badge b-red">COMPROMETIDO</span></td>
+        <td>Acceso administrativo obtenido; función de borrado remoto explotada</td>
+        <td>Requiere restablecimiento de credenciales admin, aplicación de MFA, revisión de políticas de acceso condicional, análisis de logs de auditoría</td>
+      </tr>
+      <tr>
+        <td><strong>Dispositivos móviles corporativos</strong></td>
+        <td><span class="badge b-red">BORRADOS</span></td>
+        <td>Restablecimiento de fábrica — todos los datos, apps y configuraciones corporativas destruidos</td>
+        <td>Requiere re-inscripción de dispositivos, reinstalación de apps, restauración de datos desde copias de seguridad</td>
+      </tr>
+      <tr>
+        <td><strong>Entorno Microsoft 365</strong></td>
+        <td><span class="badge b-orange">INTERRUMPIDO</span></td>
+        <td>Entorno global afectado según declaración de Stryker; alcance no detallado</td>
+        <td>Requiere revisión integral de seguridad del tenant, endurecimiento de acceso condicional, auditoría de privilegios</td>
+      </tr>
+      <tr>
+        <td><strong>Comunicaciones internas</strong></td>
+        <td><span class="badge b-orange">DEGRADADAS</span></td>
+        <td>Comunicaciones entre empleados interrumpidas; paralización del trabajo reportada</td>
+        <td>Dependiente de la cronología de restauración de dispositivos</td>
+      </tr>
+      <tr>
+        <td><strong>Sistemas de fabricación/OT</strong></td>
+        <td><span class="badge b-green">NO AFECTADOS (Evaluado)</span></td>
+        <td>Sin evidencia de compromiso OT/ICS reportada</td>
+        <td>Revisión precautoria recomendada</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 14. DEPENDENCIAS -->
+<div class="section" id="depend">
+  <div class="section-label">Sección 14</div>
+  <h2>Mapa de Dependencias de Infraestructura</h2>
+
+  <h3>Cadena de Dependencias en Cascada</h3>
+  <div class="diagram">
+<pre>
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;   MICROSOFT AZURE AD / ENTRA    &#9474; &#9668;&#9472;&#9472; Proveedor de Identidad (Ra&#237;z de Confianza)
+&#9474;   (Autenticaci&#243;n e Identidad)    &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+               &#9474; autentica
+               &#9660;
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;      MICROSOFT INTUNE (MDM)     &#9474; &#9668;&#9472;&#9472; COMPROMETIDO &#9608;&#9608; VECTOR DE ATAQUE
+&#9474;  (Consola de Gesti&#243;n de Disp.)  &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+       &#9474;           &#9474;
+       &#9474; gestiona  &#9474; pol&#237;ticas
+       &#9660;           &#9660;
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474; DISPOSITIVOS&#9474;  &#9474;  ENDPOINTS DE     &#9474;
+&#9474;  M&#211;VILES   &#9474;  &#9474; ESCRITORIO/PORT. &#9474;
+&#9474; (BORRADOS) &#9474;  &#9474; (Estado Descon.)  &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+       &#9474;              &#9474;
+       &#9474; depende      &#9474; depende
+       &#9660;              &#9660;
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;      CAPA DE COMUNICACIONES      &#9474;
+&#9474;  (Email, Teams, Tel&#233;fono, Chat)  &#9474;
+&#9474;          (INTERRUMPIDA)          &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+               &#9474; habilita
+               &#9660;
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;     OPERACIONES DE NEGOCIO       &#9474;
+&#9474;  (Pedidos, Log&#237;stica, Soporte,   &#9474;
+&#9474;   I+D, Ventas, Ops. Globales)    &#9474;
+&#9474;          (DEGRADADAS)            &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+               &#9474; soporta
+               &#9660;
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;  SERVICIOS AL CLIENTE FINAL      &#9474;
+&#9474;  (Suministro hospitalario,       &#9474;
+&#9474;   soporte quir&#250;rgico, servicio)   &#9474;
+&#9474;     (POTENCIALMENTE AFECTADOS)    &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+</pre>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-label">Análisis de Nodo Crítico</div>
+    <p>Microsoft Intune actúa como un <strong>punto de estrangulamiento crítico</strong> en la cadena de dependencias. El compromiso de una única consola administrativa se propaga en cascada a través de la flota de dispositivos &#8594; comunicaciones &#8594; operaciones de negocio &#8594; servicios al cliente. Esta arquitectura de dependencia es común en las empresas Fortune 500 que utilizan la pila de gestión cloud de Microsoft, lo que hace que la metodología de ataque sea <strong>ampliamente replicable</strong>.</p>
+  </div>
+</div>
+
+<!-- 15. VULNERABILIDADES -->
+<div class="section" id="vuln">
+  <div class="section-label">Sección 15</div>
+  <h2>Análisis de Vulnerabilidades de Infraestructura Crítica</h2>
+
+  <div class="callout critical">
+    <div class="callout-label">Vulnerabilidad Sectorial</div>
+    <p>Aunque Stryker es un <em>fabricante</em> de tecnología médica (no un proveedor sanitario), este ataque demuestra la vulnerabilidad en la <strong>cadena de suministro sanitaria</strong>. Las empresas de dispositivos médicos son críticas para las operaciones hospitalarias — la interrupción de sus comunicaciones, logística y capacidades de soporte puede tener efectos descendentes en la atención al paciente.</p>
+  </div>
+
+  <h3>Matriz de Riesgo de Vulnerabilidades</h3>
+  <table>
+    <thead><tr><th>Vulnerabilidad</th><th>Probabilidad de Amenaza</th><th>Severidad del Impacto</th><th>Nivel de Riesgo</th></tr></thead>
+    <tbody>
+      <tr><td>Compromiso de credenciales admin de MDM</td><td class="mx-high">ALTA</td><td class="mx-crit">CRÍTICA</td><td class="mx-crit">CRÍTICO</td></tr>
+      <tr><td>Acceso admin de tenant cloud vía phishing/robo de credenciales</td><td class="mx-high">ALTA</td><td class="mx-crit">CRÍTICA</td><td class="mx-crit">CRÍTICO</td></tr>
+      <tr><td>Dependencia de ecosistema cloud de proveedor único</td><td class="mx-high">ALTA</td><td class="mx-high">ALTA</td><td class="mx-high">ALTO</td></tr>
+      <tr><td>Armado de capacidad de borrado remoto</td><td class="mx-med">MEDIA</td><td class="mx-high">ALTA</td><td class="mx-high">ALTO</td></tr>
+      <tr><td>Convergencia OT/IT que permite movimiento lateral</td><td class="mx-med">MEDIA</td><td class="mx-crit">CRÍTICA</td><td class="mx-high">ALTO</td></tr>
+      <tr><td>Compromiso de cadena de suministro de firmware de dispositivos médicos</td><td class="mx-low">BAJA</td><td class="mx-crit">CRÍTICA</td><td class="mx-med">MEDIO</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Recomendaciones de Mitigación</h3>
+  <div class="cards">
+    <div class="card" style="border-top: 3px solid var(--danger);">
+      <div class="card-title"><span class="badge b-red">INMEDIATAS</span></div>
+      <ul>
+        <li>Auditar acceso admin de Microsoft Intune — imponer MFA resistente a phishing (FIDO2/llaves hardware)</li>
+        <li>Implementar políticas de acceso condicional que restrinjan acciones admin a dispositivos/ubicaciones conformes</li>
+        <li>Revisar y restringir permisos de borrado remoto — separar de roles admin rutinarios</li>
+        <li>Habilitar registro de auditoría de Intune e integración SIEM para alertas en tiempo real</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--warning);">
+      <div class="card-title"><span class="badge b-orange">CORTO PLAZO</span></div>
+      <ul>
+        <li>Desplegar estaciones de trabajo de acceso privilegiado (PAWs) para operaciones admin cloud</li>
+        <li>Implementar acceso administrativo justo a tiempo (JIT) para plataformas MDM</li>
+        <li>Establecer capacidad de comunicaciones fuera de banda (no dependiente de Microsoft)</li>
+        <li>Realizar ejercicio de equipo púrpura simulando escenario de compromiso MDM</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--info);">
+      <div class="card-title"><span class="badge b-blue">LARGO PLAZO</span></div>
+      <ul>
+        <li>Evaluar estrategia MDM multiproveedor para reducir dependencia de proveedor único</li>
+        <li>Implementar arquitectura zero-trust con verificación continua</li>
+        <li>Desarrollar y ejercitar planes de continuidad de negocio para escenarios de caída cloud</li>
+        <li>Participar en orientación y ejercicios específicos del sector sanitario de CISA</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 16. MATRIZ DE FUENTES -->
+<div class="section" id="matriz">
+  <div class="section-label">Sección 16</div>
+  <h2>Matriz de Correlación de Fuentes y Detección de Sesgos</h2>
+
+  <h3>Evaluación de Independencia de Fuentes</h3>
+  <table>
+    <thead>
+      <tr><th></th><th style="font-size:10px;">NBC News [1]</th><th style="font-size:10px;">Sophos [1a]</th><th style="font-size:10px;">Stryker [1b]</th><th style="font-size:10px;">Handala [1c]</th><th style="font-size:10px;">Empleado [1d]</th><th style="font-size:10px;">Google/PP [1e]</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>NBC News [1]</strong></td><td style="background:#e8ecf1; text-align:center;">—</td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITA</td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITA</td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITA</td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITA</td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITA</td></tr>
+      <tr><td><strong>Sophos [1a]</strong></td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITADO POR</td><td style="background:#e8ecf1; text-align:center;">—</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#fef9c3; text-align:center; font-size:11px;">ANALIZA</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#d1fae5; text-align:center; font-size:11px;">PAR</td></tr>
+      <tr><td><strong>Stryker [1b]</strong></td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITADO POR</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#e8ecf1; text-align:center;">—</td><td style="background:#fde8e8; text-align:center; font-size:11px;">ADVERSARIO</td><td style="background:#fef3cd; text-align:center; font-size:11px;">EMPLEADOR</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td></tr>
+      <tr><td><strong>Handala [1c]</strong></td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITADO POR</td><td style="background:#fef9c3; text-align:center; font-size:11px;">ANALIZ. POR</td><td style="background:#fde8e8; text-align:center; font-size:11px;">ADVERSARIO</td><td style="background:#e8ecf1; text-align:center;">—</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td></tr>
+      <tr><td><strong>Empleado [1d]</strong></td><td style="background:#fef3cd; text-align:center; font-size:11px;">CITADO POR</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#fef3cd; text-align:center; font-size:11px;">EMPLEADO</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#e8ecf1; text-align:center;">—</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td></tr>
+      <tr><td><strong>Google/PP [1e]</strong></td><td style="background:#fef3cd; text-align:center; font-size:11px;">REFERENC.</td><td style="background:#d1fae5; text-align:center; font-size:11px;">PAR</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#d1fae5; text-align:center; font-size:11px;">INDEPEND.</td><td style="background:#e8ecf1; text-align:center;">—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Análisis de Detección de Sesgos</h3>
+  <table>
+    <thead><tr><th>Tipo de Sesgo</th><th>Detección</th><th>Severidad</th><th>Mitigación</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Dependencia de artículo único</strong></td>
+        <td><span class="badge b-red">DETECTADO</span></td>
+        <td><span class="badge b-orange">MODERADA</span></td>
+        <td>Todas las subfuentes proceden de un único artículo de NBC News. El artículo contiene múltiples subfuentes independientes, pero el encuadre editorial es singular. Se requiere reportaje independiente adicional para validación completa.</td>
+      </tr>
+      <tr>
+        <td><strong>Sesgo de minimización corporativa</strong></td>
+        <td><span class="badge b-orange">SOSPECHADO</span></td>
+        <td><span class="badge b-blue">BAJA</span></td>
+        <td>La declaración de Stryker afirma que el incidente está "contenido" y que no se encontró ransomware/malware. Las declaraciones corporativas durante incidentes activos históricamente subestiman el alcance.</td>
+      </tr>
+      <tr>
+        <td><strong>Sesgo de inflación adversaria</strong></td>
+        <td><span class="badge b-orange">SOSPECHADO</span></td>
+        <td><span class="badge b-blue">BAJA</span></td>
+        <td>El Equipo Handala tiene incentivos para exagerar el impacto con fines propagandísticos. Las auto-reivindicaciones deben descontarse salvo corroboración por la víctima o evidencia de terceros.</td>
+      </tr>
+      <tr>
+        <td><strong>Sesgo de confirmación</strong></td>
+        <td><span class="badge b-green">NO DETECTADO</span></td>
+        <td>—</td>
+        <td>El informe no parece presentar selectivamente evidencia que apoye una conclusión predeterminada. El análisis ACH en la Sección 4 considera hipótesis alternativas.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-label" style="color:var(--info);">Puntuación de Independencia de Fuentes</div>
+    <p><strong>0,45 / 1,0 (MODERADA)</strong> — Mientras que las subfuentes dentro del artículo son en gran medida independientes entre sí (Sophos, Stryker, empleado, Handala), todas llegan a este análisis a través de un único intermediario periodístico (NBC News). Para elevar a ALTA (&gt;0,7), se requeriría reportaje independiente adicional de otros medios, atribución gubernamental o publicación de IOC técnicos.</p>
+  </div>
+</div>
+
+<!-- 17. CALIDAD DE FUENTES -->
+<div class="section" id="calidad">
+  <div class="section-label">Sección 17</div>
+  <h2>Monitorización Continua de Calidad de Fuentes</h2>
+
+  <table>
+    <thead><tr><th>Fuente</th><th>Precisión</th><th>Oportunidad</th><th>Completitud</th><th>General</th><th>Tendencia</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>NBC News [1]</td>
+        <td>80% <div class="pbar"><div class="pbar-fill pbar-high" style="width:80%;"></div></div></td>
+        <td>90% <div class="pbar"><div class="pbar-fill pbar-high" style="width:90%;"></div></div></td>
+        <td>65% <div class="pbar"><div class="pbar-fill pbar-med" style="width:65%;"></div></div></td>
+        <td><span class="badge b-green">BUENA</span></td>
+        <td>ESTABLE</td>
+      </tr>
+      <tr>
+        <td>Sophos/Pilling [1a]</td>
+        <td>85% <div class="pbar"><div class="pbar-fill pbar-high" style="width:85%;"></div></div></td>
+        <td>75% <div class="pbar"><div class="pbar-fill pbar-high" style="width:75%;"></div></div></td>
+        <td>60% <div class="pbar"><div class="pbar-fill pbar-med" style="width:60%;"></div></div></td>
+        <td><span class="badge b-green">BUENA</span></td>
+        <td>ESTABLE</td>
+      </tr>
+      <tr>
+        <td>Stryker Corp [1b]</td>
+        <td>70% <div class="pbar"><div class="pbar-fill pbar-med" style="width:70%;"></div></div></td>
+        <td>80% <div class="pbar"><div class="pbar-fill pbar-high" style="width:80%;"></div></div></td>
+        <td>40% <div class="pbar"><div class="pbar-fill pbar-low" style="width:40%;"></div></div></td>
+        <td><span class="badge b-orange">REGULAR</span></td>
+        <td>VIGILAR — Sesgo corporativo</td>
+      </tr>
+      <tr>
+        <td>Equipo Handala [1c]</td>
+        <td>35% <div class="pbar"><div class="pbar-fill pbar-low" style="width:35%;"></div></div></td>
+        <td>95% <div class="pbar"><div class="pbar-fill pbar-high" style="width:95%;"></div></div></td>
+        <td>30% <div class="pbar"><div class="pbar-fill pbar-low" style="width:30%;"></div></div></td>
+        <td><span class="badge b-red">POBRE</span></td>
+        <td>ADVERSARIO — sesgo inherente</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Resumen de Alertas</h3>
+  <div class="cards">
+    <div class="card" style="border-left:3px solid var(--warning);">
+      <div class="card-title">Alerta: Dependencia de Fuente Única</div>
+      <p>Toda la inteligencia deriva de un único artículo de NBC News y sus subfuentes embebidas. Monitorizar informes corroboradores de: Reuters, AP, Recorded Future, Mandiant, CrowdStrike, avisos de CISA, informes SEC de Stryker (8-K).</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--warning);">
+      <div class="card-title">Alerta: Incertidumbre de Alcance</div>
+      <p>El alcance real del ataque es desconocido. Stryker afirma contención; Handala puede reivindicar acceso más amplio. Monitorizar: informes adicionales de empleados, divulgaciones SEC, informes de incidentes de CISA, publicaciones de IOC por firmas de ciberseguridad.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 18. RECOPILACIÓN OSINT -->
+<div class="section" id="osint">
+  <div class="section-label">Sección 18</div>
+  <h2>Evaluación de Recopilación OSINT</h2>
+
+  <table>
+    <thead><tr><th>Canal de Recopilación</th><th>Estado</th><th>Rendimiento</th><th>Notas</th></tr></thead>
+    <tbody>
+      <tr><td>Reportaje de medios principales</td><td><span class="badge b-green">RECOPILADO</span></td><td>Alto</td><td>El artículo de NBC News proporciona reportaje inicial completo con múltiples subfuentes</td></tr>
+      <tr><td>Redes sociales (Handala Telegram/X)</td><td><span class="badge b-orange">PARCIAL</span></td><td>Limitado</td><td>Cuentas referenciadas pero previamente eliminadas. Disponibilidad de contenido archivado incierta.</td></tr>
+      <tr><td>Divulgaciones corporativas (Stryker)</td><td><span class="badge b-orange">PARCIAL</span></td><td>Limitado</td><td>Declaración pública obtenida. Informe SEC 8-K aún no disponible (fuente futura potencial).</td></tr>
+      <tr><td>Informes de proveedores de ciberseguridad</td><td><span class="badge b-orange">PARCIAL</span></td><td>Moderado</td><td>Atribución de Sophos citada. Informes técnicos completos aún no publicados para este incidente.</td></tr>
+      <tr><td>Avisos gubernamentales (CISA/FBI)</td><td><span class="badge b-red">NO RECOPILADO</span></td><td>Ninguno</td><td>Sin aviso gubernamental o declaración de atribución disponible al momento del análisis.</td></tr>
+      <tr><td>IOC técnicos</td><td><span class="badge b-red">NO RECOPILADO</span></td><td>Ninguno</td><td>Sin indicadores de compromiso publicados. Se esperan de la comunidad de ciberseguridad en los próximos días.</td></tr>
+      <tr><td>Dark web / foros underground</td><td><span class="badge b-red">NO RECOPILADO</span></td><td>Ninguno</td><td>Fuente potencial para comunicaciones adicionales de Handala, volcados de datos o intercambio de herramientas.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Brechas de Información</h3>
+  <div class="cards">
+    <div class="card" style="border-left:3px solid var(--danger);">
+      <div class="card-title">Brechas Críticas</div>
+      <ul>
+        <li>Vector de acceso inicial — ¿cómo se obtuvo el acceso admin de Intune?</li>
+        <li>Tiempo de permanencia — ¿cuánto tiempo tuvieron acceso los atacantes antes de ejecutar el borrado?</li>
+        <li>Exfiltración de datos — ¿se robaron datos antes de borrar los dispositivos?</li>
+        <li>Alcance completo — ¿cuántos dispositivos y qué regiones fueron afectadas?</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--warning);">
+      <div class="card-title">Brechas Significativas</div>
+      <ul>
+        <li>Infraestructura operacional y C2 del Equipo Handala</li>
+        <li>Evidencia de tasking directo del MOIS</li>
+        <li>Impacto en operaciones de clientes de Stryker (hospitales, centros quirúrgicos)</li>
+        <li>Cronología de respuesta a incidentes y progreso de restauración de Stryker</li>
+        <li>Si el ataque se dirigió a empleados/departamentos específicos o fue indiscriminado</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 19. PRÓXIMOS PASOS -->
+<div class="section" id="acciones">
+  <div class="section-label">Sección 19</div>
+  <h2>Resumen y Próximos Pasos Recomendados</h2>
+
+  <h3>Hallazgos Clave</h3>
+  <ol>
+    <li><strong>Primer ciberataque destructivo iraní significativo</strong> contra una corporación de EE.UU. desde el inicio de las hostilidades, marcando un cambio de espionaje a disrupción.</li>
+    <li><strong>Vector de ataque — abuso de MDM Microsoft Intune</strong> — representa una técnica living-off-the-land que explota funcionalidad legítima de gestión empresarial con fines destructivos.</li>
+    <li><strong>El Equipo Handala</strong>, atribuido al MOIS de Irán por Sophos, reivindicó la responsabilidad vía redes sociales — consistente con un modelo operacional híbrido estado-proxy.</li>
+    <li><strong>El impacto fue disrupción operacional</strong> (borrado de dispositivos, paralización de comunicaciones), no destrucción de datos ni ransomware — sugiriendo un nivel calculado de fuerza por debajo del umbral de daño máximo.</li>
+    <li><strong>La metodología de ataque es ampliamente replicable</strong> — Microsoft Intune está ampliamente desplegado en empresas Fortune 500, y el vector de borrado remoto MDM es aplicable en todos los sectores.</li>
+    <li><strong>La confianza en las fuentes es PROBABLE (B2)</strong> con independencia de fuentes moderada (0,45/1,0), limitada por la dependencia de un único artículo como fuente primaria.</li>
+  </ol>
+
+  <h3>Acciones Recomendadas de Recopilación y Análisis</h3>
+  <table>
+    <thead><tr><th>#</th><th>Acción</th><th>Prioridad</th><th>Objetivo</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Verificación cruzada con reportaje adicional</strong> — Monitorizar Reuters, AP, Recorded Future, Mandiant, CrowdStrike para reportaje independiente</td><td><span class="badge b-red">CRÍTICA</span></td><td>Elevar puntuación de independencia de fuentes; confirmar/desmentir reivindicaciones de alcance</td></tr>
+      <tr><td>2</td><td><strong>Monitorizar avisos de CISA/FBI</strong> — Vigilar atribución gubernamental, publicación de IOC o alertas sectoriales</td><td><span class="badge b-red">CRÍTICA</span></td><td>Confirmación gubernamental; indicadores defensivos para sector sanitario</td></tr>
+      <tr><td>3</td><td><strong>Monitorización de redes sociales del Equipo Handala</strong> — Archivar y analizar publicaciones de Telegram/X antes de eliminación</td><td><span class="badge b-orange">ALTA</span></td><td>Capturar reivindicaciones, evidencia de filtración de datos, mapeo de red</td></tr>
+      <tr><td>4</td><td><strong>Monitorización de informes SEC de Stryker</strong> — Vigilar divulgación de evento material 8-K</td><td><span class="badge b-orange">ALTA</span></td><td>Evaluación autorizada de alcance e impacto financiero</td></tr>
+      <tr><td>5</td><td><strong>Recopilación de IOC técnicos</strong> — Agregar indicadores de la comunidad de ciberseguridad</td><td><span class="badge b-orange">ALTA</span></td><td>Inteligencia defensiva para organizaciones que utilizan Intune/Microsoft 365</td></tr>
+      <tr><td>6</td><td><strong>Evaluación de impacto sectorial</strong> — Encuestar respuesta del sector salud/tecnología médica</td><td><span class="badge b-blue">MEDIA</span></td><td>Comprender preparación sectorial y exposición a vulnerabilidades</td></tr>
+      <tr><td>7</td><td><strong>Seguimiento de tendencias de operaciones cibernéticas iraníes</strong> — Monitorizar ataques de seguimiento</td><td><span class="badge b-blue">MEDIA</span></td><td>Validar Escenario A (escalada controlada) vs. Escenario B (disuasión)</td></tr>
+      <tr><td>8</td><td><strong>Recopilación dark web / foros underground</strong> — Buscar comunicaciones operacionales de Handala o datos robados</td><td><span class="badge b-blue">MEDIA</span></td><td>Determinar si hubo exfiltración de datos antes del borrado; identificar infraestructura adicional</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Micro-resumen (280 caracteres)</h3>
+  <div class="callout" style="text-align:center; font-size:15px; font-weight:600; color:var(--primary);">
+    "El Equipo Handala (vinculado al MOIS iraní) borró dispositivos de Stryker Corp vía compromiso de Microsoft Intune MDM — primer ciberataque destructivo iraní significativo contra empresa de EE.UU. desde el inicio de la guerra. Implicaciones críticas para seguridad MDM."
+    <div style="font-size:12px; font-weight:400; color:var(--text-light); margin-top:8px;">Caracteres: 271 / 280</div>
+  </div>
+</div>
+
+<!-- ESTÁNDARES ANALÍTICOS -->
+<div class="section">
+  <div class="section-label">Anexo</div>
+  <h2>Estándares y Metodología Analítica</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Marco de Lenguaje de Confianza</div>
+      <table>
+        <tbody>
+          <tr><td>Casi Seguro</td><td>95–99%</td><td><div class="pbar"><div class="pbar-fill pbar-high" style="width:97%;"></div></div></td></tr>
+          <tr><td>Muy Probable</td><td>80–95%</td><td><div class="pbar"><div class="pbar-fill pbar-high" style="width:87%;"></div></div></td></tr>
+          <tr><td><strong>Probable</strong></td><td><strong>55–80%</strong></td><td><div class="pbar"><div class="pbar-fill pbar-high" style="width:67%;"></div></div></td></tr>
+          <tr><td>Aprox. Equiprobable</td><td>45–55%</td><td><div class="pbar"><div class="pbar-fill pbar-med" style="width:50%;"></div></div></td></tr>
+          <tr><td>Improbable</td><td>20–45%</td><td><div class="pbar"><div class="pbar-fill pbar-med" style="width:32%;"></div></div></td></tr>
+          <tr><td>Muy Improbable</td><td>5–20%</td><td><div class="pbar"><div class="pbar-fill pbar-low" style="width:12%;"></div></div></td></tr>
+          <tr><td>Remota</td><td>1–5%</td><td><div class="pbar"><div class="pbar-fill pbar-low" style="width:3%;"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Técnicas Analíticas Aplicadas</div>
+      <ul>
+        <li>Análisis de Hipótesis Competidoras (ACH) — Sección 4</li>
+        <li>Verificación de Supuestos Clave — Secciones 4, 6</li>
+        <li>Análisis Estructurado de Escenarios — Sección 6</li>
+        <li>Correlación e Independencia de Fuentes — Sección 16</li>
+        <li>Detección y Mitigación de Sesgos — Sección 16</li>
+        <li>Evaluación de Matriz de Riesgo — Sección 15</li>
+        <li>Análisis de Impacto en Cascada — Secciones 7, 14</li>
+        <li>Evaluación de Fuentes con Código Admiralty — Sección 2</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Fuentes y Referencias</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Fuente</th><th>Referencia</th></tr></thead>
+    <tbody>
+      <tr><td>[1]</td><td>NBC News — U.S. News</td><td>Iran appears to have conducted a significant cyberattack against a U.S. company — <em>https://www.nbcnews.com/world/iran/iran-appears-conducted-significant-cyberattack-us-company-first-war-st-rcna263084</em></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /container -->
+
+<!-- PIE DE PÁGINA -->
+<div class="footer">
+  <div class="container">
+    <div class="cover-classification" style="display:inline-block; margin-bottom:14px;">NO CLASIFICADO // USO OFICIAL EXCLUSIVO</div>
+    <p><strong>Informe de Inteligencia</strong> — ID: INT-2026-12M-0001 | Fecha: 12 de marzo de 2026</p>
+    <p style="margin-top:8px;">Este producto es una evaluación analítica basada en información de fuentes abiertas disponible. No representa la posición oficial de ninguna agencia gubernamental. Todas las evaluaciones están sujetas a revisión conforme nueva información esté disponible. Las fuentes se evalúan mediante estándares del Código Admiralty de la OTAN conforme a ICD 203.</p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Tactico-Tecnico-Operativo — Smishing SEUR Kit k468</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── Sticky nav ── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .nav-bar a {
+    color: #8b949e;
+    text-decoration: none;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  .nav-bar a:hover { color: #c9d1d9; }
+  .nav-bar a.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+  }
+
+  /* ── TLP banner ── */
+  .tlp-banner {
+    background: #d29922;
+    color: #000;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 0;
+    letter-spacing: 1.2px;
+  }
+
+  /* ── Container ── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #30363d;
+  }
+  .report-header h1 {
+    color: #58a6ff;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle {
+    color: #8b949e;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .meta-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .meta-row .label { color: #58a6ff; font-weight: 600; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 48px; }
+  .section-title {
+    color: #58a6ff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+  .section-title .num {
+    display: inline-block;
+    background: #58a6ff;
+    color: #0d1117;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead th {
+    background: #1c2129;
+    color: #58a6ff;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid #30363d;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #21262d;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td { background: #161b22; }
+  tbody tr:nth-child(odd) td { background: #0d1117; }
+  tbody tr:hover td { background: #1c2129; }
+
+  /* ── Monospace ── */
+  code, .mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    color: #79c0ff;
+  }
+  .hash { word-break: break-all; color: #79c0ff; }
+
+  /* ── Code blocks (Sigma rules) ── */
+  pre.code-block {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #c9d1d9;
+    margin-bottom: 16px;
+  }
+  pre.code-block .kw { color: #ff7b72; }
+  pre.code-block .str { color: #a5d6ff; }
+  pre.code-block .comment { color: #8b949e; }
+
+  /* ── Kill chain ── */
+  .kill-chain { position: relative; padding-left: 0; }
+  .kc-phase {
+    position: relative;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 0;
+    margin-left: 36px;
+  }
+  .kc-phase + .kc-phase { margin-top: 0; }
+
+  .kc-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 36px;
+    height: 36px;
+    position: relative;
+  }
+  .kc-connector::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #30363d;
+    transform: translateX(-50%);
+  }
+  .kc-connector .arrow {
+    display: block;
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #58a6ff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .kc-number {
+    position: absolute;
+    left: -36px;
+    top: 20px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    z-index: 2;
+  }
+  .kc-phase .kc-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .kc-phase .kc-mitre {
+    display: inline-block;
+    background: #1c2129;
+    color: #f85149;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 600;
+  }
+  .kc-phase ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .kc-phase ul li {
+    padding: 4px 0 4px 18px;
+    position: relative;
+    font-size: 14px;
+  }
+  .kc-phase ul li::before {
+    content: '\25B8';
+    position: absolute;
+    left: 0;
+    color: #58a6ff;
+  }
+
+  /* Phase colors */
+  .phase-1 { border-left: 4px solid #f85149; }
+  .phase-1 .kc-number { background: #f85149; }
+  .phase-1 .kc-title { color: #f85149; }
+
+  .phase-2 { border-left: 4px solid #d29922; }
+  .phase-2 .kc-number { background: #d29922; }
+  .phase-2 .kc-title { color: #d29922; }
+
+  .phase-3 { border-left: 4px solid #d29922; }
+  .phase-3 .kc-number { background: #d29922; }
+  .phase-3 .kc-title { color: #d29922; }
+
+  .phase-4 { border-left: 4px solid #f85149; }
+  .phase-4 .kc-number { background: #f85149; }
+  .phase-4 .kc-title { color: #f85149; }
+
+  .phase-5 { border-left: 4px solid #f85149; }
+  .phase-5 .kc-number { background: #f85149; }
+  .phase-5 .kc-title { color: #f85149; }
+
+  .phase-6 { border-left: 4px solid #da3633; }
+  .phase-6 .kc-number { background: #da3633; }
+  .phase-6 .kc-title { color: #da3633; }
+
+  .phase-7 { border-left: 4px solid #3fb950; }
+  .phase-7 .kc-number { background: #3fb950; }
+  .phase-7 .kc-title { color: #3fb950; }
+
+  /* ── Highlight boxes ── */
+  .highlight-box {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .highlight-box.red {
+    background: rgba(248,81,73,.08);
+    border: 1px solid rgba(248,81,73,.3);
+    color: #f85149;
+  }
+  .highlight-box.orange {
+    background: rgba(210,153,34,.08);
+    border: 1px solid rgba(210,153,34,.3);
+    color: #d29922;
+  }
+  .highlight-box.blue {
+    background: rgba(88,166,255,.08);
+    border: 1px solid rgba(88,166,255,.3);
+    color: #79c0ff;
+  }
+  .highlight-box.green {
+    background: rgba(63,185,80,.08);
+    border: 1px solid rgba(63,185,80,.3);
+    color: #3fb950;
+  }
+
+  /* ── IOC list ── */
+  .ioc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .ioc-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .ioc-card h4 {
+    color: #58a6ff;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .ioc-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .ioc-card ul li {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 13px;
+    padding: 4px 0;
+    color: #79c0ff;
+    word-break: break-all;
+  }
+
+  /* ── Recommendations ── */
+  .rec-list { counter-reset: rec; list-style: none; padding: 0; }
+  .rec-list li {
+    counter-increment: rec;
+    padding: 12px 16px 12px 52px;
+    position: relative;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .rec-list li::before {
+    content: counter(rec);
+    position: absolute;
+    left: 16px;
+    top: 12px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background: #58a6ff;
+    color: #0d1117;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* ── Admiralty ── */
+  .admiralty-badge {
+    display: inline-block;
+    background: #3fb950;
+    color: #0d1117;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 24px 0;
+    color: #484f58;
+    font-size: 12px;
+    border-top: 1px solid #30363d;
+    margin-top: 48px;
+  }
+
+  /* ── SMS bubble ── */
+  .sms-bubble {
+    background: #1c2129;
+    border: 1px solid #30363d;
+    border-radius: 12px 12px 12px 2px;
+    padding: 14px 18px;
+    max-width: 480px;
+    font-size: 14px;
+    color: #c9d1d9;
+    margin: 12px 0;
+    line-height: 1.5;
+  }
+  .sms-bubble .link { color: #58a6ff; text-decoration: underline; }
+
+  /* ── Anim items ── */
+  .anim-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .anim-step .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #30363d;
+    border-top-color: #58a6ff;
+    border-radius: 50%;
+  }
+
+  /* ── Tag ── */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-right: 4px;
+  }
+  .tag-red { background: rgba(248,81,73,.15); color: #f85149; }
+  .tag-orange { background: rgba(210,153,34,.15); color: #d29922; }
+  .tag-blue { background: rgba(88,166,255,.15); color: #58a6ff; }
+  .tag-green { background: rgba(63,185,80,.15); color: #3fb950; }
+
+  /* ── Subsection ── */
+  h3.subsection {
+    color: #c9d1d9;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+  }
+  h3.subsection::before {
+    content: '\25CF';
+    color: #58a6ff;
+    margin-right: 8px;
+    font-size: 10px;
+    vertical-align: middle;
+  }
+
+  p { margin-bottom: 12px; }
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .nav-bar a { padding: 10px 12px; font-size: 12px; }
+    .container { padding: 20px 14px 48px; }
+    .report-header h1 { font-size: 20px; }
+    .meta-row { gap: 14px; }
+    .ioc-grid { grid-template-columns: 1fr; }
+    .kc-phase { margin-left: 30px; padding: 14px 16px; }
+    .kc-number { left: -30px; }
+    .kc-connector { margin-left: 30px; }
+    table { font-size: 12px; }
+    thead th, tbody td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ NAVIGATION ══════ -->
+<nav class="nav-bar">
+  <a href="seur_smishing_12-03_SITREP.html">Informe Estrat&eacute;gico</a>
+  <a href="seur_smishing_12-03_OPTACT.html" class="active">Informe T&aacute;ctico-T&eacute;cnico</a>
+  <a href="seur_smishing_12-03_stix_taxii_iocs.html">STIX/TAXII &mdash; IOCs</a>
+</nav>
+
+<!-- ══════ TLP ══════ -->
+<div class="tlp-banner">TLP:AMBER &mdash; DISTRIBUCI&Oacute;N LIMITADA</div>
+
+<!-- ══════ MAIN ══════ -->
+<div class="container">
+
+  <!-- ── 1. CABECERA ── -->
+  <header class="report-header">
+    <h1>Informe T&aacute;ctico-T&eacute;cnico-Operativo: Smishing SEUR &mdash; Kit k468</h1>
+    <p class="subtitle">An&aacute;lisis completo de infraestructura, kit de phishing y t&eacute;cnicas de exfiltraci&oacute;n</p>
+    <div class="meta-row">
+      <span><span class="label">TLP:</span> AMBER</span>
+      <span><span class="label">Fecha:</span> 12/03/2026</span>
+      <span><span class="label">Ref:</span> SMISH-SEUR-2026-0312</span>
+      <span><span class="label">Clasificaci&oacute;n:</span> T&aacute;ctico-T&eacute;cnico-Operativo</span>
+    </div>
+  </header>
+
+  <!-- ── 2. RESUMEN TECNICO ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">1</span>Resumen T&eacute;cnico</h2>
+    <div class="card">
+      <p>
+        Campa&ntilde;a de <strong>smishing</strong> (phishing v&iacute;a SMS) que suplanta la identidad de <strong>SEUR</strong>, la empresa espa&ntilde;ola de paqueter&iacute;a. Los mensajes SMS redirigen a las v&iacute;ctimas al dominio <code>seurtjm.cv/es</code>, una r&eacute;plica pixel-perfect de la p&aacute;gina de seguimiento de env&iacute;os de SEUR.
+      </p>
+      <p>
+        El kit de phishing <strong>k468_es_post_seur_index</strong> es una <strong>SPA (Single Page Application)</strong> desarrollada con <strong>Vue.js 3</strong> y empaquetada con <strong>Vite</strong>. Implementa un canal de <strong>Comando y Control (C2) bidireccional v&iacute;a WebSocket</strong> que permite la <strong>interceptaci&oacute;n de OTPs en tiempo real</strong>, posibilitando el fraude financiero inmediato mientras la v&iacute;ctima interact&uacute;a con el sitio.
+      </p>
+      <div class="highlight-box red">
+        <strong>Criticidad:</strong> El dominio fue registrado el mismo d&iacute;a del ataque (12/03/2026). El soporte para la red de pago <strong>MIR</strong> (exclusiva de Rusia) y la arquitectura modular multi-idioma del kit indican un origen <strong>Phishing-as-a-Service (PhaaS)</strong> de probable procedencia rusoparlante.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. INFRAESTRUCTURA ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">2</span>Infraestructura</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dominio</td><td><code>seurtjm.cv</code> (ccTLD Cabo Verde)</td></tr>
+          <tr><td>IP</td><td><code>50.114.184.241</code></td></tr>
+          <tr><td>CIDR</td><td><code>50.114.184.0/24</code></td></tr>
+          <tr><td>Hosting</td><td>Ace Data Centers / IPXO LLC</td></tr>
+          <tr><td>Registrador</td><td>Dynadot (San Mateo, CA)</td></tr>
+          <tr><td>Fecha de registro</td><td><code>2026-03-12T08:41:00Z</code></td></tr>
+          <tr><td>Expiraci&oacute;n</td><td>2027-03-12</td></tr>
+          <tr><td>Name Servers</td><td><code>ns1.dyna-ns.net</code>, <code>ns2.dyna-ns.net</code></td></tr>
+          <tr><td>Contactos abuse</td><td>
+            <code>abuse@ipxo.com</code><br>
+            <code>ipabuse@acedatacenter.com</code><br>
+            <code>report@abuseradar.com</code>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 4. CADENA DE ATAQUE (KILL CHAIN) ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">3</span>Cadena de Ataque (Kill Chain)</h2>
+
+    <!-- Phase 1 -->
+    <div class="kill-chain">
+      <div class="kc-phase phase-1">
+        <span class="kc-number">1</span>
+        <div class="kc-title">Distribuci&oacute;n &mdash; SMS Fraudulento <span class="kc-mitre">T1566.002</span> <span class="kc-mitre">T1204.001</span></div>
+        <div class="sms-bubble">
+          SEUR le informa que el repartidor no ha podido dejar su paquete <strong>563999998</strong> en su buz&oacute;n debido a su tama&ntilde;o.<br><br>
+          <span class="link">https://seurtjm.cv/es</span>
+        </div>
+        <ul>
+          <li>N&uacute;mero de paquete falso (<code>563999998</code>) para dar credibilidad</li>
+          <li>Enlace directo al dominio de phishing</li>
+          <li>Ingenier&iacute;a social: urgencia por paquete no entregado</li>
+        </ul>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 2 -->
+      <div class="kc-phase phase-2">
+        <span class="kc-number">2</span>
+        <div class="kc-title">P&aacute;gina de Tracking Falsa <span class="kc-mitre">T1036.005</span></div>
+        <ul>
+          <li>R&eacute;plica exacta de la p&aacute;gina de seguimiento de SEUR</li>
+          <li>T&iacute;tulo: <em>&ldquo;SEUR: Env&iacute;o y transporte de paqueter&iacute;a y mensajer&iacute;a | SEUR&rdquo;</em></li>
+          <li>Breadcrumb: <em>&ldquo;Inicio / Seguimiento de paquetes&rdquo;</em></li>
+          <li>Call-to-Action: <strong>&ldquo;Reprogramar mi entrega&rdquo;</strong></li>
+          <li>Filtrado por User-Agent: solo dispositivos m&oacute;viles (HTTP 404 para escritorio)</li>
+        </ul>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 3 -->
+      <div class="kc-phase phase-3">
+        <span class="kc-number">3</span>
+        <div class="kc-title">Recolecci&oacute;n de Datos Personales <span class="kc-mitre">T1056.003</span></div>
+        <ul>
+          <li>Campos capturados: <code>firstName</code>, <code>lastName</code>, <code>email</code>, <code>phone</code>/<code>phone1</code>, <code>address</code>, <code>address2</code>, <code>city</code>, <code>zipCode</code></li>
+          <li>Datos enviados a: <code>POST /CNIXMQnPlR/api/input</code></li>
+          <li>Formulario dise&ntilde;ado para parecer un paso leg&iacute;timo de reprogramaci&oacute;n de entrega</li>
+        </ul>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 4 -->
+      <div class="kc-phase phase-4">
+        <span class="kc-number">4</span>
+        <div class="kc-title">Captura de Tarjeta de Cr&eacute;dito <span class="kc-mitre">T1056.003</span></div>
+        <ul>
+          <li>Campos: <code>cardNumber</code> (16-19 d&iacute;gitos), <code>expires</code>, <code>cvv</code>, <code>titular</code></li>
+          <li>Validaci&oacute;n BIN autom&aacute;tica: <code>cardBIN</code> y <code>cardType</code> calculados en cliente</li>
+          <li>Tipos soportados: <span class="tag tag-blue">VISA</span> <span class="tag tag-blue">MASTERCARD</span> <span class="tag tag-blue">AMEX</span> <span class="tag tag-blue">DISCOVER</span> <span class="tag tag-blue">JCB</span> <span class="tag tag-blue">MAESTRO</span> <span class="tag tag-red">MIR</span></li>
+        </ul>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 5 -->
+      <div class="kc-phase phase-5">
+        <span class="kc-number">5</span>
+        <div class="kc-title">Simulaci&oacute;n 3D Secure / OTP <span class="kc-mitre">T1557</span> <span class="kc-mitre">T1036.001</span></div>
+        <ul>
+          <li><em>&ldquo;Su banco ha solicitado verificaci&oacute;n adicional&rdquo;</em></li>
+          <li><em>&ldquo;C&oacute;digo de verificaci&oacute;n enviado a [email]&rdquo;</em></li>
+          <li>Campos OTP: <code>verifyCode</code>, <code>verifyCode1</code>, <code>verifyCode2</code>, <code>appVerifyCode</code>, <code>customOtpData</code></li>
+        </ul>
+        <h3 class="subsection">Animaciones de legitimidad</h3>
+        <div class="anim-step"><span class="spinner"></span> &ldquo;Encriptando la informaci&oacute;n de la tarjeta...&rdquo;</div>
+        <div class="anim-step"><span class="spinner"></span> &ldquo;Verificando n&uacute;mero de tarjeta y emisor...&rdquo;</div>
+        <div class="anim-step"><span class="spinner"></span> &ldquo;Esperando autorizaci&oacute;n del banco...&rdquo;</div>
+        <div class="anim-step"><span class="spinner"></span> &ldquo;Confirmando estado de la transacci&oacute;n...&rdquo;</div>
+        <div class="anim-step"><span class="spinner"></span> &ldquo;Inicializando entorno de pago...&rdquo;</div>
+        <div style="margin-top:8px;">
+          <span class="tag tag-green">Nivel de seguridad</span>
+          <span class="tag tag-blue">Banco autorizado</span>
+        </div>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 6 -->
+      <div class="kc-phase phase-6">
+        <span class="kc-number">6</span>
+        <div class="kc-title">Interceptaci&oacute;n OTP en Tiempo Real <span class="kc-mitre">T1557</span></div>
+        <div class="highlight-box red">
+          <strong>Canal C2:</strong> <code>wss://seurtjm.cv/ws</code> &mdash; El operador recibe los OTPs capturados y los utiliza simult&aacute;neamente en la plataforma bancaria real de la v&iacute;ctima.
+        </div>
+        <h3 class="subsection">Eventos WebSocket del operador</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Evento</th><th>Funci&oacute;n</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>otp-valid</code></td><td>Operador valida OTP capturado &mdash; avanza flujo</td></tr>
+              <tr><td><code>custom-otp-valid</code></td><td>Validaci&oacute;n OTP personalizada (segundo factor alternativo)</td></tr>
+              <tr><td><code>app-valid</code></td><td>Validaci&oacute;n desde app bancaria de la v&iacute;ctima</td></tr>
+              <tr><td><code>kickOut</code></td><td>Expulsar a la v&iacute;ctima de la sesi&oacute;n</td></tr>
+              <tr><td><code>block</code></td><td>Bloquear acceso de la v&iacute;ctima</td></tr>
+              <tr><td><code>otpFail</code></td><td>Forzar reintento de OTP (c&oacute;digo &ldquo;incorrecto&rdquo;)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="kc-connector"><span class="arrow"></span></div>
+
+      <!-- Phase 7 -->
+      <div class="kc-phase phase-7">
+        <span class="kc-number">7</span>
+        <div class="kc-title">Resultado <span class="kc-mitre">T1565.003</span></div>
+        <ul>
+          <li><span class="tag tag-green">&Eacute;xito</span> <em>&ldquo;Gracias por su compra. Su pago ha sido procesado exitosamente&rdquo;</em></li>
+          <li><span class="tag tag-red">Fallo</span> <em>&ldquo;Esta tarjeta no admite esta transacci&oacute;n, por favor intente con otra tarjeta&rdquo;</em> &rarr; captura de m&uacute;ltiples tarjetas</li>
+        </ul>
+      </div>
+    </div><!-- /kill-chain -->
+  </section>
+
+  <!-- ── 5. ANALISIS DEL KIT ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">4</span>An&aacute;lisis del Kit de Phishing: k468</h2>
+
+    <h3 class="subsection">Perfil del kit</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kit ID</td><td><code>k468_es_post_seur_index</code></td></tr>
+          <tr><td>Framework</td><td>Vue.js 3 (SPA)</td></tr>
+          <tr><td>Bundler</td><td>Vite (hash: <code>index-284bfe89.js</code>)</td></tr>
+          <tr><td>HTTP Client</td><td>Axios</td></tr>
+          <tr><td>Librer&iacute;as</td><td>Moment.js, Lodash, vue-i18n</td></tr>
+          <tr><td>C2</td><td>WebSocket nativo (<code>wss://</code>) con heartbeat y reconexi&oacute;n exponencial</td></tr>
+          <tr><td>Idioma</td><td>Espa&ntilde;ol (<code>lang="es"</code>), fallback ingl&eacute;s</td></tr>
+          <tr><td>Path oculto panel</td><td><code>/CNIXMQnPlR/</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsection">Endpoints de exfiltraci&oacute;n</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>M&eacute;todo</th><th>Endpoint</th><th>Funci&oacute;n</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag tag-red">POST</span></td><td><code>/CNIXMQnPlR/api/input</code></td><td>Exfiltraci&oacute;n principal de datos de la v&iacute;ctima al C2</td></tr>
+          <tr><td><span class="tag tag-orange">POST</span></td><td><code>/api/confirm-delivery</code></td><td>Confirmaci&oacute;n de entrega (paso 1 del flujo)</td></tr>
+          <tr><td><span class="tag tag-red">WSS</span></td><td><code>wss://seurtjm.cv/ws</code></td><td>Canal C2 bidireccional en tiempo real</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsection">T&eacute;cnicas de evasi&oacute;n</h3>
+    <div class="card">
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>Filtrado User-Agent:</strong> solo sirve contenido a dispositivos m&oacute;viles (HTTP 404 a escritorio)</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>ccTLD ex&oacute;tico (.cv, Cabo Verde):</strong> menor monitorizaci&oacute;n que dominios .com/.es</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>Registro mismo d&iacute;a:</strong> dominio creado horas antes del ataque</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>Path oculto <code>/CNIXMQnPlR/</code>:</strong> dificulta descubrimiento del panel por crawlers</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>Simulaci&oacute;n 3DS convincente:</strong> animaciones progresivas con indicadores de seguridad falsos</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>WebSocket C2 con heartbeat:</strong> conexi&oacute;n persistente para operaci&oacute;n en tiempo real</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9654;</span><strong>Mensajes de error dirigidos:</strong> &ldquo;intente con otra tarjeta&rdquo; para capturar m&uacute;ltiples tarjetas</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection">Branding robado</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Asset</th><th>Descripci&oacute;n</th><th>Hash SHA-256</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>logo.png</code></td><td>Logo oficial SEUR</td><td class="hash">677bbd5328d59f7d728fc62a38e2b37ecfcae8c15aa0a2be53ddf4e177b5603d</td></tr>
+          <tr><td><code>bc.png</code></td><td>Banner corporativo SEUR</td><td class="hash">cb0a32507c72d7bd2c763c1c1e5f80ae4000f7e81e24ac522e7e9b2cc1eac749</td></tr>
+          <tr><td><code>seur.css</code></td><td>Hoja de estilos corporativa</td><td class="hash">51167d98ff37f00135834c7f94503939b0e78c30b3f9cb358c11fa3fa6df1475</td></tr>
+          <tr><td><code>PlutoSansDPDLight.otf</code></td><td>Fuente corporativa DPD/SEUR</td><td class="hash">bc2d0863394405ab3d4c9c6422a99c44abc7030ae3d8f2a2aeab95b90f60efa0</td></tr>
+          <tr><td><code>PlutoSansLight.woff2</code></td><td>Fuente corporativa DPD/SEUR</td><td class="hash">e0ab628e66309c89d43c1fe7ac6f64d24c2e5da927fbc657fa17a81a42dec70a</td></tr>
+          <tr><td><code>PlutoSansRegular.woff2</code></td><td>Fuente corporativa DPD/SEUR</td><td class="hash">a88d9ebb6a866c2d93096cb99f2e41aa904c0b2d748ccac11c34b267199cc1ba</td></tr>
+          <tr><td><code>favicon.jpg</code></td><td>Favicon del kit</td><td class="hash">b37e8c0e3341acbe6c7235120ba0ab4dd3a6f824cba36a8f8d997f04223a739b</td></tr>
+          <tr><td><code>mir-a02fe0b1.jpg</code></td><td>Logo red de pago MIR (Rusia)</td><td class="hash">a02fe0b1ea3401e73c9905652c88c20a5a4a8ba3d1927dc4009da1f4857c4e55</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsection">An&aacute;lisis de Atribuci&oacute;n del Threat Actor</h3>
+
+    <div class="highlight-box orange" style="margin-bottom:16px;">
+      <strong>Nota:</strong> Esta secci&oacute;n distingue expl&iacute;citamente entre hechos confirmados por evidencia directa (<span class="tag tag-green">CONFIRMADO</span>), inferencias razonables con nivel de confianza (<span class="tag tag-orange">INFERENCIA</span>), y elementos desconocidos (<span class="tag tag-red">DESCONOCIDO</span>).
+    </div>
+
+    <div class="card" style="border-left: 3px solid #3fb950;">
+      <h4 style="color:#3fb950; margin-bottom:10px; font-size:14px;">MODELO OPERATIVO &mdash; <span class="tag tag-green">CONFIRMADO</span></h4>
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#3fb950;">&#9654;</span>Modelo <strong>Phishing-as-a-Service (PhaaS)</strong>: identificador num&eacute;rico <code>k468</code> (kit versionado en cat&aacute;logo), soporte multi-idioma v&iacute;a <code>vue-i18n</code>, path de panel &uacute;nico por instancia (<code>/CNIXMQnPlR/</code>)</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#3fb950;">&#9654;</span><strong>Separaci&oacute;n desarrollador/operador:</strong> el desarrollador provee la plataforma; el operador configura dominio, marca y gestiona v&iacute;ctimas en tiempo real</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left: 3px solid #d29922;">
+      <h4 style="color:#d29922; margin-bottom:10px; font-size:14px;">ORIGEN DEL KIT &mdash; <span class="tag tag-orange">INFERENCIA RAZONABLE (confianza alta)</span></h4>
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#d29922;">&#9654;</span>Soporte para red de pago <strong>MIR</strong> (sistema ruso post-sanciones 2014, uso casi exclusivo en Rusia/CEI). No tiene sentido t&eacute;cnico incluir MIR en un kit para v&iacute;ctimas espa&ntilde;olas &mdash; indica que el <strong>desarrollador</strong> opera desde o para el ecosistema rusoparlante</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#d29922;">&#9654;</span>Distribuci&oacute;n probable v&iacute;a <strong>canales de Telegram rusoparlantes</strong> (vector principal documentado para kits PhaaS de este ecosistema)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left: 3px solid #58a6ff;">
+      <h4 style="color:#58a6ff; margin-bottom:10px; font-size:14px;">DESCARTE DE ACTORES CONOCIDOS</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Actor / Plataforma</th><th>Resultado</th><th>Raz&oacute;n del descarte</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Smishing Triad / Lighthouse (chino)</td><td><span class="tag tag-red">ELIMINADO</span></td><td>TLDs diferentes (.top/.xin), hosting Tencent/Alibaba, origen chino incompatible con MIR ruso</td></tr>
+            <tr><td>V3B (UE)</td><td><span class="tag tag-red">ELIMINADO</span></td><td>Usa framework uAdmin, no Vue.js/Vite</td></tr>
+            <tr><td>GXC Team (hispanohablante)</td><td><span class="tag tag-red">ELIMINADO</span></td><td>Modelo Android malware + bots Telegram, no web-only WebSocket C2</td></tr>
+            <tr><td>Scama marketplace</td><td><span class="tag tag-orange">NO CONCLUYENTE</span></td><td>Modelo gen&eacute;rico PhaaS encaja, sin coincidencia espec&iacute;fica con k468</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 3px solid #f85149;">
+      <h4 style="color:#f85149; margin-bottom:10px; font-size:14px;">IDENTIFICADORES &Uacute;NICOS &mdash; <span class="tag tag-red">SIN COINCIDENCIAS OSINT</span></h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Identificador</th><th>Tipo</th><th>Resultado OSINT</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>k468</code></td><td>Kit ID</td><td>Sin coincidencias en repositorios p&uacute;blicos ni reportes de TI</td></tr>
+            <tr><td><code>CNIXMQnPlR</code></td><td>Ruta de panel</td><td>Sin coincidencias &mdash; string aleatorio generado por instancia</td></tr>
+            <tr><td><code>k468_es_post_seur_index</code></td><td>ID completo</td><td>Sin coincidencias &mdash; estructura: kit/idioma/m&eacute;todo/marca/p&aacute;gina</td></tr>
+            <tr><td><code>50.114.184.241</code></td><td>IP servidor</td><td>Sin coincidencias relevantes en feeds p&uacute;blicos de threat intelligence</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 3px solid #f85149;">
+      <h4 style="color:#f85149; margin-bottom:10px; font-size:14px;">LO QUE NO SABEMOS &mdash; <span class="tag tag-red">DESCONOCIDO</span></h4>
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Identidad real del desarrollador del kit</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Identidad real del operador de esta campa&ntilde;a</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Canal de Telegram o foro de distribuci&oacute;n del kit</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Precio del kit o modelo de licencia</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>N&uacute;mero total de v&iacute;ctimas</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Otros dominios del mismo operador</li>
+        <li style="padding:4px 0 4px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#10007;</span>Relaci&oacute;n con otros kits de la serie (k1&ndash;k467, k469+)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left: 3px solid #58a6ff;">
+      <h4 style="color:#58a6ff; margin-bottom:10px; font-size:14px;">L&Iacute;NEAS DE INVESTIGACI&Oacute;N RECOMENDADAS</h4>
+      <ol style="padding-left:20px; margin:0;">
+        <li style="padding:4px 0;">Reverse DNS / certificados SSL del bloque <code>50.114.184.0/24</code> para revelar otros dominios del operador</li>
+        <li style="padding:4px 0;">Solicitar datos a Dynadot mediante orden judicial &mdash; registros de pago y email del registrante</li>
+        <li style="padding:4px 0;">Monitorizaci&oacute;n de canales Telegram rusoparlantes de PhaaS &mdash; buscar &ldquo;k468&rdquo;, &ldquo;seur kit&rdquo;</li>
+        <li style="padding:4px 0;">Compartir IOCs con INCIBE/CCN-CERT &mdash; pueden tener correlaciones no p&uacute;blicas</li>
+        <li style="padding:4px 0;">An&aacute;lisis del bundle JS por especialistas en reversing de kits PhaaS &mdash; convenciones de c&oacute;digo vinculables a otros kits</li>
+        <li style="padding:4px 0;">Pivoting por hash en VirusTotal, MalwareBazaar, URLhaus para muestras relacionadas</li>
+      </ol>
+    </div>
+
+    <div class="highlight-box orange" style="margin-top:16px;">
+      <strong>Conclusi&oacute;n de atribuci&oacute;n:</strong> Sabemos <em>qu&eacute;</em> hizo el actor y <em>c&oacute;mo</em> lo hizo, pero no sabemos <em>qui&eacute;n es</em>. La atribuci&oacute;n definitiva requerir&iacute;a acceso a fuentes cerradas (Telegram HUMINT, datos del registrador v&iacute;a orden judicial, o feeds de TI comerciales).
+    </div>
+  </section>
+
+  <!-- ── 6. TTPs MITRE ATT&CK ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">5</span>Tabla de TTPs &mdash; MITRE ATT&amp;CK</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>T&aacute;ctica</th>
+            <th>T&eacute;cnica</th>
+            <th>ID MITRE</th>
+            <th>Descripci&oacute;n en contexto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Resource Development</td>
+            <td>Acquire Infrastructure: Domains</td>
+            <td><code>T1583.001</code></td>
+            <td>Registro de <code>seurtjm.cv</code> en Dynadot con ccTLD de Cabo Verde</td>
+          </tr>
+          <tr>
+            <td>Resource Development</td>
+            <td>Acquire Infrastructure: Web Services</td>
+            <td><code>T1583.006</code></td>
+            <td>Hosting en Ace Data Centers / IPXO LLC</td>
+          </tr>
+          <tr>
+            <td>Resource Development</td>
+            <td>Establish Accounts</td>
+            <td><code>T1585</code></td>
+            <td>Cuentas en Dynadot para registro de dominio</td>
+          </tr>
+          <tr>
+            <td>Initial Access</td>
+            <td>Phishing: Spearphishing Link</td>
+            <td><code>T1566.002</code></td>
+            <td>SMS con enlace a <code>seurtjm.cv/es</code></td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>User Execution: Malicious Link</td>
+            <td><code>T1204.001</code></td>
+            <td>V&iacute;ctima accede al enlace del SMS</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>Masquerading: Match Legitimate Name or Location</td>
+            <td><code>T1036.005</code></td>
+            <td>R&eacute;plica exacta de SEUR con branding oficial robado</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>Masquerading: Invalid Code Signature</td>
+            <td><code>T1036.001</code></td>
+            <td>Simulaci&oacute;n de 3D Secure / certificaci&oacute;n bancaria</td>
+          </tr>
+          <tr>
+            <td>Credential Access</td>
+            <td>Input Capture: Web Portal Capture</td>
+            <td><code>T1056.003</code></td>
+            <td>Formularios capturan PII, tarjetas y OTPs</td>
+          </tr>
+          <tr>
+            <td>Credential Access</td>
+            <td>Steal Web Session Cookie</td>
+            <td><code>T1539</code></td>
+            <td>Captura de tokens de sesi&oacute;n v&iacute;a WebSocket</td>
+          </tr>
+          <tr>
+            <td>Collection</td>
+            <td>Adversary-in-the-Middle</td>
+            <td><code>T1557</code></td>
+            <td>Interceptaci&oacute;n de OTP en tiempo real para uso inmediato</td>
+          </tr>
+          <tr>
+            <td>Collection</td>
+            <td>Input Capture: Credential API Hooking</td>
+            <td><code>T1056.004</code></td>
+            <td>Validaci&oacute;n BIN autom&aacute;tica y clasificaci&oacute;n de tarjetas</td>
+          </tr>
+          <tr>
+            <td>Command and Control</td>
+            <td>Application Layer Protocol: Web Protocols</td>
+            <td><code>T1071.001</code></td>
+            <td>API REST para exfiltraci&oacute;n (<code>POST /CNIXMQnPlR/api/input</code>)</td>
+          </tr>
+          <tr>
+            <td>Command and Control</td>
+            <td>Web Service</td>
+            <td><code>T1102</code></td>
+            <td>Uso de infraestructura leg&iacute;tima (Dynadot, hosting comercial)</td>
+          </tr>
+          <tr>
+            <td>Command and Control</td>
+            <td>Non-Standard Port / Protocol</td>
+            <td><code>T1571</code></td>
+            <td>WebSocket (<code>wss://</code>) para C2 bidireccional en tiempo real</td>
+          </tr>
+          <tr>
+            <td>Impact</td>
+            <td>Data Manipulation: Transmitted Data Manipulation</td>
+            <td><code>T1565.003</code></td>
+            <td>Mensajes de &eacute;xito/fallo falsos para manipular comportamiento de v&iacute;ctima</td>
+          </tr>
+          <tr>
+            <td>Impact</td>
+            <td>Financial Theft</td>
+            <td><code>T1657</code></td>
+            <td>Transacciones fraudulentas en tiempo real con OTPs interceptados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 7. IOCs RESUMEN ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">6</span>Indicadores de Compromiso (Resumen)</h2>
+
+    <div class="ioc-grid">
+      <div class="ioc-card">
+        <h4>Red</h4>
+        <ul>
+          <li>seurtjm.cv</li>
+          <li>50.114.184.241</li>
+          <li>ns1.dyna-ns.net</li>
+          <li>ns2.dyna-ns.net</li>
+        </ul>
+      </div>
+      <div class="ioc-card">
+        <h4>URLs</h4>
+        <ul>
+          <li>https://seurtjm.cv/es</li>
+          <li>https://seurtjm.cv/CNIXMQnPlR/api/input</li>
+          <li>https://seurtjm.cv/api/confirm-delivery</li>
+          <li>wss://seurtjm.cv/ws</li>
+        </ul>
+      </div>
+      <div class="ioc-card">
+        <h4>Identificadores del Kit</h4>
+        <ul>
+          <li style="color:#c9d1d9;"><strong style="color:#58a6ff;">Kit ID:</strong> k468_es_post_seur_index</li>
+          <li style="color:#c9d1d9;"><strong style="color:#58a6ff;">Path oculto:</strong> /CNIXMQnPlR/</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="subsection">Hashes clave (SHA-256)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Archivo</th><th>Hash SHA-256</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>es-raw.html</code> &mdash; p&aacute;gina principal</td><td class="hash">21f6dcf22be8b44d4e54d49f963cc9dd8ce1e943cbdf5de4a8e1a871bb108a46</td></tr>
+          <tr><td><code>index-284bfe89.js</code> &mdash; bundle JS phishing</td><td class="hash">179e87d143bc07cfd8f22a6a1557359b064bcacbcc79ba4a5bab77619d5abbd9</td></tr>
+          <tr><td><code>index-9766d7ac.css</code> &mdash; CSS Vue</td><td class="hash">9766d7ac6187ec134308165407ffa1d64d5c12d6737c886ae867391bfe965057</td></tr>
+          <tr><td><code>logo.png</code> &mdash; logo SEUR robado</td><td class="hash">677bbd5328d59f7d728fc62a38e2b37ecfcae8c15aa0a2be53ddf4e177b5603d</td></tr>
+          <tr><td><code>bc.png</code> &mdash; banner SEUR robado</td><td class="hash">cb0a32507c72d7bd2c763c1c1e5f80ae4000f7e81e24ac522e7e9b2cc1eac749</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box blue">
+      Consultar el documento <a href="seur_smishing_12-03_stix_taxii_iocs.html"><strong>STIX/TAXII &mdash; IOCs</strong></a> adjunto para la lista completa de 26 IOCs de archivos.
+    </div>
+  </section>
+
+  <!-- ── 8. REGLAS DE DETECCION Y HUNTING ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">7</span>Reglas de Detecci&oacute;n y Hunting</h2>
+
+    <h3 class="subsection">Regla Sigma &mdash; Detecci&oacute;n de dominio de phishing por DNS</h3>
+    <pre class="code-block"><span class="kw">title</span>: Smishing SEUR - Acceso a dominio de phishing seurtjm.cv
+<span class="kw">status</span>: experimental
+<span class="kw">description</span>: <span class="str">Detecta accesos al dominio seurtjm.cv asociado a campana de smishing suplantando SEUR</span>
+<span class="kw">logsource</span>:
+  <span class="kw">category</span>: dns
+  <span class="kw">product</span>: any
+<span class="kw">detection</span>:
+  <span class="kw">selection</span>:
+    <span class="kw">query|contains</span>:
+      - <span class="str">'seurtjm.cv'</span>
+      - <span class="str">'seurtjm'</span>
+  <span class="kw">condition</span>: selection
+<span class="kw">level</span>: critical
+<span class="kw">tags</span>:
+  - attack.initial_access
+  - attack.t1566.002</pre>
+
+    <h3 class="subsection">Regla Sigma &mdash; Detecci&oacute;n de path oculto del kit k468</h3>
+    <pre class="code-block"><span class="kw">title</span>: Phishing Kit k468 - Hidden Panel Path /CNIXMQnPlR/
+<span class="kw">status</span>: experimental
+<span class="kw">description</span>: <span class="str">Detecta trafico HTTP/HTTPS hacia el path oculto del panel de phishing k468</span>
+<span class="kw">logsource</span>:
+  <span class="kw">category</span>: proxy
+  <span class="kw">product</span>: any
+<span class="kw">detection</span>:
+  <span class="kw">selection</span>:
+    <span class="kw">url|contains</span>:
+      - <span class="str">'/CNIXMQnPlR/'</span>
+      - <span class="str">'k468_es_post_seur'</span>
+  <span class="kw">condition</span>: selection
+<span class="kw">level</span>: high
+<span class="kw">tags</span>:
+  - attack.command_and_control
+  - attack.t1071.001</pre>
+
+    <h3 class="subsection">IOCs de red para bloqueo</h3>
+    <div class="card">
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9632;</span><strong>DNS:</strong> Bloquear <code>seurtjm.cv</code> y monitorizar <code>*.dyna-ns.net</code> para patrones similares</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#f85149;">&#9632;</span><strong>IP:</strong> Bloquear/alertar <code>50.114.184.241</code></li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#d29922;">&#9632;</span><strong>WebSocket:</strong> Monitorizar conexiones <code>wss://</code> a dominios inusuales desde dispositivos m&oacute;viles</li>
+      </ul>
+    </div>
+
+    <h3 class="subsection">Consultas de hunting</h3>
+    <div class="card">
+      <ul style="list-style:none; padding:0;">
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#58a6ff;">&#9656;</span><strong>Logs DNS:</strong> consultas conteniendo &ldquo;seur&rdquo; + TLD inusual (<code>.cv</code>, <code>.tk</code>, <code>.ml</code>, <code>.ga</code>, etc.)</li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#58a6ff;">&#9656;</span><strong>Logs proxy:</strong> peticiones POST a <code>/api/input</code> o paths conteniendo <code>CNIXMQnPlR</code></li>
+        <li style="padding:6px 0 6px 20px; position:relative;"><span style="position:absolute;left:0;color:#58a6ff;">&#9656;</span><strong>Logs pasarela SMS:</strong> SMS salientes conteniendo &ldquo;seurtjm&rdquo; o patrones de typosquatting similares de SEUR</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 9. RECOMENDACIONES OPERATIVAS ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">8</span>Recomendaciones Operativas</h2>
+    <ol class="rec-list">
+      <li>Bloquear inmediatamente el dominio <code>seurtjm.cv</code> y la IP <code>50.114.184.241</code> en firewalls, proxies y filtros DNS.</li>
+      <li>Enviar reportes de abuse a: <code>abuse@ipxo.com</code>, <code>ipabuse@acedatacenter.com</code>, <code>report@abuseradar.com</code>.</li>
+      <li>Solicitar takedown del dominio al registrador <strong>Dynadot</strong>.</li>
+      <li>Implementar las reglas Sigma proporcionadas en la secci&oacute;n anterior en el SIEM corporativo.</li>
+      <li>Ejecutar hunting retrospectivo en logs DNS/proxy para <code>seurtjm.cv</code> y variantes.</li>
+      <li>Monitorizar registros de nuevos dominios con patr&oacute;n <code>seur*</code> en ccTLDs inusuales.</li>
+      <li>Alertar al equipo de fraude de las entidades bancarias sobre la interceptaci&oacute;n de OTP en tiempo real.</li>
+      <li>Si hay v&iacute;ctimas identificadas: bloqueo inmediato de tarjetas, cambio de credenciales y monitorizaci&oacute;n de transacciones.</li>
+      <li>Compartir IOCs con <strong>INCIBE-CERT</strong>, <strong>CCN-CERT</strong> y el sector bancario espa&ntilde;ol.</li>
+      <li>Monitorizar el Kit ID <code>k468</code> y el path <code>/CNIXMQnPlR/</code> en fuentes de threat intelligence para detectar nuevas instancias.</li>
+    </ol>
+  </section>
+
+  <!-- ── 10. CLASIFICACION DE FUENTES ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">9</span>Clasificaci&oacute;n de Fuentes (C&oacute;digo Admiralty)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Fiabilidad</th>
+            <th>Credibilidad</th>
+            <th>C&oacute;digo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mirror completo del sitio de phishing</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+          <tr>
+            <td>An&aacute;lisis est&aacute;tico del bundle JavaScript</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+          <tr>
+            <td>Registros WHOIS del dominio</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+          <tr>
+            <td>Resoluci&oacute;n DNS y datos de IP</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+          <tr>
+            <td>Hashes SHA-256 de archivos</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+          <tr>
+            <td>Marco MITRE ATT&amp;CK</td>
+            <td>A &mdash; Completamente fiable</td>
+            <td>1 &mdash; Confirmado por otras fuentes</td>
+            <td><span class="admiralty-badge">A1</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 11. REFERENCIAS ── -->
+  <section class="section">
+    <h2 class="section-title"><span class="num">10</span>Referencias</h2>
+    <div class="card">
+      <ol style="padding-left:20px; margin:0;">
+        <li style="padding:4px 0;">Mirror completo del sitio: <code>./site-mirror/seurtjm.cv/</code></li>
+        <li style="padding:4px 0;">Bundle JavaScript principal: <code>assets/index-284bfe89.js</code> (466 KB)</li>
+        <li style="padding:4px 0;">WHOIS <code>seurtjm.cv</code> &mdash; Dynadot, registro <code>2026-03-12T08:41:00Z</code></li>
+        <li style="padding:4px 0;">MITRE ATT&amp;CK Framework &mdash; <a href="https://attack.mitre.org/" target="_blank" rel="noopener">https://attack.mitre.org/</a></li>
+        <li style="padding:4px 0;">INCIBE &mdash; Instituto Nacional de Ciberseguridad</li>
+        <li style="padding:4px 0;">Captura del sitio activo (<code>captura web.jpeg</code>)</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer class="footer">
+    <p>Informe T&aacute;ctico-T&eacute;cnico-Operativo &mdash; SMISH-SEUR-2026-0312 &mdash; TLP:AMBER</p>
+    <p>12 de marzo de 2026</p>
+  </footer>
+
+</div><!-- /container -->
+
+</body>
+</html>

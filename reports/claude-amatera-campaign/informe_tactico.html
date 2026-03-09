@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe T&aacute;ctico-T&eacute;cnico-Operativo: Campa&ntilde;a InstallFix / Amatera Stealer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── Sticky navigation ── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #010409;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+    height: 48px;
+  }
+  .nav-bar a {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 24px;
+    transition: color .2s, background .2s;
+    border-bottom: 2px solid transparent;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .nav-bar a:hover { color: #c9d1d9; background: #161b22; }
+  .nav-bar a.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+    background: #161b22;
+  }
+
+  /* ── TLP banner ── */
+  .tlp-banner {
+    background: #1a1e24;
+    border: 1px solid #30363d;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #f0f6fc;
+  }
+  .tlp-banner span { color: #f0f6fc; background: #238636; padding: 2px 10px; border-radius: 3px; }
+
+  /* ── Main container ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  /* ── Header ── */
+  .report-header { text-align: center; margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid #30363d; }
+  .report-header h1 { color: #58a6ff; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .report-header h2 { color: #8b949e; font-size: 16px; font-weight: 400; margin-bottom: 14px; }
+  .report-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 13px; color: #8b949e; }
+  .report-meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .report-meta .label { color: #58a6ff; font-weight: 600; }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 42px; }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #58a6ff;
+    border-bottom: 2px solid #1f6feb;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+  }
+  .section-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #c9d1d9;
+    margin: 22px 0 10px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Paragraph ── */
+  p { margin-bottom: 12px; }
+  strong { color: #f0f6fc; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  table th {
+    background: #1c2128;
+    color: #58a6ff;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border: 1px solid #30363d;
+    white-space: nowrap;
+  }
+  table td {
+    padding: 9px 14px;
+    border: 1px solid #30363d;
+    vertical-align: top;
+  }
+  table tbody tr:nth-child(even) { background: #161b22; }
+  table tbody tr:nth-child(odd)  { background: #0d1117; }
+  table code, .mono { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13px; color: #e6edf3; }
+
+  /* ── Kill chain ── */
+  .kill-chain { position: relative; padding-left: 36px; margin: 20px 0 8px; }
+  .kill-chain::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #58a6ff 0%, #d29922 30%, #f85149 60%, #bc4c00 80%, #8b949e 100%);
+    border-radius: 3px;
+  }
+  .kc-phase {
+    position: relative;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #58a6ff;
+  }
+  .kc-phase::before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 18px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #58a6ff;
+    border: 3px solid #0d1117;
+  }
+  .kc-phase.phase-recon  { border-left-color: #58a6ff; }
+  .kc-phase.phase-recon::before  { background: #58a6ff; }
+  .kc-phase.phase-access { border-left-color: #d29922; }
+  .kc-phase.phase-access::before { background: #d29922; }
+  .kc-phase.phase-exec   { border-left-color: #f85149; }
+  .kc-phase.phase-exec::before   { background: #f85149; }
+  .kc-phase.phase-evasion { border-left-color: #bc4c00; }
+  .kc-phase.phase-evasion::before { background: #bc4c00; }
+  .kc-phase.phase-payload { border-left-color: #f85149; }
+  .kc-phase.phase-payload::before { background: #f85149; }
+  .kc-phase.phase-exfil   { border-left-color: #8b949e; }
+  .kc-phase.phase-exfil::before   { background: #8b949e; }
+
+  .kc-phase .phase-label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .kc-phase .phase-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f0f6fc;
+    margin-bottom: 8px;
+  }
+  .kc-phase ul { margin: 0; padding-left: 20px; }
+  .kc-phase li { margin-bottom: 4px; font-size: 14px; }
+  .mitre-tag {
+    display: inline-block;
+    background: #1c2128;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 12px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    color: #d29922;
+    margin-left: 4px;
+  }
+
+  /* ── IOC blocks ── */
+  .ioc-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    margin-bottom: 14px;
+    overflow-x: auto;
+  }
+  .ioc-list .ioc-item { color: #e6edf3; }
+  .ioc-label {
+    display: inline-block;
+    min-width: 60px;
+    color: #8b949e;
+    margin-right: 8px;
+  }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    color: #e6edf3;
+  }
+  code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    background: #1c2128;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #e6edf3;
+  }
+
+  /* ── Lists ── */
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { margin-bottom: 5px; }
+
+  /* ── Severity badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .badge-critical { background: #490202; color: #f85149; border: 1px solid #f85149; }
+  .badge-high     { background: #3d1d00; color: #d29922; border: 1px solid #d29922; }
+  .badge-medium   { background: #1c2128; color: #58a6ff; border: 1px solid #58a6ff; }
+  .badge-low      { background: #0b2e13; color: #3fb950; border: 1px solid #3fb950; }
+
+  /* ── Recommendation list ── */
+  .rec-list { counter-reset: rec; list-style: none; padding-left: 0; }
+  .rec-list li {
+    counter-increment: rec;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-left: 4px solid #58a6ff;
+    border-radius: 6px;
+    padding: 12px 16px 12px 48px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .rec-list li::before {
+    content: counter(rec);
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    background: #1f6feb;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ── CVE cards ── */
+  .cve-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-left: 4px solid #f85149;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .cve-card h3 { color: #f85149; font-size: 17px; margin-bottom: 10px; }
+  .cve-card .cve-row { display: flex; margin-bottom: 4px; }
+  .cve-card .cve-label { color: #8b949e; min-width: 130px; font-weight: 600; }
+  .cve-card .cve-value { color: #c9d1d9; }
+
+  /* ── Links ── */
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Footer ── */
+  .footer {
+    border-top: 1px solid #30363d;
+    margin-top: 48px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #484f58;
+  }
+  .footer p { margin-bottom: 4px; }
+
+  /* ── Admiralty table colors ── */
+  .adm-a1 { color: #3fb950; }
+  .adm-a2 { color: #58a6ff; }
+  .adm-b1 { color: #3fb950; }
+  .adm-b2 { color: #58a6ff; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .container { padding: 16px 12px 40px; }
+    .report-header h1 { font-size: 20px; }
+    .nav-bar a { padding: 10px 12px; font-size: 13px; }
+    .kill-chain { padding-left: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- NAVIGATION BAR                                              -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<nav class="nav-bar">
+  <a href="informe_estrategico.html">Informe Estrat&eacute;gico</a>
+  <a href="informe_tactico.html" class="active">Informe T&aacute;ctico-T&eacute;cnico</a>
+  <a href="stix_taxii_iocs.html">STIX/TAXII &mdash; IOCs</a>
+</nav>
+
+<!-- TLP Banner -->
+<div class="tlp-banner">
+  TRAFFIC LIGHT PROTOCOL &mdash; <span>TLP:CLEAR</span>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 1. CABECERA                                                 -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<header class="report-header">
+  <h1>Informe T&aacute;ctico-T&eacute;cnico-Operativo: Campa&ntilde;a InstallFix / Amatera Stealer</h1>
+  <h2>An&aacute;lisis detallado de TTPs, cadena de ataque e indicadores</h2>
+  <div class="report-meta">
+    <span><span class="label">Clasificaci&oacute;n:</span> TLP:CLEAR</span>
+    <span><span class="label">Fecha:</span> 12 de marzo de 2026</span>
+    <span><span class="label">Tipo:</span> T&aacute;ctico-T&eacute;cnico-Operativo</span>
+    <span><span class="label">Referencia:</span> IR-2026-0312-TAC</span>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 2. RESUMEN TECNICO                                          -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">1. Resumen T&eacute;cnico</h2>
+  <div class="card">
+    <p>La campa&ntilde;a denominada <strong>&laquo;InstallFix&raquo;</strong> explota los flujos de trabajo de instalaci&oacute;n basados en copiar y pegar comandos (<em>curl-to-bash</em>) para distribuir malware contra usuarios de <strong>Claude Code</strong>, la interfaz de l&iacute;nea de comandos de Anthropic. Los atacantes clonaron las p&aacute;ginas oficiales de instalaci&oacute;n con precisi&oacute;n p&iacute;xel por p&iacute;xel y las distribuyeron mediante <strong>malvertising</strong> (resultados patrocinados en motores de b&uacute;squeda).</p>
+    <p>El payload principal es <strong>Amatera Stealer</strong>, una evoluci&oacute;n del conocido <strong>ACR Stealer (AcridRain)</strong> comercializado como <strong>Malware-as-a-Service (MaaS)</strong> en foros cibercriminales rusoparlantes. Este infostealer implementa t&eacute;cnicas avanzadas de evasi&oacute;n como NTSockets directos, resoluci&oacute;n din&aacute;mica de APIs, <em>Heaven&rsquo;s Gate</em> (WoW64 syscalls), enmascaramiento CDN y esteganograf&iacute;a.</p>
+    <p>Adicionalmente, se han identificado dos vulnerabilidades que afectan al manejo de configuraciones de repositorio en Claude Code: <strong>CVE-2025-59536</strong> (ejecuci&oacute;n de c&oacute;digo no autorizado v&iacute;a hooks y MCP) y <strong>CVE-2026-21852</strong> (robo de credenciales API por redirecci&oacute;n de headers de autorizaci&oacute;n). Estas vulnerabilidades ampl&iacute;an significativamente la superficie de ataque cuando se combinan con la campa&ntilde;a de malvertising.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 3. CADENA DE ATAQUE (KILL CHAIN)                            -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">2. Cadena de Ataque (Kill Chain)</h2>
+
+  <div class="kill-chain">
+
+    <!-- Fase 1 -->
+    <div class="kc-phase phase-recon">
+      <div class="phase-label" style="color:#58a6ff;">Fase 1</div>
+      <div class="phase-title">Reconocimiento y Preparaci&oacute;n</div>
+      <ul>
+        <li>Registro de dominios similares a Claude Code (<em>typosquatting</em> y dominios gen&eacute;ricos)</li>
+        <li>Clonaci&oacute;n p&iacute;xel-perfect de la p&aacute;gina oficial de instalaci&oacute;n de Claude Code</li>
+        <li>Despliegue de infraestructura en servicios leg&iacute;timos: <strong>Cloudflare Pages</strong>, <strong>Squarespace</strong>, <strong>Tencent EdgeOne</strong></li>
+        <li>Preparaci&oacute;n de payloads y cadenas de ejecuci&oacute;n ofuscadas</li>
+      </ul>
+    </div>
+
+    <!-- Fase 2 -->
+    <div class="kc-phase phase-access">
+      <div class="phase-label" style="color:#d29922;">Fase 2</div>
+      <div class="phase-title">Acceso Inicial &mdash; Malvertising <span class="mitre-tag">T1583.008</span> <span class="mitre-tag">T1566</span></div>
+      <ul>
+        <li>Campa&ntilde;as de anuncios patrocinados en motores de b&uacute;squeda principales</li>
+        <li>T&eacute;rminos de b&uacute;squeda objetivo: <code>Claude Code install</code>, <code>Claude Code CLI</code>, <code>Claude Code setup</code></li>
+        <li>URLs truncadas en las vistas previas del buscador dificultan la detecci&oacute;n visual por parte del usuario</li>
+        <li>Landing pages pr&aacute;cticamente indistinguibles de las p&aacute;ginas oficiales de Anthropic</li>
+      </ul>
+    </div>
+
+    <!-- Fase 3 -->
+    <div class="kc-phase phase-exec">
+      <div class="phase-label" style="color:#f85149;">Fase 3</div>
+      <div class="phase-title">Ejecuci&oacute;n &mdash; curl-to-bash Malicioso <span class="mitre-tag">T1059.004</span> <span class="mitre-tag">T1204.002</span></div>
+      <ul>
+        <li>Comandos de instalaci&oacute;n modificados que apuntan al servidor del atacante en lugar del oficial</li>
+        <li>Cadena de procesos: <code>cmd.exe</code> &rarr; <code>mshta.exe</code> &rarr; scripts remotos &rarr; payloads</li>
+        <li>Descarga y ejecuci&oacute;n de payloads adicionales con mecanismos de persistencia</li>
+        <li>Uso de <code>mshta.exe</code> para recuperar y ejecutar scripts HTA desde dominios controlados</li>
+      </ul>
+    </div>
+
+    <!-- Fase 4 -->
+    <div class="kc-phase phase-evasion">
+      <div class="phase-label" style="color:#bc4c00;">Fase 4</div>
+      <div class="phase-title">Evasi&oacute;n de Defensas <span class="mitre-tag">T1102</span></div>
+      <ul>
+        <li>Abuso de infraestructura leg&iacute;tima: <strong>Cloudflare Pages</strong> (<code>*.pages.dev</code>), <strong>Squarespace</strong>, <strong>Tencent EdgeOne</strong></li>
+        <li>Tr&aacute;fico C2 mezclado con servicios leg&iacute;timos, dificultando la detecci&oacute;n basada en reputaci&oacute;n</li>
+        <li>Ofuscaci&oacute;n de comandos y empaquetamiento de payloads</li>
+        <li>T&eacute;cnica <em>Dead Drop Resolver</em> (DDR) para resolver infraestructura C2 din&aacute;micamente</li>
+      </ul>
+    </div>
+
+    <!-- Fase 5 -->
+    <div class="kc-phase phase-payload">
+      <div class="phase-label" style="color:#f85149;">Fase 5</div>
+      <div class="phase-title">Despliegue del Payload &mdash; Amatera Stealer <span class="mitre-tag">T1555</span> <span class="mitre-tag">T1539</span> <span class="mitre-tag">T1071</span></div>
+      <ul>
+        <li>Ejecuci&oacute;n del infostealer en el sistema v&iacute;ctima con privilegios del usuario</li>
+        <li>Recolecci&oacute;n masiva de datos sensibles: credenciales, cookies, tokens, carteras crypto</li>
+        <li>Empaquetado y cifrado de datos recolectados para exfiltraci&oacute;n</li>
+        <li>Posibilidad de desplegar payloads secundarios seg&uacute;n instrucciones del C2</li>
+      </ul>
+    </div>
+
+    <!-- Fase 6 -->
+    <div class="kc-phase phase-exfil">
+      <div class="phase-label" style="color:#8b949e;">Fase 6</div>
+      <div class="phase-title">Exfiltraci&oacute;n y C2</div>
+      <ul>
+        <li>Comunicaci&oacute;n con servidor C2 v&iacute;a <strong>NTSockets directos</strong> <span class="mitre-tag">T1095</span>, sin pasar por APIs de alto nivel</li>
+        <li><strong>CDN Masking</strong> <span class="mitre-tag">T1090</span>: IPs hardcodeadas de CDNs leg&iacute;timas para enmascarar tr&aacute;fico C2</li>
+        <li>Exfiltraci&oacute;n de datos cifrados al servidor del atacante</li>
+        <li>Capacidad de recibir actualizaciones y nuevas instrucciones en tiempo real</li>
+      </ul>
+    </div>
+
+  </div><!-- /kill-chain -->
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 4. ANALISIS DEL MALWARE: AMATERA STEALER                   -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">3. An&aacute;lisis del Malware: Amatera Stealer</h2>
+
+  <h3 class="section-subtitle">Perfil del Malware</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Campo</th><th>Valor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Nombre</strong></td><td>Amatera Stealer</td></tr>
+        <tr><td><strong>Alias</strong></td><td>AmateraStealer</td></tr>
+        <tr><td><strong>Predecesor</strong></td><td>ACR Stealer (AcridRain)</td></tr>
+        <tr><td><strong>Tipo</strong></td><td>Infostealer</td></tr>
+        <tr><td><strong>Modelo</strong></td><td>Malware-as-a-Service (MaaS)</td></tr>
+        <tr><td><strong>Plataforma</strong></td><td>Windows</td></tr>
+        <tr><td><strong>Comercializaci&oacute;n</strong></td><td>Suscripci&oacute;n en foros cibercriminales rusoparlantes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="section-subtitle">Capacidades de Recolecci&oacute;n</h3>
+  <div class="card">
+    <ul>
+      <li><strong>Credenciales de navegadores:</strong> Extracci&oacute;n de contrase&ntilde;as almacenadas en navegadores basados en Chromium y Gecko (Firefox)</li>
+      <li><strong>Cookies de sesi&oacute;n y tokens:</strong> Robo de cookies activas y tokens de autenticaci&oacute;n (OAuth, JWT, API keys)</li>
+      <li><strong>Carteras de criptomonedas:</strong> Detecci&oacute;n y exfiltraci&oacute;n de wallets y claves privadas</li>
+      <li><strong>Datos de Steam y Telegram:</strong> Archivos de sesi&oacute;n y datos de configuraci&oacute;n</li>
+      <li><strong>Clientes FTP:</strong> Credenciales almacenadas en FileZilla, WinSCP y similares</li>
+      <li><strong>Servicios de correo electr&oacute;nico:</strong> Credenciales de clientes de correo locales</li>
+      <li><strong>Informaci&oacute;n del sistema:</strong> Hardware, software instalado, configuraci&oacute;n de red</li>
+      <li><strong>Payloads secundarios:</strong> Capacidad de descarga y ejecuci&oacute;n de m&oacute;dulos adicionales seg&uacute;n instrucciones del C2</li>
+    </ul>
+  </div>
+
+  <h3 class="section-subtitle">T&eacute;cnicas de Evasi&oacute;n Avanzadas</h3>
+  <div class="card">
+    <ul>
+      <li><strong>Direct NTSockets para C2</strong> <span class="mitre-tag">T1095</span>: Comunicaci&oacute;n directa con el kernel sin pasar por APIs de alto nivel (<code>Ws2_32.dll</code>, <code>wininet.dll</code>), evitando hooks de seguridad</li>
+      <li><strong>Dynamic API Resolution + WoW64 Syscalls</strong> <span class="mitre-tag">T1106</span>: Resoluci&oacute;n din&aacute;mica de APIs en tiempo de ejecuci&oacute;n y ejecuci&oacute;n de c&oacute;digo de 64 bits desde procesos de 32 bits (<em>Heaven&rsquo;s Gate</em>)</li>
+      <li><strong>CDN Masking</strong> <span class="mitre-tag">T1090</span>: IPs hardcodeadas de CDNs leg&iacute;timas (Cloudflare, Akamai) para enmascarar el tr&aacute;fico C2 real</li>
+      <li><strong>Dead Drop Resolver (DDR):</strong> Uso de servicios leg&iacute;timos (Steam, Telegram) para almacenar y resolver direcciones de infraestructura C2</li>
+      <li><strong>Esteganograf&iacute;a</strong> <span class="mitre-tag">T1001.002</span>: Ocultaci&oacute;n de datos exfiltrados y configuraciones dentro de archivos de imagen</li>
+      <li><strong>Sandbox Detection</strong> <span class="mitre-tag">T1497</span>: Detecci&oacute;n de entornos virtualizados, depuradores y sandboxes para evitar an&aacute;lisis automatizado</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 5. TABLA DE TTPs — MITRE ATT&CK                             -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">4. Tabla de TTPs &mdash; MITRE ATT&amp;CK</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>T&aacute;ctica</th>
+          <th>T&eacute;cnica</th>
+          <th>ID MITRE</th>
+          <th>Descripci&oacute;n</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Resource Development -->
+        <tr>
+          <td><strong>Desarrollo de Recursos</strong></td>
+          <td>Malvertising</td>
+          <td class="mono">T1583.008</td>
+          <td>Compra de anuncios patrocinados en buscadores para posicionar p&aacute;ginas maliciosas</td>
+        </tr>
+
+        <!-- Initial Access -->
+        <tr>
+          <td rowspan="2"><strong>Acceso Inicial</strong></td>
+          <td>Phishing</td>
+          <td class="mono">T1566</td>
+          <td>Distribuci&oacute;n de enlaces maliciosos a trav&eacute;s de resultados de b&uacute;squeda patrocinados</td>
+        </tr>
+        <tr>
+          <td>Malicious Copy and Paste</td>
+          <td class="mono">T1204.004</td>
+          <td>Explotaci&oacute;n de flujos de instalaci&oacute;n copy-paste con comandos curl|bash modificados</td>
+        </tr>
+
+        <!-- Execution -->
+        <tr>
+          <td rowspan="3"><strong>Ejecuci&oacute;n</strong></td>
+          <td>Command and Scripting Interpreter</td>
+          <td class="mono">T1059</td>
+          <td>Uso de int&eacute;rpretes de comandos para ejecutar payloads</td>
+        </tr>
+        <tr>
+          <td>PowerShell</td>
+          <td class="mono">T1059.001</td>
+          <td>Ejecuci&oacute;n de scripts PowerShell ofuscados para descarga de payloads</td>
+        </tr>
+        <tr>
+          <td>Visual Basic</td>
+          <td class="mono">T1059.005</td>
+          <td>Scripts VBS/HTA ejecutados mediante mshta.exe</td>
+        </tr>
+
+        <!-- Defense Evasion -->
+        <tr>
+          <td rowspan="12"><strong>Evasi&oacute;n de Defensas</strong></td>
+          <td>Obfuscated Files or Information</td>
+          <td class="mono">T1027</td>
+          <td>Ofuscaci&oacute;n general de archivos y c&oacute;digo malicioso</td>
+        </tr>
+        <tr>
+          <td>Dynamic API Resolution</td>
+          <td class="mono">T1027.007</td>
+          <td>Resoluci&oacute;n din&aacute;mica de APIs en tiempo de ejecuci&oacute;n para evitar an&aacute;lisis est&aacute;tico</td>
+        </tr>
+        <tr>
+          <td>Software Packing</td>
+          <td class="mono">T1027.002</td>
+          <td>Empaquetamiento de ejecutables para dificultar la ingenier&iacute;a inversa</td>
+        </tr>
+        <tr>
+          <td>Command Obfuscation</td>
+          <td class="mono">T1027.010</td>
+          <td>Ofuscaci&oacute;n de comandos en l&iacute;nea de comandos</td>
+        </tr>
+        <tr>
+          <td>Steganography</td>
+          <td class="mono">T1027.003</td>
+          <td>Ocultaci&oacute;n de datos en archivos de imagen</td>
+        </tr>
+        <tr>
+          <td>Embedded Payloads</td>
+          <td class="mono">T1027.009</td>
+          <td>Payloads embebidos dentro de archivos aparentemente leg&iacute;timos</td>
+        </tr>
+        <tr>
+          <td>Compression</td>
+          <td class="mono">T1027.015</td>
+          <td>Compresi&oacute;n de payloads para reducir tama&ntilde;o y evitar firmas</td>
+        </tr>
+        <tr>
+          <td>Deobfuscate/Decode Files</td>
+          <td class="mono">T1140</td>
+          <td>Decodificaci&oacute;n de payloads en tiempo de ejecuci&oacute;n</td>
+        </tr>
+        <tr>
+          <td>Match Legitimate Name or Location</td>
+          <td class="mono">T1036.005</td>
+          <td>Uso de nombres de proceso y rutas que imitan software leg&iacute;timo</td>
+        </tr>
+        <tr>
+          <td>Virtualization/Sandbox Evasion</td>
+          <td class="mono">T1497</td>
+          <td>Detecci&oacute;n de entornos virtualizados para evitar an&aacute;lisis</td>
+        </tr>
+        <tr>
+          <td>User Activity Based Checks</td>
+          <td class="mono">T1497.002</td>
+          <td>Verificaci&oacute;n de actividad real del usuario antes de ejecutarse</td>
+        </tr>
+        <tr>
+          <td>SyncAppvPublishingServer</td>
+          <td class="mono">T1216.002</td>
+          <td>Abuso de binario firmado para ejecuci&oacute;n de c&oacute;digo indirecta</td>
+        </tr>
+
+        <!-- More Defense Evasion -->
+        <tr>
+          <td rowspan="2"><strong>Evasi&oacute;n de Defensas (cont.)</strong></td>
+          <td>Mutual Exclusion</td>
+          <td class="mono">T1480.002</td>
+          <td>Uso de mutex para garantizar instancia &uacute;nica y evitar an&aacute;lisis paralelo</td>
+        </tr>
+        <tr>
+          <td>Hide Infrastructure</td>
+          <td class="mono">T1665</td>
+          <td>Ocultaci&oacute;n de infraestructura C2 detr&aacute;s de servicios leg&iacute;timos</td>
+        </tr>
+
+        <!-- Credential Access -->
+        <tr>
+          <td rowspan="3"><strong>Acceso a Credenciales</strong></td>
+          <td>Credentials from Web Browsers</td>
+          <td class="mono">T1555.003</td>
+          <td>Extracci&oacute;n de credenciales almacenadas en navegadores Chromium y Gecko</td>
+        </tr>
+        <tr>
+          <td>Steal Web Session Cookie</td>
+          <td class="mono">T1539</td>
+          <td>Robo de cookies de sesi&oacute;n activas para secuestro de cuentas</td>
+        </tr>
+        <tr>
+          <td>OS Credential Dumping</td>
+          <td class="mono">T1003</td>
+          <td>Volcado de credenciales del sistema operativo</td>
+        </tr>
+
+        <!-- Discovery -->
+        <tr>
+          <td><strong>Descubrimiento</strong></td>
+          <td>System Information Discovery</td>
+          <td class="mono">T1082</td>
+          <td>Recolecci&oacute;n de informaci&oacute;n del sistema: hardware, software, red</td>
+        </tr>
+
+        <!-- Collection -->
+        <tr>
+          <td rowspan="5"><strong>Recolecci&oacute;n</strong></td>
+          <td>Data from Local System</td>
+          <td class="mono">T1005</td>
+          <td>Recolecci&oacute;n de archivos sensibles del sistema local</td>
+        </tr>
+        <tr>
+          <td>Clipboard Data</td>
+          <td class="mono">T1115</td>
+          <td>Captura de datos del portapapeles</td>
+        </tr>
+        <tr>
+          <td>Screen Capture</td>
+          <td class="mono">T1113</td>
+          <td>Capturas de pantalla del escritorio de la v&iacute;ctima</td>
+        </tr>
+        <tr>
+          <td>Local Email Collection</td>
+          <td class="mono">T1114.001</td>
+          <td>Recolecci&oacute;n de correos electr&oacute;nicos almacenados localmente</td>
+        </tr>
+        <tr>
+          <td>Archive Collected Data</td>
+          <td class="mono">T1560</td>
+          <td>Empaquetado de datos recolectados para exfiltraci&oacute;n eficiente</td>
+        </tr>
+
+        <!-- Command and Control -->
+        <tr>
+          <td rowspan="12"><strong>Comando y Control</strong></td>
+          <td>Web Protocols</td>
+          <td class="mono">T1071.001</td>
+          <td>Comunicaci&oacute;n C2 sobre protocolos web est&aacute;ndar (HTTP/HTTPS)</td>
+        </tr>
+        <tr>
+          <td>Ingress Tool Transfer</td>
+          <td class="mono">T1105</td>
+          <td>Descarga de herramientas y payloads adicionales desde el C2</td>
+        </tr>
+        <tr>
+          <td>Encrypted Channel</td>
+          <td class="mono">T1573</td>
+          <td>Canal cifrado para comunicaciones C2</td>
+        </tr>
+        <tr>
+          <td>Symmetric Cryptography</td>
+          <td class="mono">T1573.001</td>
+          <td>Cifrado sim&eacute;trico para ofuscaci&oacute;n de tr&aacute;fico</td>
+        </tr>
+        <tr>
+          <td>Asymmetric Cryptography</td>
+          <td class="mono">T1573.002</td>
+          <td>Cifrado asim&eacute;trico para intercambio inicial de claves</td>
+        </tr>
+        <tr>
+          <td>Protocol Tunneling</td>
+          <td class="mono">T1572</td>
+          <td>T&uacute;neles de protocolo para evadir detecci&oacute;n</td>
+        </tr>
+        <tr>
+          <td>Web Service</td>
+          <td class="mono">T1102</td>
+          <td>Abuso de servicios web leg&iacute;timos como infraestructura C2</td>
+        </tr>
+        <tr>
+          <td>Data Obfuscation</td>
+          <td class="mono">T1001</td>
+          <td>Ofuscaci&oacute;n de datos en tr&aacute;nsito</td>
+        </tr>
+        <tr>
+          <td>Steganography (C2)</td>
+          <td class="mono">T1001.002</td>
+          <td>Esteganograf&iacute;a para ocultar datos en comunicaciones C2</td>
+        </tr>
+        <tr>
+          <td>Standard Encoding</td>
+          <td class="mono">T1132.001</td>
+          <td>Codificaci&oacute;n est&aacute;ndar (Base64) para datos en tr&aacute;nsito</td>
+        </tr>
+        <tr>
+          <td>Data Encoding</td>
+          <td class="mono">T1132</td>
+          <td>Codificaci&oacute;n personalizada de datos para evasi&oacute;n</td>
+        </tr>
+        <tr>
+          <td>Native API</td>
+          <td class="mono">T1106</td>
+          <td>Uso de APIs nativas del SO para comunicaci&oacute;n directa</td>
+        </tr>
+
+        <!-- Execution / Privilege -->
+        <tr>
+          <td rowspan="2"><strong>Ejecuci&oacute;n / Privilegios</strong></td>
+          <td>Process Injection</td>
+          <td class="mono">T1055</td>
+          <td>Inyecci&oacute;n de c&oacute;digo en procesos leg&iacute;timos</td>
+        </tr>
+        <tr>
+          <td>Valid Accounts</td>
+          <td class="mono">T1078</td>
+          <td>Uso de credenciales v&aacute;lidas robadas para acceso persistente</td>
+        </tr>
+
+        <!-- Impact -->
+        <tr>
+          <td rowspan="4"><strong>Impacto</strong></td>
+          <td>Data Encrypted for Impact</td>
+          <td class="mono">T1486</td>
+          <td>Posible cifrado de datos como acci&oacute;n destructiva secundaria</td>
+        </tr>
+        <tr>
+          <td>Resource Hijacking</td>
+          <td class="mono">T1496</td>
+          <td>Secuestro de recursos del sistema para fines del atacante</td>
+        </tr>
+        <tr>
+          <td>Compute Hijacking</td>
+          <td class="mono">T1496.001</td>
+          <td>Uso no autorizado de recursos de c&oacute;mputo (criptominer&iacute;a)</td>
+        </tr>
+        <tr>
+          <td>Financial Theft</td>
+          <td class="mono">T1657</td>
+          <td>Robo financiero directo mediante credenciales bancarias y carteras crypto</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 6. VULNERABILIDADES CVE                                     -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">5. Vulnerabilidades CVE</h2>
+
+  <div class="cve-card">
+    <h3>CVE-2025-59536 <span class="badge badge-critical">CR&Iacute;TICO</span></h3>
+    <div class="cve-row"><span class="cve-label">Producto:</span><span class="cve-value">Claude Code (Anthropic)</span></div>
+    <div class="cve-row"><span class="cve-label">Vector:</span><span class="cve-value">Archivos de configuraci&oacute;n de repositorio (Hooks y MCP)</span></div>
+    <div class="cve-row"><span class="cve-label">Impacto:</span><span class="cve-value">Ejecuci&oacute;n de c&oacute;digo no autorizado al abrir un proyecto malicioso</span></div>
+    <div class="cve-row" style="margin-top:10px;">
+      <span class="cve-value">Los atacantes pueden manipular archivos de configuraci&oacute;n a nivel de proyecto (archivos de hooks y MCP) para que, al clonar y abrir un repositorio malicioso con Claude Code, se ejecuten comandos autom&aacute;ticamente sin confirmaci&oacute;n del usuario. Esta vulnerabilidad permite la ejecuci&oacute;n remota de c&oacute;digo arbitrario en el contexto del usuario que abre el proyecto.</span>
+    </div>
+  </div>
+
+  <div class="cve-card">
+    <h3>CVE-2026-21852 <span class="badge badge-critical">CR&Iacute;TICO</span></h3>
+    <div class="cve-row"><span class="cve-label">Producto:</span><span class="cve-value">Claude Code (Anthropic)</span></div>
+    <div class="cve-row"><span class="cve-label">Vector:</span><span class="cve-value">Redirecci&oacute;n de headers de autorizaci&oacute;n</span></div>
+    <div class="cve-row"><span class="cve-label">Impacto:</span><span class="cve-value">Robo de credenciales API</span></div>
+    <div class="cve-row" style="margin-top:10px;">
+      <span class="cve-value">Mediante la manipulaci&oacute;n de configuraciones de repositorio, los atacantes redirigen el tr&aacute;fico API autenticado (incluyendo headers de autorizaci&oacute;n completos con claves API) a un servidor controlado por el atacante. La exfiltraci&oacute;n ocurre <strong>ANTES</strong> de que el usuario confirme la confianza del proyecto, lo que hace especialmente peligrosa esta vulnerabilidad al no requerir interacci&oacute;n alguna del usuario m&aacute;s all&aacute; del clonado del repositorio.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 7. INDICADORES DE COMPROMISO (Resumen)                      -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">6. Indicadores de Compromiso (Resumen)</h2>
+
+  <h3 class="section-subtitle">Dominios Maliciosos</h3>
+  <div class="ioc-list">
+    <div class="ioc-item">nnnnnnnnnnnnnnnnnnnnn.pages.dev</div>
+    <div class="ioc-item">claude.update-version.com</div>
+    <div class="ioc-item">update-version.com</div>
+    <div class="ioc-item">claude-code-macos.com</div>
+    <div class="ioc-item">claude-code-docs-site.pages.dev</div>
+    <div class="ioc-item">saramoftah.com/n8n/update</div>
+    <div class="ioc-item">overplanteasiest.top</div>
+    <div class="ioc-item">amaprox.icu</div>
+  </div>
+
+  <h3 class="section-subtitle">Direcciones IP</h3>
+  <div class="ioc-list">
+    <div class="ioc-item"><span class="ioc-label">IP:</span>45.94.47.224</div>
+    <div class="ioc-item"><span class="ioc-label">IP:</span>212.34.138.4</div>
+    <div class="ioc-item"><span class="ioc-label">IP:</span>91.98.229.246</div>
+    <div class="ioc-item"><span class="ioc-label">IP:</span>104.21.80.1</div>
+  </div>
+
+  <h3 class="section-subtitle">Hashes Representativos (SHA-256)</h3>
+  <div class="ioc-list">
+    <div class="ioc-item">04c30011603048f69ad9ecf57ce580c1ebd20fb49a80b259e9628eaec79179a8</div>
+    <div class="ioc-item">8d3634a77504cb0eee0f0f853bebaeb501a8147e104eb0f381a93b497272e34f</div>
+    <div class="ioc-item">120316ecaf06b76a564ce42e11f7074c52df6d79b85d3526c5b4e9f362d2f1c2</div>
+    <div class="ioc-item">05db76843f81795f9a736cb2609197d5f018978b33277f420fd17c166caddb93</div>
+    <div class="ioc-item">08bf6ddf7d0313477a51787d82ca3b66c102a93fcabdf53c891aa1ed331ea4a9</div>
+    <div class="ioc-item">0967e0e1f15ddfb9b3d7451832dd3a653177679b0b56a7c19aea8e5fd82bd420</div>
+    <div class="ioc-item">096aabe166d4cec286d31042107c793431ce7ae75d208c7f7afbe822361ce329</div>
+    <div class="ioc-item">0df602fe581b9f252c21da7c6efc8c7bf1b9c7e83029e4b64ee1d3de6c771544</div>
+    <div class="ioc-item">127a367df685ce3b04eed27ce58e148fba7c1b2273e280c531c0b3a2955dd2e6</div>
+    <div class="ioc-item">133d56d17ba934898306f4ad442ee679f9e161e0237c968ff37f2abc487d3f0d</div>
+  </div>
+
+  <div class="card" style="border-left: 4px solid #58a6ff;">
+    <p><strong>Nota:</strong> Los hashes anteriores representan una muestra reducida. Consultar el documento <a href="stix_taxii_iocs.html">STIX/TAXII &mdash; IOCs</a> adjunto para la lista completa de <strong>220 indicadores de compromiso</strong> en formato estandarizado.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 8. REGLAS DE DETECCION Y HUNTING                            -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">7. Reglas de Detecci&oacute;n y Hunting</h2>
+
+  <h3 class="section-subtitle">Regla Sigma &mdash; Cadena de Ejecuci&oacute;n mshta.exe</h3>
+  <pre><code>title: InstallFix Campaign - Suspicious mshta.exe Execution Chain
+status: experimental
+description: Detects cmd.exe spawning mshta.exe to retrieve remote scripts (InstallFix campaign pattern)
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    ParentImage|endswith: '\cmd.exe'
+    Image|endswith: '\mshta.exe'
+    CommandLine|contains:
+      - 'http'
+      - 'pages.dev'
+      - 'update-version'
+  condition: selection
+level: high
+tags:
+  - attack.execution
+  - attack.t1059.004
+  - attack.t1204.002
+falsepositives:
+  - Legitimate use of mshta.exe to open HTA applications (rare in modern environments)
+date: 2026/03/12</code></pre>
+
+  <h3 class="section-subtitle">Regla Sigma &mdash; Descarga Sospechosa curl/wget</h3>
+  <pre><code>title: InstallFix Campaign - Suspicious curl/wget to Non-Official Domain
+status: experimental
+description: Detects curl or wget commands targeting domains associated with InstallFix campaign
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tool:
+    Image|endswith:
+      - '\curl.exe'
+      - '\wget.exe'
+  selection_domain:
+    CommandLine|contains:
+      - 'update-version.com'
+      - 'claude-code-macos.com'
+      - 'pages.dev'
+      - 'overplanteasiest.top'
+      - 'amaprox.icu'
+  condition: selection_tool and selection_domain
+level: high
+tags:
+  - attack.execution
+  - attack.t1059.004
+date: 2026/03/12</code></pre>
+
+  <h3 class="section-subtitle">Consultas DNS para Hunting</h3>
+  <div class="card">
+    <p>Monitorizar consultas DNS hacia los siguientes patrones:</p>
+    <ul>
+      <li><code>*update-version.com</code> &mdash; Dominio principal de la campa&ntilde;a</li>
+      <li><code>*pages.dev</code> con referencia a <code>claude</code> &mdash; Abuso de Cloudflare Pages</li>
+      <li><code>claude-code-macos.com</code> &mdash; Dominio de typosquatting espec&iacute;fico</li>
+      <li><code>overplanteasiest.top</code> &mdash; Dominio C2 identificado</li>
+      <li><code>amaprox.icu</code> &mdash; Dominio asociado a Amatera Stealer</li>
+    </ul>
+    <p><strong>Consulta Splunk de ejemplo:</strong></p>
+    <pre><code>index=dns sourcetype=dns
+| search (query="*update-version.com" OR query="*claude-code*pages.dev"
+  OR query="claude-code-macos.com" OR query="overplanteasiest.top"
+  OR query="amaprox.icu")
+| stats count by src_ip, query, answer
+| sort -count</code></pre>
+  </div>
+
+  <h3 class="section-subtitle">IOCs de Red para Bloqueo</h3>
+  <div class="card">
+    <ul>
+      <li><strong>Bloquear/alertar</strong> conexiones a: <code>45.94.47.224</code>, <code>212.34.138.4</code>, <code>91.98.229.246</code></li>
+      <li><strong>Monitorizar</strong> conexiones NTSocket directas que bypasean APIs est&aacute;ndar de red</li>
+      <li><strong>Detectar</strong> tr&aacute;fico HTTP/S hacia IPs de CDN con patrones de comunicaci&oacute;n an&oacute;malos (tama&ntilde;o de payload, frecuencia, user-agent)</li>
+      <li><strong>Inspeccionar</strong> tr&aacute;fico DNS sobre HTTPS (DoH) hacia dominios no autorizados</li>
+    </ul>
+  </div>
+
+  <h3 class="section-subtitle">Hunting en EDR</h3>
+  <div class="card">
+    <ul>
+      <li><strong>Cadena de procesos:</strong> <code>cmd.exe</code> &rarr; <code>mshta.exe</code> &rarr; <code>powershell.exe</code> / <code>wscript.exe</code></li>
+      <li><strong>Comandos sospechosos:</strong> <code>curl</code> o <code>wget</code> apuntando a dominios no oficiales de Anthropic</li>
+      <li><strong>Patrones WoW64:</strong> Transiciones WoW64 syscall indicativas de la t&eacute;cnica <em>Heaven&rsquo;s Gate</em> (procesos 32-bit realizando llamadas al sistema de 64-bit)</li>
+      <li><strong>Acceso a archivos sensibles:</strong> Lectura masiva de archivos de credenciales de navegadores (<code>Login Data</code>, <code>Cookies</code>, <code>Web Data</code>)</li>
+      <li><strong>Mutex espec&iacute;ficos:</strong> B&uacute;squeda de mutex asociados a Amatera Stealer en procesos en ejecuci&oacute;n</li>
+      <li><strong>Detecci&oacute;n de esteganograf&iacute;a:</strong> Descargas de im&aacute;genes seguidas de operaciones de memoria inusuales</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 9. RECOMENDACIONES OPERATIVAS                               -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">8. Recomendaciones Operativas</h2>
+
+  <ol class="rec-list">
+    <li><strong>Bloquear inmediatamente</strong> los dominios e IPs listados en la secci&oacute;n de IOCs en firewalls, proxies y sistemas DNS corporativos. Priorizar el bloqueo a nivel DNS para cobertura m&aacute;xima.</li>
+    <li><strong>Implementar las reglas Sigma proporcionadas</strong> en el SIEM corporativo. Validar la generaci&oacute;n de alertas con las cadenas de ejecuci&oacute;n documentadas (cmd.exe &rarr; mshta.exe).</li>
+    <li><strong>Ejecutar hunting retrospectivo</strong> en logs DNS de los &uacute;ltimos 90 d&iacute;as para los dominios identificados. Correlacionar con logs de proxy y firewall para identificar sistemas potencialmente comprometidos.</li>
+    <li><strong>Verificar estaciones de desarrollo</strong> para la presencia de IOCs. Ejecutar b&uacute;squedas de los hashes SHA-256 proporcionados en el EDR y comparar con la lista completa del documento STIX/TAXII.</li>
+    <li><strong>Revisar configuraciones de repositorios clonados recientemente</strong>, prestando especial atenci&oacute;n a archivos en directorios <code>.claude/</code> y <code>.mcp/</code>. Buscar configuraciones de hooks y MCP no autorizadas.</li>
+    <li><strong>Actualizar Claude Code a la &uacute;ltima versi&oacute;n parcheada</strong> que mitiga CVE-2025-59536 y CVE-2026-21852. Verificar que todos los desarrolladores utilizan la versi&oacute;n actualizada.</li>
+    <li><strong>Implementar pol&iacute;ticas de ejecuci&oacute;n restringida para mshta.exe</strong> mediante AppLocker, WDAC o pol&iacute;ticas de grupo. Considerar el bloqueo total de mshta.exe en estaciones de desarrollo donde no sea necesario.</li>
+    <li><strong>Monitorizar tr&aacute;fico hacia IPs de CDN con patrones an&oacute;malos</strong>. Implementar reglas de detecci&oacute;n para comunicaciones C2 enmascaradas como tr&aacute;fico CDN leg&iacute;timo (frecuencia, tama&ntilde;o, user-agent).</li>
+    <li><strong>Formar a desarrolladores</strong> sobre los riesgos de ejecutar comandos <code>curl|bash</code> desde fuentes no verificadas. Establecer procedimientos de verificaci&oacute;n de URLs antes de ejecutar comandos de instalaci&oacute;n.</li>
+    <li><strong>Compartir IOCs con equipos de seguridad de la cadena de suministro</strong> y socios tecnol&oacute;gicos. Coordinar la respuesta con equipos de seguridad de Anthropic y proveedores de CDN afectados.</li>
+  </ol>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 10. CLASIFICACION DE FUENTES (ADMIRALTY CODE)               -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">9. Clasificaci&oacute;n de Fuentes (C&oacute;digo Admiralty / NATO)</h2>
+
+  <div class="card" style="margin-bottom: 16px;">
+    <p>La fiabilidad de las fuentes se eval&uacute;a seg&uacute;n el sistema de clasificaci&oacute;n <strong>Admiralty (NATO)</strong>, donde la <em>fiabilidad</em> del emisor se clasifica de A (completamente fiable) a F (no evaluable) y la <em>credibilidad</em> de la informaci&oacute;n de 1 (confirmada) a 6 (no evaluable).</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fuente</th>
+          <th>Fiabilidad</th>
+          <th>Credibilidad</th>
+          <th>C&oacute;digo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>IBM X-Force</td>
+          <td>A &mdash; Completamente fiable</td>
+          <td>1 &mdash; Confirmada</td>
+          <td><strong class="adm-a1">A1</strong></td>
+        </tr>
+        <tr>
+          <td>Proofpoint Threat Insight</td>
+          <td>A &mdash; Completamente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-a2">A2</strong></td>
+        </tr>
+        <tr>
+          <td>FortiGuard Labs</td>
+          <td>A &mdash; Completamente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-a2">A2</strong></td>
+        </tr>
+        <tr>
+          <td>eSecurity Planet</td>
+          <td>B &mdash; Normalmente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-b2">B2</strong></td>
+        </tr>
+        <tr>
+          <td>SecurityOnline / Daily CyberSecurity</td>
+          <td>B &mdash; Normalmente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-b2">B2</strong></td>
+        </tr>
+        <tr>
+          <td>CybersecurityNews</td>
+          <td>B &mdash; Normalmente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-b2">B2</strong></td>
+        </tr>
+        <tr>
+          <td>Feedly AI</td>
+          <td>B &mdash; Normalmente fiable</td>
+          <td>2 &mdash; Probablemente cierta</td>
+          <td><strong class="adm-b2">B2</strong></td>
+        </tr>
+        <tr>
+          <td>VirusTotal</td>
+          <td>B &mdash; Normalmente fiable</td>
+          <td>1 &mdash; Confirmada</td>
+          <td><strong class="adm-b1">B1</strong></td>
+        </tr>
+        <tr>
+          <td>CVE Details / NVD</td>
+          <td>A &mdash; Completamente fiable</td>
+          <td>1 &mdash; Confirmada</td>
+          <td><strong class="adm-a1">A1</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- 11. REFERENCIAS                                             -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">10. Referencias</h2>
+
+  <div class="card">
+    <ol>
+      <li style="margin-bottom: 8px;">
+        <strong>IBM X-Force</strong> &mdash; InstallFix Report<br>
+        <a href="https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991" target="_blank" rel="noopener">https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991</a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>SecurityOnline</strong> &mdash; The Vibe-Coding Trap: Fake Claude Code Installers<br>
+        <a href="https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/" target="_blank" rel="noopener">https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/</a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>eSecurity Planet</strong> &mdash; Fake Claude Code Install Pages Spread Infostealer Malware<br>
+        <a href="https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/" target="_blank" rel="noopener">https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/</a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>CybersecurityNews</strong> &mdash; Claude Code Vulnerabilities<br>
+        <a href="https://cybersecuritynews.com/claude-code-vulnerabilities/" target="_blank" rel="noopener">https://cybersecuritynews.com/claude-code-vulnerabilities/</a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>Feedly Threat Intelligence</strong> &mdash; InstallFix / Amatera / ACR Stealer tracking
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>VirusTotal</strong> &mdash; An&aacute;lisis de muestras
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>CVE Details / NVD</strong> &mdash; CVE-2025-59536, CVE-2026-21852
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>Proofpoint</strong> &mdash; Amatera Stealer: Rebranded ACR Stealer analysis
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong>FortiGuard Labs</strong> &mdash; SVG Phishing / Amatera Stealer campaign
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                      -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <p><strong>TLP:CLEAR</strong> &mdash; Este documento puede ser compartido sin restricciones.</p>
+  <p>Fecha de emisi&oacute;n: 12 de marzo de 2026 &mdash; Referencia: IR-2026-0312-TAC</p>
+  <p>Destinatarios autorizados: Equipos SOC, equipos de respuesta a incidentes, analistas de amenazas, administradores de seguridad de infraestructura de desarrollo.</p>
+  <p style="margin-top: 12px; font-size: 12px; color: #30363d;">Informe generado como parte del ciclo de inteligencia sobre amenazas a la cadena de suministro de software.</p>
+</footer>
+
+</div><!-- /container -->
+</body>
+</html>

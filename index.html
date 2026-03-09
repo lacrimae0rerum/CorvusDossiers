@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorvusDossiers</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --border: #1e1e2e;
+            --text: #c8c8d4;
+            --text-muted: #6c6c80;
+            --accent: #7c5cbf;
+            --accent-dim: #5a3d8f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        header p {
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        main {
+            width: 100%;
+            max-width: 960px;
+            padding: 2rem;
+            flex: 1;
+        }
+        .dossier-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .dossier-list li a {
+            display: block;
+            padding: 1rem 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .dossier-list li a:hover {
+            border-color: var(--accent-dim);
+            background: #16161f;
+        }
+        .dossier-list li a .title {
+            font-weight: 500;
+        }
+        .dossier-list li a .meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        .empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 4rem 1rem;
+            font-style: italic;
+        }
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        footer a { color: var(--accent-dim); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CorvusDossiers</h1>
+        <p>Intelligence analysis reports generated with CorvusEngine</p>
+    </header>
+    <main>
+        <ul class="dossier-list">
+            <li><a href="reports/seur_smishing_12-03_SITREP.html">
+                <div class="title">SMISH-SEUR-2026-0312 &mdash; Smishing SEUR / Kit k468 (seurtjm.cv)</div>
+                <div class="meta">2026-03-12 &middot; TLP:AMBER &middot; PhaaS k468, interceptaci&oacute;n OTP en tiempo real, WebSocket C2, origen rusoparlante &middot; 3 informes + STIX 2.1 JSON</div>
+            </a></li>
+            <li><a href="reports/claude-amatera-campaign/informe_estrategico.html">
+                <div class="title">SMISH-AMATERA-2026-0312 &mdash; Amatera smishing campaign</div>
+                <div class="meta">2026-03-12 &middot; TLP:AMBER &middot; 3 informes (estrat&eacute;gico, t&aacute;ctico, STIX/TAXII IOCs)</div>
+            </a></li>
+            <li><a href="reports/informe_ciberataque_iran_stryker.html">
+                <div class="title">INT-2026-12M-0001 &mdash; Ciberataque vinculado a Ir&aacute;n contra Stryker Corporation</div>
+                <div class="meta">2026-03-12 &middot; NO CLASIFICADO &middot; Handala Team / MOIS &middot; Wiper v&iacute;a Microsoft Intune MDM &middot; Evaluaci&oacute;n integral con 18 secciones &middot; C&oacute;digo Admiralty &middot; ICD 203</div>
+            </a></li>
+            <li><a href="reports/anonymized-risk-assessment/P0_Executive_Summary.html">
+                <div class="title">OSINT Risk Assessment &mdash; Anonymized Corporate Intelligence Dossier</div>
+                <div class="meta">2026-03-07 &middot; UNCLASSIFIED &middot; 9 reports &middot; 6 analytical phases &middot; 18+ CorvusEngine modules &middot; Economic, strategic, infrastructure &amp; cyber risk analysis</div>
+            </a></li>
+            <li><a href="reports/2026-03-10-zoyiosho-smishing.html">
+                <div class="title">THREAT-2026-SMISH-002 &mdash; Zoyiosho smishing campaign</div>
+                <div class="meta">2026-03-10 &middot; TLP:AMBER &middot; Triple-encrypted phishing kit, Smishing Triad/Lighthouse affiliate, 7 domains, Indonesian hosting</div>
+            </a></li>
+            <li><a href="reports/2026-03-09-netflix-smishing.html">
+                <div class="title">THREAT-2026-SMISH-001 &mdash; neflixpagocuenta.net</div>
+                <div class="meta">2026-03-09 &middot; TLP:AMBER &middot; Netflix smishing campaign &mdash; real-time 3DS fraud, bulletproof ASN, 64+ domains</div>
+            </a></li>
+        </ul>
+    </main>
+    <footer>
+        Powered by CorvusEngine &middot; <a href="AVISO_LEGAL.md">Legal Notice</a> &middot; <a href="EIPD.md">DPIA</a>
+    </footer>
+</body>
+</html>

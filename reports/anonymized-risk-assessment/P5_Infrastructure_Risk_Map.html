@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P5 -- Infrastructure Risk & Dependency Map | Ht4pL9a OSINT</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --bg-gradient: linear-gradient(170deg, #0b0e14 0%, #0f1318 40%, #111820 100%);
+      --surface: #141920;
+      --surface-elevated: #1a2029;
+      --surface-recessed: #0d1017;
+      --border: rgba(255,255,255,0.06);
+      --border-accent: rgba(212,167,58,0.2);
+      --text: #d4d8e0;
+      --text-dim: #7a8194;
+      --text-bright: #eef0f4;
+      --heading: #f0f1f4;
+      --accent-gold: #d4a73a;
+      --accent-gold-dim: rgba(212,167,58,0.12);
+      --accent-blue: #1e3a5f;
+      --accent-blue-bright: #2d5a8a;
+      --accent-blue-dim: rgba(30,58,95,0.25);
+      --accent-red: #c0392b;
+      --accent-red-dim: rgba(192,57,43,0.15);
+      --accent-amber: #d4a73a;
+      --accent-amber-dim: rgba(212,167,58,0.1);
+      --accent-green: #27ae60;
+      --accent-green-dim: rgba(39,174,96,0.12);
+      --accent-teal: #0891b2;
+      --accent-teal-dim: rgba(8,145,178,0.12);
+      --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+      --radius: 6px;
+      --radius-lg: 10px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f0f1f4;
+        --bg-gradient: linear-gradient(170deg, #f0f1f4 0%, #e8eaef 40%, #e2e5eb 100%);
+        --surface: #ffffff;
+        --surface-elevated: #ffffff;
+        --surface-recessed: #e8eaef;
+        --border: rgba(0,0,0,0.08);
+        --border-accent: rgba(30,58,95,0.2);
+        --text: #2c3040;
+        --text-dim: #6b7280;
+        --text-bright: #111827;
+        --heading: #111827;
+        --accent-gold: #b8922e;
+        --accent-gold-dim: rgba(184,146,46,0.1);
+        --accent-blue: #1e3a5f;
+        --accent-blue-bright: #2d5a8a;
+        --accent-blue-dim: rgba(30,58,95,0.08);
+        --accent-red: #c0392b;
+        --accent-red-dim: rgba(192,57,43,0.08);
+        --accent-amber: #b8922e;
+        --accent-amber-dim: rgba(184,146,46,0.08);
+        --accent-green: #1e8449;
+        --accent-green-dim: rgba(30,132,73,0.08);
+        --accent-teal: #0e7490;
+        --accent-teal-dim: rgba(14,116,144,0.08);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+        --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV SIDEBAR ---- */
+    .nav-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 260px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.25rem;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-sidebar__classification {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(212,167,58,0.2);
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-sidebar__title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--heading);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .nav-sidebar__subtitle {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-sidebar__section {
+      margin-bottom: 1.25rem;
+    }
+
+    .nav-sidebar__section-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-sidebar__link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.6rem;
+      margin-bottom: 2px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 400;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-sidebar__link:hover {
+      background: var(--accent-blue-dim);
+      color: var(--text-bright);
+    }
+
+    .nav-sidebar__dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      flex-shrink: 0;
+    }
+
+    .nav-sidebar__meta {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    /* ---- MOBILE NAV ---- */
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-mobile a {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      margin-right: 0.3rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+    }
+
+    .nav-mobile a:hover { background: var(--accent-blue-dim); color: var(--text-bright); }
+
+    /* ---- MAIN CONTENT ---- */
+    .main-content {
+      margin-left: 260px;
+      padding: 2.5rem 3rem 4rem;
+      max-width: 1100px;
+    }
+
+    /* ---- HERO HEADER ---- */
+    .hero {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero__badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(212,167,58,0.15);
+      padding: 0.25rem 0.7rem;
+      border-radius: 3px;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero__sub {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent-blue-bright);
+      letter-spacing: 0.02em;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero__meta {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: var(--radius);
+      padding: 0.9rem 1.2rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      font-family: var(--font-mono);
+    }
+
+    .hero__meta span {
+      color: var(--text);
+    }
+
+    /* ---- SECTIONS ---- */
+    .section {
+      margin-bottom: 3rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .section:nth-child(2) { animation-delay: 0.05s; }
+    .section:nth-child(3) { animation-delay: 0.1s; }
+    .section:nth-child(4) { animation-delay: 0.15s; }
+    .section:nth-child(5) { animation-delay: 0.2s; }
+    .section:nth-child(6) { animation-delay: 0.25s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .section { animation: none; }
+    }
+
+    .section__num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: #c0d0e8;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-right: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .section h2 {
+      display: flex;
+      align-items: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+    }
+
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      margin-top: 1.8rem;
+      padding-left: 0.8rem;
+      border-left: 3px solid var(--accent-gold);
+    }
+
+    /* ---- TABLES ---- */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 600px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    thead th {
+      background: var(--surface-elevated);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+      overflow-wrap: break-word;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(255,255,255,0.015);
+    }
+
+    tbody tr:hover td {
+      background: var(--accent-blue-dim);
+    }
+
+    tbody td strong {
+      color: var(--text-bright);
+    }
+
+    /* ---- RISK BADGES ---- */
+    .risk-critico, .risk-critica {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: var(--accent-red-dim);
+      color: var(--accent-red);
+      border: 1px solid rgba(192,57,43,0.25);
+    }
+
+    .risk-alto, .risk-alta {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: var(--accent-amber-dim);
+      color: var(--accent-amber);
+      border: 1px solid rgba(212,167,58,0.2);
+    }
+
+    .risk-medio, .risk-media {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: var(--accent-teal-dim);
+      color: var(--accent-teal);
+      border: 1px solid rgba(8,145,178,0.2);
+    }
+
+    .risk-bajo, .risk-baja {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: var(--accent-green-dim);
+      color: var(--accent-green);
+      border: 1px solid rgba(39,174,96,0.2);
+    }
+
+    .risk-desconocido {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: rgba(122,129,148,0.12);
+      color: var(--text-dim);
+      border: 1px solid rgba(122,129,148,0.2);
+    }
+
+    .risk-na {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: rgba(122,129,148,0.08);
+      color: var(--text-dim);
+    }
+
+    /* ---- CODE BLOCKS (ASCII diagrams) ---- */
+    .code-block {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .code-block__header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .code-block__header-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+    }
+
+    .code-block pre {
+      padding: 1.2rem 1.5rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre;
+      tab-size: 4;
+    }
+
+    /* ---- DASHBOARD CARD ---- */
+    .dashboard-card {
+      background: var(--surface);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .dashboard-card__title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .dashboard-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .dashboard-row:last-child { border-bottom: none; }
+
+    .dashboard-row__label {
+      color: var(--text);
+      font-weight: 500;
+      min-width: 0;
+    }
+
+    .dashboard-row__right {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .trend-up {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-red);
+    }
+
+    .trend-stable {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* ---- BLOCKQUOTE / RESULT ---- */
+    .result-block {
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(212,167,58,0.18);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      font-size: 0.82rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      line-height: 1.6;
+      margin-top: 2rem;
+    }
+
+    .result-block strong {
+      color: var(--accent-gold);
+    }
+
+    /* ---- DIVIDERS ---- */
+    .section-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+      margin: 2.5rem 0;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      .nav-sidebar { display: none; }
+      .nav-mobile { display: block; }
+      .main-content {
+        margin-left: 0;
+        padding: 3.5rem 1.5rem 3rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .main-content { padding: 3.5rem 1rem 2rem; }
+      .hero h1 { font-size: 1.5rem; }
+      table { font-size: 0.75rem; }
+      .code-block pre { font-size: 0.68rem; }
+      .dashboard-card { padding: 1rem 1.2rem; }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION BAR -->
+<nav style="position:sticky;top:0;z-index:9999;background:#090c11;border-bottom:1px solid rgba(212,167,58,0.2);display:flex;align-items:center;padding:0 1rem;height:44px;backdrop-filter:blur(12px);font-family:'IBM Plex Mono',monospace;">
+  <a href="P4_Strategic_Assessment.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Anterior: P4 Strategic">&larr;</a>
+  <div style="display:flex;align-items:center;gap:2px;overflow-x:auto;flex:1;padding:0 0.75rem;scrollbar-width:none;">
+    <a href="P0_Executive_Summary.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Summary</a>
+    <a href="P0_Relationship_Graph.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P0 Graph</a>
+    <a href="P1_Lm5nR2xligence_Intake_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P1 Intake</a>
+    <a href="P2_OSINT_Collection_Report.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P2 OSINT</a>
+    <a href="P3_Economic_Analysis.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P3 Economic</a>
+    <a href="P4_Strategic_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P4 Strategic</a>
+    <a href="P5_Infrastructure_Risk_Map.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:600;color:#d4a73a;white-space:nowrap;border:1px solid rgba(212,167,58,0.2);background:rgba(212,167,58,0.1);">P5 Infra</a>
+    <a href="P6_FINAL_OSINT_Lm5nR2xligence_Assessment.html" style="padding:0.35rem 0.65rem;border-radius:6px;text-decoration:none;font-size:0.68rem;font-weight:500;color:#6b7280;white-space:nowrap;border:1px solid transparent;">P6 Final</a>
+  </div>
+  <a href="P6_FINAL_OSINT_Lm5nR2xligence_Assessment.html" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);color:#6b7280;text-decoration:none;font-size:0.85rem;" title="Siguiente: P6 Final">&rarr;</a>
+</nav>
+
+  <!-- SIDEBAR NAV -->
+  <nav class="nav-sidebar">
+    <div class="nav-sidebar__classification">UNCLASSIFIED</div>
+    <div class="nav-sidebar__title">Ht4pL9a OSINT</div>
+    <div class="nav-sidebar__subtitle">R3x8kW2<br>FGn4hKse 5 -- INFRAESTRUCTURA</div>
+
+    <div class="nav-sidebar__section">
+      <div class="nav-sidebar__section-label">Secciones</div>
+      <a href="#sec1" class="nav-sidebar__link"><span class="nav-sidebar__dot"></span> 1. Evaluacion Infraestructura</a>
+      <a href="#sec2" class="nav-sidebar__link"><span class="nav-sidebar__dot"></span> 2. Infraestructura Critica</a>
+      <a href="#sec3" class="nav-sidebar__link"><span class="nav-sidebar__dot"></span> 3. Mapeo Dependencias</a>
+      <a href="#sec4" class="nav-sidebar__link"><span class="nav-sidebar__dot"></span> 4. Resumen de Riesgo</a>
+    </div>
+
+    <div class="nav-sidebar__section">
+      <div class="nav-sidebar__section-label">Subsecciones</div>
+      <a href="#sec1-1" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 1.1 Inventario Instalaciones</a>
+      <a href="#sec1-2" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 1.2 Infraestructura Digital</a>
+      <a href="#sec1-3" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 1.3 Fabricacion</a>
+      <a href="#sec2-1" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 2.1 Sectores Dependientes</a>
+      <a href="#sec2-2" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 2.2 Vulnerabilidades</a>
+      <a href="#sec3-1" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 3.1 Upstream</a>
+      <a href="#sec3-2" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 3.2 Downstream</a>
+      <a href="#sec3-3" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 3.3 Cascading Effects</a>
+      <a href="#sec3-4" class="nav-sidebar__link"><span class="nav-sidebar__dot" style="background:var(--text-dim)"></span> 3.4 SPOFs</a>
+    </div>
+
+    <div class="nav-sidebar__meta">
+      Fecha: 2026-03-07<br>
+      Modulos: infrastructure_assessment,<br>
+      critical_infrastructure_vulnerability,<br>
+      infrastructure_dependency_mapping<br><br>
+      Qv7nJ4m // P5
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <nav class="nav-mobile">
+    <a href="#sec1">1. Infraestructura</a>
+    <a href="#sec2">2. Critica</a>
+    <a href="#sec3">3. Dependencias</a>
+    <a href="#sec4">4. Resumen</a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero__badge">FGn4hKse 5 -- MODO 5</div>
+      <h1>P5 -- Infrastructure Risk &amp; Dependency Map</h1>
+      <div class="hero__sub">R3x8kW2 | INFRAESTRUCTURA Y SEGURIDAD</div>
+      <div class="hero__meta">
+        <span>//CLASSIFICATION:</span> UNCLASSIFIED<br>
+        <span>//Qv7nJ4m:</span> Modulos ejecutados: infrastructure_assessment, critical_infrastructure_vulnerability, infrastructure_dependency_mapping<br>
+        <span>Fecha:</span> 2026-03-07
+      </div>
+    </header>
+
+    <!-- SECTION 1 -->
+    <section class="section" id="sec1">
+      <h2><span class="section__num">1</span> Evaluacion de Infraestructura Corporativa</h2>
+
+      <!-- 1.1 -->
+      <h3 id="sec1-1">1.1 Inventario de Instalaciones</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Instalacion</th>
+              <th>Ubicacion</th>
+              <th>Funcion</th>
+              <th>Riesgo Geopolitico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>HQ Principal</strong></td>
+              <td>L_q3nR7w (campus Nw6rT3e)</td>
+              <td>Corporativo, I+D</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Oficinas L_k5hT2d</strong></td>
+              <td>L_k5hT2d</td>
+              <td>Engineering, operaciones</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Oficinas L_m8pF4c</strong></td>
+              <td>L_m8pF4c</td>
+              <td>I+D</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Oficinas L_r2kW9n</strong></td>
+              <td>L_r2kW9n</td>
+              <td>I+D</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Centro I+D L_iL5pT9</strong></td>
+              <td>L_iL5pT9</td>
+              <td>I+D semiconductores</td>
+              <td><span class="risk-medio">MEDIO</span> <small style="color:var(--text-dim)">(conflicto regional)</small></td>
+            </tr>
+            <tr>
+              <td><strong>Kd6pM1r</strong></td>
+              <td>L_uK8dH4</td>
+              <td>Operaciones EMEA</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Kd6pSgf</strong></td>
+              <td>L_sG7mK3</td>
+              <td>Entidad financiera</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rx7kBin R&amp;D</strong></td>
+              <td>L_iN2wF6</td>
+              <td>I+D software/chips</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Multiples Europa</strong></td>
+              <td>Varios paises EU</td>
+              <td>Operaciones</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 1.2 -->
+      <h3 id="sec1-2">1.2 Infraestructura Digital</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Detalle</th>
+              <th>Riesgo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Dominios web</strong></td>
+              <td><code style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent-teal)">dm_Ht4pL9a</code>, <code style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent-teal)">dm_Nw6rT3e</code>, <code style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent-teal)">dm_Gp4vL6t</code>, <code style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent-teal)">dm_Fm3wP7c</code></td>
+              <td><span class="risk-medio">MEDIO</span> <small style="color:var(--text-dim)">(superficie de ataque amplia)</small></td>
+            </tr>
+            <tr>
+              <td><strong>Cloud/Data Centers</strong></td>
+              <td>No divulgados publicamente</td>
+              <td><span class="risk-desconocido">DESCONOCIDO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Redes internas</strong></td>
+              <td>Enterprise-grade (Gp4vL6t security stack)</td>
+              <td><span class="risk-medio">MEDIO</span></td>
+            </tr>
+            <tr>
+              <td><strong>IP/Patentes</strong></td>
+              <td>Miles de patentes en networking, semiconductores</td>
+              <td><span class="risk-bajo">BAJO</span> <small style="color:var(--text-dim)">(bien protegido legalmente)</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 1.3 -->
+      <h3 id="sec1-3">1.3 Infraestructura de Fabricacion</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Detalle</th>
+              <th>Riesgo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Fabless model</strong></td>
+              <td>Ht4pL9a no posee fabs</td>
+              <td><span class="risk-na">N/A</span> <small style="color:var(--text-dim)">-- riesgo transferido a foundry</small></td>
+            </tr>
+            <tr>
+              <td><strong>Dq3fB7s (primario)</strong></td>
+              <td>~99% de fabricacion chips IA</td>
+              <td><span class="risk-critico">CRITICO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rk8mW4n</strong></td>
+              <td>Uso limitado para nodos menos avanzados</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Otras foundries</strong></td>
+              <td>Uso marginal</td>
+              <td><span class="risk-bajo">BAJO</span></td>
+            </tr>
+            <tr>
+              <td><strong>Assembly/Test</strong></td>
+              <td>Subcontratado (Gn4hKse, Hv7dP3w en Asia)</td>
+              <td><span class="risk-medio">MEDIO</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 2 -->
+    <section class="section" id="sec2">
+      <h2><span class="section__num">2</span> Ht4pL9a como Proveedor de Infraestructura Critica</h2>
+
+      <!-- 2.1 -->
+      <h3 id="sec2-1">2.1 Sectores Criticos Dependientes de Ht4pL9a</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sector</th>
+              <th>Productos Ht4pL9a</th>
+              <th>Criticidad</th>
+              <th>Sustituibilidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Telecomunicaciones</strong></td>
+              <td>Broadband chips, set-top box SoCs, cable modems</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td><span class="risk-baja">BAJA</span> <small style="color:var(--text-dim)">-- G_n4hK8t alega monopolio</small></td>
+            </tr>
+            <tr>
+              <td><strong>Defensa/Gobierno</strong></td>
+              <td>Nw6rT3e (virtualizacion G_DOD8c5), networking chips</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td><span class="risk-critica">MUY BAJA</span> <small style="color:var(--text-dim)">-- contratos activos</small></td>
+            </tr>
+            <tr>
+              <td><strong>Servicios financieros</strong></td>
+              <td>Ws8nH2j software, Nw6rT3e infra</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td><span class="risk-media">MEDIA</span> <small style="color:var(--text-dim)">-- alternativas existen</small></td>
+            </tr>
+            <tr>
+              <td><strong>Salud</strong></td>
+              <td>Nw6rT3e, Ws8nH2j (Bk7mT3d)</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td><span class="risk-media">MEDIA</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cloud/Data Centers</strong></td>
+              <td>Custom AI ASICs, networking switches (Memory, D_h3kR7n)</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td><span class="risk-baja">BAJA</span> <small style="color:var(--text-dim)">para custom silicon</small></td>
+            </tr>
+            <tr>
+              <td><strong>Ciberseguridad</strong></td>
+              <td>Gp4vL6t products</td>
+              <td><span class="risk-media">MEDIA</span></td>
+              <td><span class="risk-alta">ALTA</span> <small style="color:var(--text-dim)">-- mercado competitivo</small></td>
+            </tr>
+            <tr>
+              <td><strong>Enterprise IT</strong></td>
+              <td>Yd9sK4n, D_q8dF4c, D_r2hK9j</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td><span class="risk-media">MEDIA-BAJA</span> <small style="color:var(--text-dim)">-- migracion costosa</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2.2 -->
+      <h3 id="sec2-2">2.2 Vulnerabilidades de Infraestructura Critica</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vulnerabilidad</th>
+              <th>Sector afectado</th>
+              <th>Severidad</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V1</code></td>
+              <td>Zero-days Bx5qR1g (CVE-XXXX-0001)</td>
+              <td>Todos los usuarios Nw6rT3e</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td>Explotacion activa en wild</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V2</code></td>
+              <td>Actor estatal chino TA_r3kW7n en Jk2mD8v</td>
+              <td>Gobierno, defensa</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td>Explotacion &gt;1 ano antes de deteccion</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V3</code></td>
+              <td>TA_m5hT2d breach Ht4pL9a (nov 2025)</td>
+              <td>Supply chain trust</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td>Compromiso del proveedor de seguridad</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V4</code></td>
+              <td>Single point of failure Dq3fB7s</td>
+              <td>Toda la cadena semiconductores</td>
+              <td><span class="risk-critica">CRITICA</span></td>
+              <td>Sin redundancia real</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V5</code></td>
+              <td>Nw6rT3e licensing como arma comercial</td>
+              <td>Enterprise IT global</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td>Clientes cautivos sin alternativa inmediata</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V6</code></td>
+              <td>Concentracion broadband chips</td>
+              <td>Telecom ISPs</td>
+              <td><span class="risk-alta">ALTA</span></td>
+              <td>G_n4hK8t alega monopolio</td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-gold)">V7</code></td>
+              <td>Mainframe software (CA) legacy lock-in</td>
+              <td>Finanzas, salud, gobierno</td>
+              <td><span class="risk-media">MEDIA</span></td>
+              <td>Costos de migracion prohibitivos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 3 -->
+    <section class="section" id="sec3">
+      <h2><span class="section__num">3</span> Mapeo de Dependencias</h2>
+
+      <!-- 3.1 -->
+      <h3 id="sec3-1">3.1 Dependencias Upstream (Lo que Ht4pL9a necesita)</h3>
+      <div class="code-block">
+        <div class="code-block__header">
+          <span class="code-block__header-dot"></span> UPSTREAM DEPENDENCIES
+        </div>
+        <pre>
+NIVEL 1 -- DIRECTAS
+&#9500;&#9472;&#9472; Dq3fB7s (L_tW3rB7)
+&#9474;   &#9500;&#9472;&#9472; Fabricacion 3nm/5nm chips IA
+&#9474;   &#9500;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; MAXIMA
+&#9474;   &#9500;&#9472;&#9472; Alternativa: Rk8mW4n (inferior yield)
+&#9474;   &#9492;&#9472;&#9472; Single Point of Failure: SI
+&#9474;
+&#9500;&#9472;&#9472; Fp6tL2v (L_nL9hM5)
+&#9474;   &#9500;&#9472;&#9472; Equipos litografia EUV para Dq3fB7s
+&#9474;   &#9500;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618; ALTA (indirecta)
+&#9474;   &#9492;&#9472;&#9472; Alternativa: NINGUNA
+&#9474;
+&#9500;&#9472;&#9472; Gn4hK9j (L_tW3rB7/L_kR6nJ2)
+&#9474;   &#9500;&#9472;&#9472; Assembly, packaging, test
+&#9474;   &#9500;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618;&#9618;&#9618; MEDIA
+&#9474;   &#9492;&#9472;&#9472; Alternativa: Multiples (OSAT market)
+&#9474;
+&#9492;&#9472;&#9472; Materias Primas
+    &#9500;&#9472;&#9472; Tierras raras (L_cN5rK2 60%)
+    &#9500;&#9472;&#9472; Silicio alta pureza
+    &#9500;&#9472;&#9472; Gases especiales
+    &#9492;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618; ALTA
+
+NIVEL 2 -- INDIRECTAS
+&#9500;&#9472;&#9472; EDA Tools (Qm7hB3k, Lp5rW9d)
+&#9474;   &#9492;&#9472;&#9472; Software diseno chips -- critico pero diversificado
+&#9500;&#9472;&#9472; Tc4pF6nA (Tc4pF6n / Vr2mD8j)
+&#9474;   &#9492;&#9472;&#9472; Licencias IP para algunos disenos
+&#9492;&#9472;&#9472; Infraestructura cloud propia
+    &#9492;&#9472;&#9472; Operaciones internas</pre>
+      </div>
+
+      <!-- 3.2 -->
+      <h3 id="sec3-2">3.2 Dependencias Downstream (Quien depende de Ht4pL9a)</h3>
+      <div class="code-block">
+        <div class="code-block__header">
+          <span class="code-block__header-dot"></span> DOWNSTREAM DEPENDENCIES
+        </div>
+        <pre>
+GOBIERNO/DEFENSA &#9472;&#9472;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; MAXIMA
+&#9500;&#9472;&#9472; G_G_DOD8c58c5 (Nw6rT3e, networking)
+&#9500;&#9472;&#9472; G_q9dM7w ($XXXM-g1 CT_r7mW3)
+&#9500;&#9472;&#9472; G_k4nF2t ($XXXM-g2 CT_n4hK8)
+&#9500;&#9472;&#9472; G_h6rL3p D_k7rN5d (agencias federales)
+&#9500;&#9472;&#9472; G_GOBnl7 (caso judicial)
+&#9492;&#9472;&#9472; Multiples agencias IC
+
+HYPERSCALERS &#9472;&#9472;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608; MAXIMA
+&#9500;&#9472;&#9472; Fd8qW2m (TPU custom silicon partnership)
+&#9500;&#9472;&#9472; Jt6pR4c (custom AI chips)
+&#9500;&#9472;&#9472; Ks3nV7h (custom networking)
+&#9492;&#9472;&#9472; Otros (no divulgados)
+
+TELECOMUNICACIONES &#9472;&#9472;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618; ALTA
+&#9500;&#9472;&#9472; Cm9rF5b (broadband, Nw6rT3e)
+&#9500;&#9472;&#9472; ISPs globales (set-top box, cable modem chips)
+&#9492;&#9472;&#9472; G_n4hK8t case: Ht4pL9a = monopolio en este segmento
+
+ENTERPRISE &#9472;&#9472;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618; ALTA
+&#9500;&#9472;&#9472; Fortune 500 (Nw6rT3e virtualizacion)
+&#9500;&#9472;&#9472; Pq2kN8t ($XX.XT-c1 AUM -- litigio)
+&#9500;&#9472;&#9472; Bk7mT3d (Ws8nH2j)
+&#9500;&#9472;&#9472; Wn4jH6r (Nw6rT3e -- litigio)
+&#9492;&#9472;&#9472; Miles de enterprise customers globales
+
+CLOUD PROVIDERS &#9472;&#9472;&#9472;&#9472; Criticidad: &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9618;&#9618;&#9618;&#9618;&#9618; MEDIA
+&#9500;&#9472;&#9472; G_d5kF2n members (EU cloud providers)
+&#9500;&#9472;&#9472; Hosting providers globales
+&#9492;&#9472;&#9472; Managed service providers</pre>
+      </div>
+
+      <!-- 3.3 -->
+      <h3 id="sec3-3">3.3 Analisis de Cascading Effects</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento trigger</th>
+              <th>Efecto 1er orden</th>
+              <th>Efecto 2do orden</th>
+              <th>Efecto 3er orden</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Dq3fB7s falla</strong></td>
+              <td>Ht4pL9a no puede fabricar chips</td>
+              <td>Hyperscalers sin custom silicon, networking global afectado</td>
+              <td>Cloud services degradados, G_DOD8c5 operaciones impactadas</td>
+            </tr>
+            <tr>
+              <td><strong>Ht4pL9a pierde caso G_n4hK8t</strong></td>
+              <td>Remedios en broadband/TV chips</td>
+              <td>ISPs buscan alternativas</td>
+              <td>Incremento costo broadband para consumidores</td>
+            </tr>
+            <tr>
+              <td><strong>Nw6rT3e desinversion forzada</strong></td>
+              <td>Nw6rT3e independiente cambia pricing</td>
+              <td>Enterprise customers renegocian</td>
+              <td>Mercado virtualizacion se fragmenta</td>
+            </tr>
+            <tr>
+              <td><strong>TA_m5hT2d leak data sensible</strong></td>
+              <td>Perdida confianza clientes seguridad</td>
+              <td>Gp4vL6t clientes migran</td>
+              <td>Competidores (Xn9pV2q, L_q3nR7w) ganan share</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3.4 -->
+      <h3 id="sec3-4">3.4 Single Points of Failure Identificados</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SPOF</th>
+              <th>Componente</th>
+              <th>Mitigacion existente</th>
+              <th>Riesgo residual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-red);font-weight:600">SPOF-1</code></td>
+              <td>Dq3fB7s como unico foundry avanzado</td>
+              <td>Dq3fB7sA (limitada, 2025+)</td>
+              <td><span class="risk-critico">CRITICO</span></td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-amber);font-weight:600">SPOF-2</code></td>
+              <td>CEO P_k4mR7w (key-man risk)</td>
+              <td>Board independiente con experiencia</td>
+              <td><span class="risk-medio">MEDIO</span></td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-amber);font-weight:600">SPOF-3</code></td>
+              <td>Nw6rT3e como revenue anchor</td>
+              <td>Diversificacion hacia IA chips</td>
+              <td><span class="risk-medio">MEDIO</span></td>
+            </tr>
+            <tr>
+              <td><code style="font-family:var(--font-mono);font-size:0.76rem;color:var(--accent-amber);font-weight:600">SPOF-4</code></td>
+              <td>Concentracion hyperscaler clients</td>
+              <td>Backlog contractual largo plazo</td>
+              <td><span class="risk-medio">MEDIO</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 4 -->
+    <section class="section" id="sec4">
+      <h2><span class="section__num">4</span> Resumen de Riesgo Infraestructura</h2>
+
+      <div class="dashboard-card">
+        <div class="dashboard-card__title">Infrastructure Risk Dashboard -- Ht4pL9a</div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Supply Chain (Dq3fB7s)</span>
+          <div class="dashboard-row__right">
+            <span class="risk-critico">CRITICO</span>
+            <span class="trend-stable" title="Estable (sin mejora)">&rarr; Estable (sin mejora)</span>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Ciberseguridad</span>
+          <div class="dashboard-row__right">
+            <span class="risk-alto">ALTO</span>
+            <span class="trend-up" title="Deteriorando (breaches)">&uarr; Deteriorando (breaches)</span>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Regulatorio</span>
+          <div class="dashboard-row__right">
+            <span class="risk-critico">CRITICO</span>
+            <span class="trend-up" title="Escalando (G_n4hK8t + EU)">&uarr; Escalando (G_n4hK8t + EU)</span>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Geopolitico</span>
+          <div class="dashboard-row__right">
+            <span class="risk-alto">ALTO</span>
+            <span class="trend-stable" title="Estable (pausa comercial)">&rarr; Estable (pausa comercial)</span>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Operacional</span>
+          <div class="dashboard-row__right">
+            <span class="risk-medio">MEDIO</span>
+            <span class="trend-stable" title="Estable">&rarr; Estable</span>
+          </div>
+        </div>
+
+        <div class="dashboard-row">
+          <span class="dashboard-row__label">Reputacional</span>
+          <div class="dashboard-row__right">
+            <span class="risk-alto">ALTO</span>
+            <span class="trend-up" title="Deteriorando (litigios)">&uarr; Deteriorando (litigios)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-block">
+        <strong>//RESULT:</strong> Fase 5 completa. 7 vulnerabilidades criticas identificadas, 4 SPOFs mapeados. Riesgo infraestructura dominado por dependencia Dq3fB7s y exposicion regulatoria.
+      </div>
+    </section>
+
+  </main>
+  <footer style="text-align:center; padding:1.5rem 1rem; font-size:0.65rem; color:#6c6c80;">
+    R3x8kW2 &bull; P5 Infrastructure Risk Map &bull; UNCLASSIFIED &bull; 2026-03-07
+    <br><span style="font-size:0.7rem;">CC BY 4.0 &mdash; Art. 6(1)(f) RGPD &mdash; Derechos ARSALPO: <a href="mailto:corvusdossiers@proton.me" style="color:#5a3d8f;">corvusdossiers@proton.me</a></span>
+  </footer>
+
+</body>
+</html>

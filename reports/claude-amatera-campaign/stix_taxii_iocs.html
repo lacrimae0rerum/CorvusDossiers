@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STIX/TAXII &mdash; IOCs: Campa&ntilde;a InstallFix / Amatera Stealer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #010409;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  height: 48px;
+}
+.nav-bar a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 24px;
+  transition: color .2s, background .2s;
+  border-bottom: 2px solid transparent;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.nav-bar a:hover { color: #c9d1d9; background: #161b22; }
+.nav-bar a.active {
+  color: #58a6ff;
+  border-bottom-color: #58a6ff;
+  background: #161b22;
+}
+.tlp-banner {
+  background: #1a1e24;
+  border: 1px solid #30363d;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #f0f6fc;
+}
+.tlp-banner span { color: #f0f6fc; background: #238636; padding: 2px 10px; border-radius: 3px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; }
+.report-header { text-align: center; margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid #30363d; }
+.report-header h1 { color: #58a6ff; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.report-header h2 { color: #8b949e; font-size: 16px; font-weight: 400; margin-bottom: 14px; }
+.report-meta { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 13px; color: #8b949e; }
+.report-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.report-meta .label { color: #58a6ff; font-weight: 600; }
+.section { margin-bottom: 42px; }
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #58a6ff;
+  border-bottom: 2px solid #1f6feb;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+}
+.section-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #c9d1d9;
+  margin: 22px 0 10px;
+}
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-card .num { font-size: 32px; font-weight: 700; color: #58a6ff; display: block; }
+.stat-card .lbl { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+.stat-card.red .num { color: #f85149; }
+.stat-card.orange .num { color: #d29922; }
+.stat-card.green .num { color: #3fb950; }
+.table-wrapper { overflow-x: auto; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  background: #1c2128;
+  color: #58a6ff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #30363d;
+  white-space: nowrap;
+}
+tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #21262d;
+  vertical-align: top;
+}
+tbody tr:hover { background: #1c2128; }
+.mono { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12px; word-break: break-all; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-red { background: rgba(248,81,73,0.15); color: #f85149; }
+.badge-orange { background: rgba(210,153,34,0.15); color: #d29922; }
+.badge-blue { background: rgba(88,166,255,0.15); color: #58a6ff; }
+.badge-green { background: rgba(63,185,80,0.15); color: #3fb950; }
+.badge-info { background: rgba(88,166,255,0.15); color: #58a6ff; }
+.hash-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+}
+.hash-container table { margin: 0; }
+.hash-container thead th { position: sticky; top: 0; z-index: 1; }
+.filter-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 13px;
+  margin-bottom: 12px;
+  outline: none;
+}
+.filter-input:focus { border-color: #58a6ff; }
+.stix-block {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 600px;
+  overflow: auto;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #c9d1d9;
+  white-space: pre;
+  tab-size: 2;
+}
+.btn-download {
+  display: inline-block;
+  background: #238636;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 12px 0;
+  transition: background .2s;
+}
+.btn-download:hover { background: #2ea043; }
+.admiralty-note {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #8b949e;
+  margin-top: 12px;
+}
+.ref-list li { margin-bottom: 8px; }
+.ref-source { color: #58a6ff; font-weight: 600; }
+a { color: #58a6ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  border-top: 1px solid #30363d;
+  font-size: 13px;
+  color: #484f58;
+  margin-top: 40px;
+}
+.footer .pub-date { color: #8b949e; font-weight: 600; margin-bottom: 8px; }
+.sub-label { color: #8b949e; font-size: 12px; font-style: italic; margin-bottom: 6px; display: block; }
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="informe_estrategico.html">Informe Estrat&eacute;gico</a>
+  <a href="informe_tactico.html">Informe T&aacute;ctico-T&eacute;cnico</a>
+  <a href="stix_taxii_iocs.html" class="active">STIX/TAXII &mdash; IOCs</a>
+</nav>
+
+<div class="tlp-banner">TLP: <span>CLEAR</span></div>
+
+<div class="container">
+
+<header class="report-header">
+  <h1>STIX/TAXII &mdash; Indicadores de Compromiso</h1>
+  <h2>Campa&ntilde;a InstallFix / Amatera Stealer</h2>
+  <div class="report-meta">
+    <span><span class="label">Fecha:</span> 12 de marzo de 2026</span>
+    <span><span class="label">Formato:</span> STIX 2.1</span>
+    <span><span class="label">TLP:</span> CLEAR</span>
+    <span><span class="label">Referencia:</span> IR-2026-0312-IOC</span>
+  </div>
+</header>
+
+<!-- Summary Stats -->
+<section class="section">
+  <h2 class="section-title">Resumen de Indicadores</h2>
+  <div class="stats-grid">
+    <div class="stat-card red"><span class="num">220</span><span class="lbl">IOCs Totales</span></div>
+    <div class="stat-card orange"><span class="num">20</span><span class="lbl">Dominios</span></div>
+    <div class="stat-card"><span class="num">6</span><span class="lbl">Direcciones IP</span></div>
+    <div class="stat-card green"><span class="num">2</span><span class="lbl">URLs</span></div>
+    <div class="stat-card red"><span class="num">192</span><span class="lbl">Hashes SHA-256</span></div>
+  </div>
+</section>
+
+<!-- Domains -->
+<section class="section">
+  <h2 class="section-title">1. Dominios Maliciosos</h2>
+  <p class="sub-label">Dominios directamente asociados a la campa&ntilde;a InstallFix / Amatera Stealer</p>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>Dominio</th><th>Tipo</th><th>Primera detecci&oacute;n</th><th>&Uacute;ltima detecci&oacute;n</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">claude.update-version.com</td><td><span class="badge badge-red">C2/Distribuci&oacute;n</span></td><td>06/03/2026</td><td>11/03/2026</td><td>IBM X-Force, Feedly [A1]</td></tr>
+        <tr><td class="mono">update-version.com</td><td><span class="badge badge-red">C2/Distribuci&oacute;n</span></td><td>11/03/2026</td><td>11/03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">claude-code-macos.com</td><td><span class="badge badge-orange">Distribuci&oacute;n</span></td><td>03/2026</td><td>03/2026</td><td>IBM X-Force [A1]</td></tr>
+        <tr><td class="mono">claude-code-docs-site.pages.dev</td><td><span class="badge badge-orange">Distribuci&oacute;n</span></td><td>03/2026</td><td>03/2026</td><td>IBM X-Force [A1]</td></tr>
+        <tr><td class="mono">nnnnnnnnnnnnnnnnnnnnn.pages.dev</td><td><span class="badge badge-orange">Distribuci&oacute;n</span></td><td>03/2026</td><td>03/2026</td><td>IBM X-Force [A1]</td></tr>
+        <tr><td class="mono">saramoftah.com</td><td><span class="badge badge-red">C2/Staging</span></td><td>03/2026</td><td>03/2026</td><td>IBM X-Force [A1]</td></tr>
+        <tr><td class="mono">overplanteasiest.top</td><td><span class="badge badge-red">C2 (Amatera)</span></td><td>27/05/2025</td><td>19/06/2025</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">amaprox.icu</td><td><span class="badge badge-red">C2 (Amatera)</span></td><td>19/06/2025</td><td>19/06/2025</td><td>Feedly [B2]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub-label" style="margin-top:20px;">Dominios asociados a ACR Stealer (predecesor de Amatera)</p>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>Dominio</th><th>Tipo</th><th>Primera detecci&oacute;n</th><th>&Uacute;ltima detecci&oacute;n</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">playtogga.com</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>03/2026</td><td>03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">apposx.com</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>03/03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">theriygrt.com</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>03/03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">memory-scanner.cc</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>01/01/2026</td><td>04/02/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">indeanapolice.cc</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">globalsnn3-new.cc</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">globalsnn2-new.cc</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">tyuropium.com</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">dpaste.org</td><td><span class="badge badge-blue">DDR (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">joinmc.link</td><td><span class="badge badge-blue">DDR (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">pktriot.net</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">portmap.io</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>30/01/2026</td><td>30/01/2026</td><td>Feedly [B2]</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- IPs -->
+<section class="section">
+  <h2 class="section-title">2. Direcciones IP</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>IP</th><th>Tipo</th><th>Primera detecci&oacute;n</th><th>&Uacute;ltima detecci&oacute;n</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">45.94.47.224</td><td><span class="badge badge-red">C2 (Amatera)</span></td><td>14/11/2025</td><td>10/03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">212.34.138.4</td><td><span class="badge badge-red">C2 (Amatera)</span></td><td>28/01/2026</td><td>28/01/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">91.98.229.246</td><td><span class="badge badge-red">C2 (Amatera)</span></td><td>14/11/2025</td><td>17/11/2025</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">104.21.80.1</td><td><span class="badge badge-orange">CDN Masking</span></td><td>19/06/2025</td><td>18/07/2025</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">157.180.40.106</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>03/2026</td><td>03/2026</td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">78.40.193.126</td><td><span class="badge badge-orange">C2 (ACR)</span></td><td>05/02/2026</td><td>05/02/2026</td><td>Feedly [B2]</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- URLs -->
+<section class="section">
+  <h2 class="section-title">3. URLs Maliciosas</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>URL</th><th>Tipo</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">https://geotravelsgi.xyz/ujs/2ae977f4-db12-4876-9e4d-fc8d1778842d</td><td><span class="badge badge-red">Staging</span></td><td>Feedly [B2]</td></tr>
+        <tr><td class="mono">62.133.61.104/downloads/test.pdf.lnk</td><td><span class="badge badge-red">Dropper</span></td><td>Feedly [B2]</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Hashes -->
+<section class="section">
+  <h2 class="section-title">4. Hashes de Archivos (SHA-256)</h2>
+  <p style="color:#8b949e; font-size:13px; margin-bottom:12px;">173 hashes asociados a muestras de Amatera Stealer y ACR Stealer. Utilice el campo de b&uacute;squeda para filtrar.</p>
+  <input type="text" class="filter-input" id="hashFilter" placeholder="Buscar hash..." oninput="filterHashes()">
+  <div class="hash-container">
+    <table id="hashTable">
+      <thead><tr><th style="width:40px">#</th><th>Hash SHA-256</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="mono">04c30011603048f69ad9ecf57ce580c1ebd20fb49a80b259e9628eaec79179a8</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>2</td><td class="mono">05db76843f81795f9a736cb2609197d5f018978b33277f420fd17c166caddb93</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>3</td><td class="mono">08bf6ddf7d0313477a51787d82ca3b66c102a93fcabdf53c891aa1ed331ea4a9</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>4</td><td class="mono">0967e0e1f15ddfb9b3d7451832dd3a653177679b0b56a7c19aea8e5fd82bd420</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>5</td><td class="mono">096aabe166d4cec286d31042107c793431ce7ae75d208c7f7afbe822361ce329</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>6</td><td class="mono">0df602fe581b9f252c21da7c6efc8c7bf1b9c7e83029e4b64ee1d3de6c771544</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>7</td><td class="mono">127a367df685ce3b04eed27ce58e148fba7c1b2273e280c531c0b3a2955dd2e6</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>8</td><td class="mono">133d56d17ba934898306f4ad442ee679f9e161e0237c968ff37f2abc487d3f0d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>9</td><td class="mono">137c4590924df22317a90bdd9e1c9bec64def8905fe379e5f13beced9b2bb012</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>10</td><td class="mono">14daf77c40fa3c1ac8aef6071a818681412f36cf1565ef8cc9dc57085665476e</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>11</td><td class="mono">16dd58a3c2fc840fa00de80ea9dd0524ba2f02943ce049de2898598285cc9541</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>12</td><td class="mono">19e839202598018bab2825e24d9bdf9fad4d0ad93aada919fe13552d5a10d44b</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>13</td><td class="mono">1ce829beec85e6633cc20abc1093395bfbd21e5235cec2ab2a447e8b14cc70d3</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>14</td><td class="mono">1f2791dcde3845bff10d8b5612e8ee788a64d2f754a00707c85d37b0ffe6d2cc</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>15</td><td class="mono">22ef775bce102887a4965df0cd83d5863ff43393f2eab3fc65e6c3d2c0584cf0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>16</td><td class="mono">24d94bdd8e8ce62a3ff0b704b75f01eac9345bab67086aad272dd3ac9a0c49a3</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>17</td><td class="mono">309e4e46e9aaf1376b7c46385269082412f3372a8071d0c4b8987bf498121874</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>18</td><td class="mono">31875081489b524d1cad448458de4732d13e0a570c762505765186834d66d9ea</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>19</td><td class="mono">318863986703d8e2bcff4a240f8d3e9f351b32741c1981e750e9546c42241bd5</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>20</td><td class="mono">33537764b8aa3b4c53e45181681fa67233411f56646dbad1aae45b391ba2b52b</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>21</td><td class="mono">360114ed2b6d6bc4c22c1a7918e58884013b733e3f3b3112b789ce0d8e77e03a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>22</td><td class="mono">3622330a5663d834856c72f1666ca3530319e82edc6b0db28b88360acebb64c4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>23</td><td class="mono">36d2e6c50d2b153d1caae36199a6bf0d102cdb1ce1f79777bb60619ac67ba688</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>24</td><td class="mono">3794a53a91357b30bf3329141171447d2e10e5e102db13a95838ec4669fee5d6</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>25</td><td class="mono">38589033da08fa0e259543a44d0eacc05606ec9350e3d86fee9ebaf9124992bb</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>26</td><td class="mono">3ac830b1499c00d1433f19e833f68286f462b996ceec568ef69453aaee9b9c64</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>27</td><td class="mono">3b562a133ca05f1921c230383726049fb1eb7f1af0ac49194b0c047c87f76719</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>28</td><td class="mono">3c4da6c520bb4b7ed8606bacf4c2956a5f7e3a77c1e01607bb270ae7765608c9</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>29</td><td class="mono">3d942864e59d5dd6a6b0e138aaf63bd31d5d21e10a9c3eef7c1eccd01900455d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>30</td><td class="mono">3f0d14ae0aee61e3342d12a0b84bfd240257b589cba4b5189f126cbe44777ced</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>31</td><td class="mono">3f4a9dd1e512ef05d6871676dc10094e8da5eaa4cb9df4fcbb61b27bca3dee89</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>32</td><td class="mono">40ba596be5c0c702a2ca4f156b7e3102cafe324e5191d25c25bdd12b521fe59b</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>33</td><td class="mono">421b2bb856c017b29788073ebcfce11a684555d9945a0377e4f8e27959b02ee1</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>34</td><td class="mono">429ab5f3d38e47a6aeda69cee14475745264bbad865aebfa7e0a1774feb9d44a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>35</td><td class="mono">42c2f7ffab89d769906f4cb65bf9f30f61f13bc4dba128d57845f94bb9c8163f</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>36</td><td class="mono">42eabf1e8e5e5f2c2cbeaf47b277ba768d4c84b65b44f5db5d811c4347da59f8</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>37</td><td class="mono">43125fdc0fbdd0612b985f03298b7bd505f3f286ce2958d83e5d4bc5f46da870</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>38</td><td class="mono">4341879fe90a6edb5c8e826e25c37cb8a7f49890781ffe2732b3bd963795a63c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>39</td><td class="mono">4475e6254c8c10e7a1ee231cafac459388de7e026bf8987dd11832b0b0fff30c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>40</td><td class="mono">44e5b0bf7843024b86ae669ac96143fb84388ab03b0ae4887066cc3118d1cbe0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>41</td><td class="mono">46bd2546646cc5f09ede431e971813f48b243c9d38af1eed5bcc97747908bfb5</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>42</td><td class="mono">47f04785b7414f2c9628fc544dc05c8da43b186ce3c9b3790d7af28bb2b2bcde</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>43</td><td class="mono">48da3a8666a96374253c20e98608803a41a8057a318e458f2241b9e97ec13263</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>44</td><td class="mono">49e7a5329a19e32df5998efd8bb3b5eaeed28b13fe79218949693706f239305d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>45</td><td class="mono">4a0591336c7df9c61ed2656ac8d943cbc5b9a1375d83723e1cc9e3c71dd9a01c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>46</td><td class="mono">4a1b0e3635668e15ccadb554acd571109d8e5d3398deb39b0346aebcb6561d9b</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>47</td><td class="mono">4afa12e92cb5cfa1ce31dc3679576b3dd70cb0c14c0fa5105c09612b6c515bf4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>48</td><td class="mono">52faca2228eb5a3f2820e792279f338c5a0faffada1ce3b554873a128b234013</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>49</td><td class="mono">58e5b3002218fb778f2648c6096655aeab2a9b62973dbd7f7dc6a170edf522ef</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>50</td><td class="mono">5be1cde221d957444d8f4db59f50e0f14363ef4de69f0f46af460c592adb6100</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>51</td><td class="mono">5f2e9a0da6938034fb0310f82d85afbe923df5963364b2b257ace0f9b33e51c4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>52</td><td class="mono">6040a2950f28f8d4ea16f8b9f73f95fca4043ec5356eeb14e1dcdd621ead06cc</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>53</td><td class="mono">60474d9dfcd8e77331b3f317441bb0c065d924b2dbb8b4dcc9ad917f4074a302</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>54</td><td class="mono">64bc219bca2e3a4426199b2cf54aba7df8ea53f8a0ed04364aae9a654e96efe1</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>55</td><td class="mono">6678141627eeb3bbb72f2e48c0dcfc1f7bbe7c54f1a7787dcba7e780020e2167</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>56</td><td class="mono">6840d20d78db83e0bd6f81e3c7cb5cda6577336ecbce38626e2299d79082ad5a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>57</td><td class="mono">6962de7de92116ea5eae20476f3490aa862091196d1eb00e216ff1a4960a3c10</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>58</td><td class="mono">6c0fe0efb2bbfaa12c321e747a893ad0c9fa1e4e549a193a36a86bc2edb2c6d4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>59</td><td class="mono">6d0068de8bc140cfe20a79d0ce8f1feb5778c13f93e65938e0114d236291117e</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>60</td><td class="mono">6d202bab1a6a981beb3d87936dbb2b526f4ef2d0c317194cccec8be324c05a48</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>61</td><td class="mono">6e2ae6f112a0bb20a7b4907976b4279a8afb3778a6adb8b4b5db0228f257f49f</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>62</td><td class="mono">6fae124d09e3eb213357175e59fded348b9f47fdb30a7a660f1e65771cb6eef7</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>63</td><td class="mono">72817b35ab376da800b5403fe3595676680dad41033a0f7107d0261a086f6eae</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>64</td><td class="mono">742f5543ca17514b9a3b2fd7227f962cea17477050b03ebe8e07f1b1bdf1dea1</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>65</td><td class="mono">76a10b1097d80a92a99fb3fa313c290f236e1e69be703accd20c600bc164841c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>66</td><td class="mono">7c7aad09308047f103aa8d2d692707b5e2adf4ac219862ef1fbaf5e97854ee0f</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>67</td><td class="mono">7e01ba0fd3dbc631f49c5b6a14fd954efde9bed0b00c7fa150665c6407c05b68</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>68</td><td class="mono">7f83cf01abd97ca0fdac21991a6ddd45b57815ddd5bdc1a62e0f469550b6e9a5</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>69</td><td class="mono">7f9700249874f38f183556f8028b2d59aaa20fa0cb03a427772507eb480ca103</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>70</td><td class="mono">809be9b70095f131db8a41629bd079424975668ef78fb75297d4e8251907d70c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>71</td><td class="mono">80d289a581c8ef758ef16165b35a2294fa21b27c60dafe81bd706da962127f88</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>72</td><td class="mono">80f1c57294dadc4551a0a5d830dd508df0a491a7d4fc48c85e47ef795a97821d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>73</td><td class="mono">8110d62f3238365518dfaf9e673c5cae2ffee7dfdb8e6d48bfc2d211deab72c5</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>74</td><td class="mono">83b63027f77ccc7d1cdfd22ff160a20ff129ef660fb86af5839a675290c73181</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>75</td><td class="mono">84c35ac3554103162155a3c1fa2211a4ab703d9b1614b69a75248f300cf35eac</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>76</td><td class="mono">859834fba7aec413f91a24d7b72473f9a587e1e5e3ea15498050d26400228f4f</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>77</td><td class="mono">890950b1f00724110afa7ca2e5381fc49576bd20985444910e9c0c7cb6e770c6</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>78</td><td class="mono">8975c1f6424eaff78d99c9e5dc69d63c0b3150146cef490e9935fe80d1fc8a04</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>79</td><td class="mono">89b32e6252d2b66e15f255f803d1e9936431f3ec05a343e36e0279c42bb2d2a9</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>80</td><td class="mono">8a5e13b35745a2fd1de5567ee10e0493c437b59a6c8bd081f7543a71d3affe19</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>81</td><td class="mono">8a5e9cbdc3fdf28bbf5d97559f6d6a6a76a89e25f2e6e6aa615ecf9d5fd1f2fb</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>82</td><td class="mono">8bc815d40768f04720d1112b7d477e90c2f26611ae0488f2bb43502c008868e9</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>83</td><td class="mono">8d3634a77504cb0eee0f0f853bebaeb501a8147e104eb0f381a93b497272e34f</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>84</td><td class="mono">8d9044c428b2cad9b1ff7218d8a7d652964abb9a567468727808fd63ec9e60a8</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>85</td><td class="mono">8da7cca815469604dd7e360c3567db5ff1354fe662a45392a3cbfdfcb5acb047</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>86</td><td class="mono">8e7d408cc63726a0e53adb06749ab7a3115e11cac4e7befe72c7135d1e1278a8</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>87</td><td class="mono">8f237a902bc62ad96dd5643275f4ad1ea64cb5dedbcc16d62db0e6de25cd9e5b</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>88</td><td class="mono">8fc16b78b93594da17f958aecb690a8b39cdeabb63639887aa65a82038b0639c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>89</td><td class="mono">903af605398c2582a90df8ca56fa6b780fd29d6892ec0e9dcaa7770d9e5329a0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>90</td><td class="mono">904fa94df03c2933c589401f3905511461b10f7a21dcd68a8c4317693a9e6f79</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>91</td><td class="mono">917c89e14b81f4d2f76ae245974d5b6bc596cccee6be901ce8c5840e73ea1c63</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>92</td><td class="mono">93996926637363d89936b9c878c11e0c5289c8aadecd07cbd7475e7caab83595</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>93</td><td class="mono">9560b4aaff3989b986697e642528601e821f306b7b4161131b5bf5bdf83786d0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>94</td><td class="mono">986b8a112ee72aff84800420d69524c35bfb2c307779d2b440d2c78734f2d130</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>95</td><td class="mono">993f59eea8a62974d98d56f6f5465d05b391b6d5272493951e7b59e37a87ed9a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>96</td><td class="mono">9a6222acd09d0f5c562df1e6cf9de913e6e19525ff2c299b3ccfefe5b442fe5c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>97</td><td class="mono">9cdc77b08aa5d2a1b7ff74d9adbbc6845c14764bb8c3017b51510cd1a46a0db9</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>98</td><td class="mono">9f91c9f0839fb08719d3426ffc51a343c318482fec1a09c58e1ca304b945a333</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>99</td><td class="mono">a03d51cf173223b030a2efc043903a53c17307c81ba871455f700c799d80a081</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>100</td><td class="mono">a130899c3d7edb54817005b0e62da8512d674e706aa479c6c5885e221bd374e4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>101</td><td class="mono">a214d286049720fb67ff97716d5695a5c7af9644aa9e1e91f85a291db6f0b074</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>102</td><td class="mono">a325ae77780855c5959c237db9cc5dfb215bda7605d8e0a03c25cb33a76003e7</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>103</td><td class="mono">a389ea8e6a5d25145dfeb476a6d79a4ac95c0d252775e0f38400368b70597c89</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>104</td><td class="mono">a54be7b1aefe64427a8a60ad27d2d6a2a2f862c3c3598f05593ef6c44d37a47c</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>105</td><td class="mono">a59b4a80e971c197c10fc8d37c2e7936618a59d25b0c3f3bc5fb8270043e778e</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>106</td><td class="mono">a6087401434c0ce8a2b141a1b87ee301d7945b7a8c51a3aee5cde72a19a632d6</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>107</td><td class="mono">a7987ec4361b890bc4248964b5b3cb79a3dcdb1e0044df5377a335bbee351857</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>108</td><td class="mono">a857af09fdfbceebcfdca6a0c8bb242bda95f1250f69225680e45c13487a568e</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>109</td><td class="mono">a8f5ad6064065fe0821daa6aef489b8ae3ac61b8dbe245af7dbfec19bcab05b4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>110</td><td class="mono">acf12a0375d46897a69d730e32b3d8c14ca79f593db0d602fc398deb91430575</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>111</td><td class="mono">af421446784776aa11a0542445141d44e083ee683fff905b04dfdaf3e51ea479</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>112</td><td class="mono">b0c684a54ee747c2241eff998c3b2c4fdc6f17c3c74637c21bcbcbfdcde44e72</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>113</td><td class="mono">b407f05eae27d33fb5a71e5969c824732853248bb4905d8cca541d556e5decba</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>114</td><td class="mono">b4363643a18007f3a1fd4e68269f87f6b78b0fb7390021df606901fd87c87aab</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>115</td><td class="mono">b5b8fa30d56490fc8385369ec7adcf3f1cc334b2204c910d7da43fdc06a4c08d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>116</td><td class="mono">b999ccdeb2d043b645c9989ae4330f8abe039a6708bdbdfded750cc5f91a8e09</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>117</td><td class="mono">bb129862e059eb57df8d01311dfcae333d34f47a4a95f0f916c871b1aefb31f8</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>118</td><td class="mono">bbd76bcc6023e877ba553fe54cd072bed8ad483ce2fc778417600df0c05701a0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>119</td><td class="mono">bfcd2440a0fc09819ee4034cab2a1f22a8d60a4b8812d65fd426ff5b7af1155d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>120</td><td class="mono">c0709c02d27a88b78939bc422e738af70b1455580a5ef7f3169b2868ecdd584a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>121</td><td class="mono">c251c36277cccfca55e7807c1720dd372012aff5ee6c6f27f58a9e1c1d753794</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>122</td><td class="mono">c25f55c1b8c8df717a347733bd13b8fe544969cdbdb81eace3d41b737179cd64</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>123</td><td class="mono">c39cf50252f271b3a7fb96429606c7acb791457076a80fb6bd8fb7302eae08c2</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>124</td><td class="mono">c62e8f6718bd826dff060996de02cab86d78385b8c147b8c21289067842bfe20</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>125</td><td class="mono">c641fcafd2aa18b7613c042deb8160ec9519b4c6795d42848a1ea42d3c0ecaef</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>126</td><td class="mono">c94be154ff82f46d6cfd34bae05ba8ae2502fe49e4eee23851f7b1db406adb21</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>127</td><td class="mono">ccc9acd19fa263eae1f879c6404f2a73fd0bcb0092e25d3c44f63f0cf6d5779d</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>128</td><td class="mono">cd713042c74ca5cd390ae794aa61e745df5d8b43f24b67b58336756dff3612f2</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>129</td><td class="mono">cf4a556c2adaf3f3c38c2dffd663cccb21606b9cfe4760bf87d970569669975a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>130</td><td class="mono">d22eea2a1ad481932a96c5f1fa5f420f7f3754bcda91f8b8b5ef179158241a4a</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>131</td><td class="mono">d2d99ee55ce67286247f7acc45c8cff8dbf58d018298f854a6f3e0d41c4320e0</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>132</td><td class="mono">d31f0db296f0b8588af3b8094772ec57f7c51ce95d1bdec0c7ddc45994c4669e</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>133</td><td class="mono">d656f7f2013255b19c2c17bbc6dcbf00c81ac61e6109bc5b439053d510e8c383</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>134</td><td class="mono">d83fe96db4f4f9ce7049af471e78fabd425cbbfc9bc1f5ee474b80c46bb08493</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>135</td><td class="mono">d8a855515e8bc62c09a90698218c9befb7a5dcc8967852cb05721432c6eaaf45</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>136</td><td class="mono">d8dbbcab910ae421f9194f25e6e9a3604205fd4d006980c710a023e26fb416a1</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>137</td><td class="mono">dcca439390582b45f9a0b3e30f59c8ca43aaee050d1a6db3de9e5286dad4b765</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>138</td><td class="mono">dd0d7e49323ffad1a9803f1299dffc5dd38ab96bc7e2ae6ba1509dc7944150e4</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>139</td><td class="mono">deab8293009b0660cd094d5596e4627d5811ec20ab8dc90253431d3afc7428af</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>140</td><td class="mono">e102e3fc64fd8e6e688dfab60761c3cbb3e5b7b9127000c5136a0063b28deadc</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>141</td><td class="mono">e2809f1d32105a31ef82ed30cc6d1dd6ed93b17a335dc9e0f66b295b6aee5e30</td><td>IBM X-Force / VirusTotal [A1/B1]</td></tr>
+        <tr><td>142</td><td class="mono">e43ebc41d3091fa5353d38504557b7b91757a3f1049105a034064d87f3b4e650</td><td>Feedly [B2]</td></tr>
+        <tr><td>143</td><td class="mono">e5a27de41e2a586b44f92622fc025be4d24c2c292ebcf24c11c4fe47364d5430</td><td>Feedly [B2]</td></tr>
+        <tr><td>144</td><td class="mono">e73497f7c3d311faa8af5c83aafdfd08fd2cf3631cf6df295b0241033e4a11b4</td><td>Feedly [B2]</td></tr>
+        <tr><td>145</td><td class="mono">e7cdf0c76ebbc46f9521d16cd8f3ee8ff55d5e6a20f50a8c9a02e20700aa3b38</td><td>Feedly [B2]</td></tr>
+        <tr><td>146</td><td class="mono">e9f38fe0e1e22b28f05c5079c9436946e0b20ba9f73d719b0dc782ed8f392a23</td><td>Feedly [B2]</td></tr>
+        <tr><td>147</td><td class="mono">eb11fbb9fdc5a0ffab884629c0c24042912ac85eedcc5becb72606ecfb603065</td><td>Feedly [B2]</td></tr>
+        <tr><td>148</td><td class="mono">eb20c5b57c3f8518ef554936d492d96f7ebbfda2e5210669fe0ed8a651ec1392</td><td>Feedly [B2]</td></tr>
+        <tr><td>149</td><td class="mono">ebb439fd5a48a86a3b1eecd66929f6692b7f6e7a4b48238a1340566171e49c70</td><td>Feedly [B2]</td></tr>
+        <tr><td>150</td><td class="mono">ec09d94ab15223852ae23c9e9245c880aada90e1de590feb34334ce28e7e8de9</td><td>Feedly [B2]</td></tr>
+        <tr><td>151</td><td class="mono">eefe961b5e4ee1bab6379431c0a0d831fd35df5bbfeb9f3d4109def041182852</td><td>Feedly [B2]</td></tr>
+        <tr><td>152</td><td class="mono">f49e6edb57d0b4f4dd37cf695ab54a35af2b016ab6bae2e555be22a7141cde55</td><td>Feedly [B2]</td></tr>
+        <tr><td>153</td><td class="mono">f4be3316d1283766d8479e1ae49b0f2b114ca5dd4fc076cb8d350636d4360da1</td><td>Feedly [B2]</td></tr>
+        <tr><td>154</td><td class="mono">f4d640102f791f45864d15702ea91c2f4acca45c424ee05f34a4112aa1a0dd87</td><td>Feedly [B2]</td></tr>
+        <tr><td>155</td><td class="mono">f5729e4772ff54d9d467d8db254c220e7880a50a28820135294ec7d5df37a89c</td><td>Feedly [B2]</td></tr>
+        <tr><td>156</td><td class="mono">f59df0373050020d46cc36bdec28542e71136d7a7988f8b1576272c8f1f5afbb</td><td>Feedly [B2]</td></tr>
+        <tr><td>157</td><td class="mono">f7b08d7183bc1b1ec18a3f12496243a52f14a1535b776771b02cffe1760145c7</td><td>Feedly [B2]</td></tr>
+        <tr><td>158</td><td class="mono">f89e7b0c6408f89c73bfa7c6f97d28c7bca0c067bcea97a524c10a377e55ee50</td><td>Feedly [B2]</td></tr>
+        <tr><td>159</td><td class="mono">fa5d5774063fe032b9be993617435b57da556c4ce2cef267581acb493098b76b</td><td>Feedly [B2]</td></tr>
+        <tr><td>160</td><td class="mono">fcd37d51ca9d72e7a38df466a2495e7cc4478e820f0d6953fb617bfe31142449</td><td>Feedly [B2]</td></tr>
+        <tr><td>161</td><td class="mono">fe5b16ab3a33610667334967a1d4e314e4291305390fc893060efda132dc7bd9</td><td>Feedly [B2]</td></tr>
+        <tr><td>162</td><td class="mono">fe65744e7490a23a0dc2ee6914184fbbc0e0f9815a285928a5b803de59959c85</td><td>Feedly [B2]</td></tr>
+        <tr><td>163</td><td class="mono">120316ecaf06b76a564ce42e11f7074c52df6d79b85d3526c5b4e9f362d2f1c2</td><td>Feedly [B2]</td></tr>
+        <tr><td>164</td><td class="mono">59202cb766c3034c308728c2e5770a0d074faa110ea981aa88f570eb402540d2</td><td>Feedly [B2]</td></tr>
+        <tr><td>165</td><td class="mono">ad0bfefa643b395400d4c89181446dbfec57f263dda39555c2ef5e704a9e6eb6</td><td>Feedly [B2]</td></tr>
+        <tr><td>166</td><td class="mono">f82938352cebfe4338e0e3e763cfee88aa5dd6229ac36200ce0392619153f4cd</td><td>Feedly [B2]</td></tr>
+        <tr><td>167</td><td class="mono">64010a9fe4483155044ad76aecbd2cdafab0fc1399e4ae0c644bcce6acbf7f58</td><td>Feedly [B2]</td></tr>
+        <tr><td>168</td><td class="mono">2db0c548a91356a4f79bcad8d492342699a5842b36cd813485145df0c2957c08</td><td>Feedly [B2]</td></tr>
+        <tr><td>169</td><td class="mono">68f9e86795c5dd817dec72f776ea0162a8c4a9cef26b54843fac00c101158ba1</td><td>Feedly [B2]</td></tr>
+        <tr><td>170</td><td class="mono">2df520219dd0db59d75203dec58c8d0dcce55b4e947defb1df30fdce4af982da</td><td>Feedly [B2]</td></tr>
+        <tr><td>171</td><td class="mono">4867b739b7a4cb72fdd88c7716150e12183b98a07a752753ced440355a5ee193</td><td>Feedly [B2]</td></tr>
+        <tr><td>172</td><td class="mono">38cd4bb0d7e4b8bc5de10df2a2554939ae96642109567e103d779b6eb19c40ae</td><td>Feedly [B2]</td></tr>
+        <tr><td>173</td><td class="mono">12ab29ed1c3f60092c101e9c8451ff44fda6c9787c6e32e3956e9a645be5dcee</td><td>Feedly [B2]</td></tr>
+        <tr><td>174</td><td class="mono">0111ffb0dab4bdef8c8788e4ce6ad4fc071b9f7b1f3affb7ead8d5df9582f34f</td><td>Feedly [B2]</td></tr>
+        <tr><td>175</td><td class="mono">006f0054609064c00d3d217ee37f924b4cf8c4fabde362408cdec1446d719913</td><td>Feedly [B2]</td></tr>
+        <tr><td>176</td><td class="mono">00b84eae83e4cd6165255247026c702c2c88f5cea8a1032187c2b842dc54095d</td><td>Feedly [B2]</td></tr>
+        <tr><td>177</td><td class="mono">dc363b99506502dac735b4b5636dfeadc07fec6742140da0d89673110538e532</td><td>Feedly [B2]</td></tr>
+        <tr><td>178</td><td class="mono">f7131fc0267d5e0eae0b00ee05eb221351910114d1794c30997a5e45e24059ef</td><td>Feedly [B2]</td></tr>
+        <tr><td>179</td><td class="mono">bbf45b03ba04ceab793e2a4dda578c9d4881ba26d1a39bc1257a7996f7c3dfac</td><td>Feedly [B2]</td></tr>
+        <tr><td>180</td><td class="mono">bc55d60466f7d1a03e4002759aa95cae2bd08cf9c0685f2f822ebcc8956569b2</td><td>Feedly [B2]</td></tr>
+        <tr><td>181</td><td class="mono">8721d3af5d2d01dc76d8102716dd6bc4271284a7682df46f10b6aacfd5b2cd48</td><td>Feedly [B2]</td></tr>
+        <tr><td>182</td><td class="mono">3e99b0f5eb750b818e55f23a6f1fcf8213e7ed3ac850529ade7e6fa6b7afe0e2</td><td>Feedly [B2]</td></tr>
+        <tr><td>183</td><td class="mono">2428bd931dde4d818437ff9e12197bdbb4a5c0548bc7c068bb732c7bc4847554</td><td>Feedly [B2]</td></tr>
+        <tr><td>184</td><td class="mono">e4a1b01b2a76ef02a2f6ea32275eeee4f44b867d2d5768bf89f870cbfacfa47e</td><td>Feedly [B2]</td></tr>
+        <tr><td>185</td><td class="mono">0cec3100b84f95dfb1e856390cf41809b653812fd4d51025517ba11b167442fa</td><td>Feedly [B2]</td></tr>
+        <tr><td>186</td><td class="mono">b9ff92917225778b82c30587d5559628f0ab14c359bd2b6ae4981ff262480fc8</td><td>Feedly [B2]</td></tr>
+        <tr><td>187</td><td class="mono">ca6b92b816c98e3fca7b287cf665257a93f1a35cc768cae223ac31a97d1af203</td><td>Feedly [B2]</td></tr>
+        <tr><td>188</td><td class="mono">e01fa4ca545c8a4002b9afe3243f80027b76ef5fb81fd5d9e9d1dcaddfaca54b</td><td>Feedly [B2]</td></tr>
+        <tr><td>189</td><td class="mono">f213970c9bde24a7b774e16803b9df9be69e02f1795e777241ada5201ed72666</td><td>Feedly [B2]</td></tr>
+        <tr><td>190</td><td class="mono">4ad9fd2b5519c521765a80f3411f825adcd38409ba6cfefd595873c9c6db92c3</td><td>Feedly [B2]</td></tr>
+        <tr><td>191</td><td class="mono">9375878e6780ed937d68f58904d27257c5ec7af0fef24c6126a8e05eb2dbd4f3</td><td>Feedly [B2]</td></tr>
+        <tr><td>192</td><td class="mono">532c9bc2e30150bef61a050386509dd5f3c152688898f6be616393f10b9262d3</td><td>Feedly [B2]</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- PART B: STIX 2.1 BUNDLE                                     -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">5. STIX 2.1 Bundle</h2>
+  <p style="color:#8b949e; font-size:13px; margin-bottom:12px;">Bundle STIX 2.1 completo con todos los indicadores de compromiso, objetos de amenaza y relaciones. El bot&oacute;n inferior permite descargar el JSON para importarlo en plataformas TAXII/SIEM.</p>
+  <button class="btn-download" onclick="downloadSTIX()">Descargar JSON STIX 2.1</button>
+  <div class="stix-block" id="stixBundle"></div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- FUENTES Y ADMIRALTY CODE                                     -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">6. Clasificaci&oacute;n de Fuentes (Admiralty Code)</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>Fuente</th><th>Fiabilidad</th><th>Credibilidad</th><th>C&oacute;digo</th></tr></thead>
+      <tbody>
+        <tr><td>IBM X-Force</td><td>A &ndash; Completamente fiable</td><td>1 &ndash; Confirmada por otras fuentes</td><td><span class="badge badge-info">A1</span></td></tr>
+        <tr><td>Proofpoint Threat Insight</td><td>A &ndash; Completamente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">A2</span></td></tr>
+        <tr><td>FortiGuard Labs</td><td>A &ndash; Completamente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">A2</span></td></tr>
+        <tr><td>eSecurity Planet</td><td>B &ndash; Normalmente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">B2</span></td></tr>
+        <tr><td>SecurityOnline / Daily CyberSecurity</td><td>B &ndash; Normalmente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">B2</span></td></tr>
+        <tr><td>CybersecurityNews</td><td>B &ndash; Normalmente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">B2</span></td></tr>
+        <tr><td>Feedly AI</td><td>B &ndash; Normalmente fiable</td><td>2 &ndash; Probablemente verdadera</td><td><span class="badge badge-info">B2</span></td></tr>
+        <tr><td>VirusTotal</td><td>B &ndash; Normalmente fiable</td><td>1 &ndash; Confirmada por otras fuentes</td><td><span class="badge badge-info">B1</span></td></tr>
+        <tr><td>CVE Details / NVD</td><td>A &ndash; Completamente fiable</td><td>1 &ndash; Confirmada por otras fuentes</td><td><span class="badge badge-info">A1</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="admiralty-note">
+    <strong>Sistema de Evaluaci&oacute;n Admiralty (NATO):</strong> El c&oacute;digo Admiralty es un sistema est&aacute;ndar utilizado por las comunidades de inteligencia de la OTAN y aliados para evaluar fuentes de informaci&oacute;n. Combina dos escalas independientes:
+    <br><br>
+    <strong>Fiabilidad de la fuente (A-F):</strong> A &ndash; Completamente fiable; B &ndash; Normalmente fiable; C &ndash; Bastante fiable; D &ndash; No suele ser fiable; E &ndash; No fiable; F &ndash; No se puede juzgar.
+    <br><br>
+    <strong>Credibilidad de la informaci&oacute;n (1-6):</strong> 1 &ndash; Confirmada por otras fuentes; 2 &ndash; Probablemente verdadera; 3 &ndash; Posiblemente verdadera; 4 &ndash; Dudosa; 5 &ndash; Improbable; 6 &ndash; No se puede juzgar.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- REFERENCIAS                                                  -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <h2 class="section-title">7. Referencias</h2>
+  <div class="card">
+    <ol class="ref-list">
+      <li><span class="ref-source">IBM X-Force &mdash; InstallFix Report:</span><br><a href="https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991" target="_blank" rel="noopener noreferrer">https://exchange.xforce.ibmcloud.com/report/details/guid:f52c99c24f704788b8036f1ead587991</a></li>
+      <li><span class="ref-source">SecurityOnline &mdash; The Vibe-Coding Trap:</span><br><a href="https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/" target="_blank" rel="noopener noreferrer">https://securityonline.info/the-vibe-coding-trap-fake-claude-code-installers-unleash-amatera-malware-via-search-ads/</a></li>
+      <li><span class="ref-source">eSecurity Planet &mdash; Fake Claude Code Install Pages:</span><br><a href="https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/" target="_blank" rel="noopener noreferrer">https://www.esecurityplanet.com/artificial-intelligence/fake-claude-code-install-pages-spread-infostealer-malware/</a></li>
+      <li><span class="ref-source">CybersecurityNews &mdash; Claude Code Vulnerabilities:</span><br><a href="https://cybersecuritynews.com/claude-code-vulnerabilities/" target="_blank" rel="noopener noreferrer">https://cybersecuritynews.com/claude-code-vulnerabilities/</a></li>
+      <li><span class="ref-source">Feedly Threat Intelligence</span> &mdash; Seguimiento de InstallFix / Amatera Stealer / ACR Stealer</li>
+      <li><span class="ref-source">VirusTotal</span> &mdash; An&aacute;lisis de muestras de malware</li>
+      <li><span class="ref-source">CVE Details / NVD</span> &mdash; CVE-2025-59536, CVE-2026-21852</li>
+      <li><span class="ref-source">Proofpoint</span> &mdash; Amatera Stealer: Rebranded ACR Stealer analysis</li>
+      <li><span class="ref-source">FortiGuard Labs</span> &mdash; SVG Phishing / Amatera Stealer campaign</li>
+    </ol>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p class="pub-date">Fecha de publicaci&oacute;n: 12 de marzo de 2026</p>
+  <p><strong>TLP:CLEAR</strong> &mdash; Este documento puede ser compartido sin restricciones.</p>
+  <p>Referencia: IR-2026-0312-IOC</p>
+  <p>Destinatarios autorizados: Equipos SOC, equipos de respuesta a incidentes, analistas de amenazas, administradores de seguridad.</p>
+  <p style="margin-top: 12px; font-size: 12px; color: #30363d;">Informe generado como parte del ciclo de inteligencia sobre amenazas a la cadena de suministro de software.</p>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+// Hash filter
+function filterHashes() {
+  var q = document.getElementById('hashFilter').value.toLowerCase();
+  var rows = document.querySelectorAll('#hashTable tbody tr');
+  rows.forEach(function(r) {
+    r.style.display = r.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+  });
+}
+
+// STIX 2.1 Bundle
+var stixBundle = {
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "spec_version": "2.1",
+  "created": "2026-03-12T00:00:00.000Z",
+  "modified": "2026-03-12T00:00:00.000Z",
+  "objects": [
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--f1a23b45-6c78-4d90-ae12-b34c56d78e90",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Equipo de Inteligencia de Amenazas",
+      "identity_class": "organization",
+      "description": "Autor del informe de indicadores de compromiso para la campana InstallFix / Amatera Stealer."
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Operador de InstallFix (desconocido)",
+      "description": "Actor de amenaza no atribuido responsable de la campana InstallFix que distribuye Amatera Stealer mediante paginas clonadas de instalacion de herramientas de desarrollo IA.",
+      "threat_actor_types": ["criminal"],
+      "sophistication": "intermediate",
+      "resource_level": "organization",
+      "primary_motivation": "personal-gain",
+      "goals": ["Robo de credenciales", "Exfiltracion de datos", "Compromiso de entornos de desarrollo"]
+    },
+    {
+      "type": "malware",
+      "spec_version": "2.1",
+      "id": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Amatera Stealer",
+      "description": "Infostealer distribuido como Malware-as-a-Service (MaaS). Evolucion del ACR Stealer. Capacidad de robo de credenciales de navegadores, carteras de criptomonedas, tokens de sesion, claves API y datos de aplicaciones de escritorio.",
+      "malware_types": ["spyware", "trojan"],
+      "is_family": true,
+      "aliases": ["AmateraStealer", "ACR Stealer"],
+      "first_seen": "2025-05-27T00:00:00.000Z",
+      "last_seen": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CVE-2025-59536",
+      "description": "Ejecucion de codigo no autorizado a traves de archivos de configuracion de repositorio (Hooks/MCP). Permite la ejecucion de comandos arbitrarios cuando un desarrollador abre un repositorio malicioso.",
+      "external_references": [{"source_name": "cve", "external_id": "CVE-2025-59536", "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2025-59536"}]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "CVE-2026-21852",
+      "description": "Robo de credenciales API mediante redireccion de headers de autenticacion. Permite la exfiltracion de tokens de API a servidores controlados por el atacante.",
+      "external_references": [{"source_name": "cve", "external_id": "CVE-2026-21852", "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2026-21852"}]
+    },
+    {
+      "type": "campaign",
+      "spec_version": "2.1",
+      "id": "campaign--e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a90",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "InstallFix",
+      "description": "Campana de malvertising que utiliza paginas clonadas de instalacion de herramientas de desarrollo IA para distribuir Amatera Stealer. Los atacantes posicionan anuncios patrocinados en motores de busqueda y abusan de servicios legitimos como Cloudflare Pages.",
+      "first_seen": "2025-05-27T00:00:00.000Z",
+      "last_seen": "2026-03-12T00:00:00.000Z",
+      "objective": "Distribucion masiva de Amatera Stealer para robo de credenciales y datos sensibles de desarrolladores de software."
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b01",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Malvertising",
+      "description": "Uso de anuncios patrocinados en motores de busqueda para posicionar enlaces maliciosos que imitan paginas de descarga legitimas.",
+      "external_references": [{"source_name": "mitre-attack", "external_id": "T1583.008", "url": "https://attack.mitre.org/techniques/T1583/008/"}]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c12",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Malicious Copy and Paste",
+      "description": "Tecnica que induce al usuario a copiar y pegar comandos maliciosos en su terminal, ejecutando codigo de descarga e instalacion del malware.",
+      "external_references": [{"source_name": "mitre-attack", "external_id": "T1204.004", "url": "https://attack.mitre.org/techniques/T1204/004/"}]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d23",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Command and Scripting Interpreter",
+      "description": "Ejecucion de comandos maliciosos a traves de interpretes de comandos del sistema (cmd.exe, PowerShell, mshta.exe).",
+      "external_references": [{"source_name": "mitre-attack", "external_id": "T1059", "url": "https://attack.mitre.org/techniques/T1059/"}]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "claude.update-version.com",
+      "description": "Dominio C2/Distribucion de la campana InstallFix",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'claude.update-version.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-06T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "update-version.com",
+      "description": "Dominio C2/Distribucion de la campana InstallFix",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'update-version.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-11T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "claude-code-macos.com",
+      "description": "Dominio de distribucion de la campana InstallFix",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'claude-code-macos.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "claude-code-docs-site.pages.dev",
+      "description": "Dominio de distribucion de la campana InstallFix (Cloudflare Pages)",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'claude-code-docs-site.pages.dev']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "nnnnnnnnnnnnnnnnnnnnn.pages.dev",
+      "description": "Dominio de distribucion de la campana InstallFix (Cloudflare Pages)",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'nnnnnnnnnnnnnnnnnnnnn.pages.dev']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "saramoftah.com",
+      "description": "Dominio C2/Staging de la campana InstallFix",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'saramoftah.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "overplanteasiest.top",
+      "description": "Dominio C2 de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'overplanteasiest.top']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "amaprox.icu",
+      "description": "Dominio C2 de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'amaprox.icu']",
+      "pattern_type": "stix",
+      "valid_from": "2025-06-19T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000009",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "playtogga.com",
+      "description": "Dominio C2 de ACR Stealer (predecesor)",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'playtogga.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000010",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "apposx.com",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'apposx.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000011",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "theriygrt.com",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'theriygrt.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000012",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "memory-scanner.cc",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'memory-scanner.cc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000013",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "indeanapolice.cc",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'indeanapolice.cc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000014",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "globalsnn3-new.cc",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'globalsnn3-new.cc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000015",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "globalsnn2-new.cc",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'globalsnn2-new.cc']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000016",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "tyuropium.com",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'tyuropium.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000017",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "dpaste.org",
+      "description": "Dominio DDR (Dead Drop Resolver) de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'dpaste.org']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000018",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "joinmc.link",
+      "description": "Dominio DDR (Dead Drop Resolver) de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'joinmc.link']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000019",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "pktriot.net",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'pktriot.net']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d001a000-0001-4000-8000-000000000020",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "portmap.io",
+      "description": "Dominio C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[domain-name:value = 'portmap.io']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-30T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "45.94.47.224",
+      "description": "IP C2 de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '45.94.47.224']",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-14T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "212.34.138.4",
+      "description": "IP C2 de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '212.34.138.4']",
+      "pattern_type": "stix",
+      "valid_from": "2026-01-28T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "91.98.229.246",
+      "description": "IP C2 de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '91.98.229.246']",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-14T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "104.21.80.1",
+      "description": "IP utilizada para enmascaramiento CDN por Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '104.21.80.1']",
+      "pattern_type": "stix",
+      "valid_from": "2025-06-19T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "157.180.40.106",
+      "description": "IP C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '157.180.40.106']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1fa00000-0001-4000-8000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "78.40.193.126",
+      "description": "IP C2 de ACR Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[ipv4-addr:value = '78.40.193.126']",
+      "pattern_type": "stix",
+      "valid_from": "2026-02-05T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--u001a000-0001-4000-8000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "URL de staging geotravelsgi.xyz",
+      "description": "URL de staging utilizada para distribucion de Amatera Stealer",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'https://geotravelsgi.xyz/ujs/2ae977f4-db12-4876-9e4d-fc8d1778842d']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--u001a000-0001-4000-8000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "URL dropper test.pdf.lnk",
+      "description": "URL de dropper que distribuye archivo .lnk malicioso",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[url:value = 'http://62.133.61.104/downloads/test.pdf.lnk']",
+      "pattern_type": "stix",
+      "valid_from": "2026-03-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 1, hashes 1-32)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 1 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = ''] OR [file:hashes.'SHA-256' = '04c30011603048f69ad9ecf57ce580c1ebd20fb49a80b259e9628eaec79179a8'] OR [file:hashes.'SHA-256' = '05db76843f81795f9a736cb2609197d5f018978b33277f420fd17c166caddb93'] OR [file:hashes.'SHA-256' = '08bf6ddf7d0313477a51787d82ca3b66c102a93fcabdf53c891aa1ed331ea4a9'] OR [file:hashes.'SHA-256' = '0967e0e1f15ddfb9b3d7451832dd3a653177679b0b56a7c19aea8e5fd82bd420'] OR [file:hashes.'SHA-256' = '096aabe166d4cec286d31042107c793431ce7ae75d208c7f7afbe822361ce329'] OR [file:hashes.'SHA-256' = '0df602fe581b9f252c21da7c6efc8c7bf1b9c7e83029e4b64ee1d3de6c771544'] OR [file:hashes.'SHA-256' = '127a367df685ce3b04eed27ce58e148fba7c1b2273e280c531c0b3a2955dd2e6'] OR [file:hashes.'SHA-256' = '133d56d17ba934898306f4ad442ee679f9e161e0237c968ff37f2abc487d3f0d'] OR [file:hashes.'SHA-256' = '137c4590924df22317a90bdd9e1c9bec64def8905fe379e5f13beced9b2bb012'] OR [file:hashes.'SHA-256' = '14daf77c40fa3c1ac8aef6071a818681412f36cf1565ef8cc9dc57085665476e'] OR [file:hashes.'SHA-256' = '16dd58a3c2fc840fa00de80ea9dd0524ba2f02943ce049de2898598285cc9541'] OR [file:hashes.'SHA-256' = '19e839202598018bab2825e24d9bdf9fad4d0ad93aada919fe13552d5a10d44b'] OR [file:hashes.'SHA-256' = '1ce829beec85e6633cc20abc1093395bfbd21e5235cec2ab2a447e8b14cc70d3'] OR [file:hashes.'SHA-256' = '1f2791dcde3845bff10d8b5612e8ee788a64d2f754a00707c85d37b0ffe6d2cc'] OR [file:hashes.'SHA-256' = '22ef775bce102887a4965df0cd83d5863ff43393f2eab3fc65e6c3d2c0584cf0'] OR [file:hashes.'SHA-256' = '24d94bdd8e8ce62a3ff0b704b75f01eac9345bab67086aad272dd3ac9a0c49a3'] OR [file:hashes.'SHA-256' = '309e4e46e9aaf1376b7c46385269082412f3372a8071d0c4b8987bf498121874'] OR [file:hashes.'SHA-256' = '31875081489b524d1cad448458de4732d13e0a570c762505765186834d66d9ea'] OR [file:hashes.'SHA-256' = '318863986703d8e2bcff4a240f8d3e9f351b32741c1981e750e9546c42241bd5'] OR [file:hashes.'SHA-256' = '33537764b8aa3b4c53e45181681fa67233411f56646dbad1aae45b391ba2b52b'] OR [file:hashes.'SHA-256' = '360114ed2b6d6bc4c22c1a7918e58884013b733e3f3b3112b789ce0d8e77e03a'] OR [file:hashes.'SHA-256' = '3622330a5663d834856c72f1666ca3530319e82edc6b0db28b88360acebb64c4'] OR [file:hashes.'SHA-256' = '36d2e6c50d2b153d1caae36199a6bf0d102cdb1ce1f79777bb60619ac67ba688'] OR [file:hashes.'SHA-256' = '3794a53a91357b30bf3329141171447d2e10e5e102db13a95838ec4669fee5d6'] OR [file:hashes.'SHA-256' = '38589033da08fa0e259543a44d0eacc05606ec9350e3d86fee9ebaf9124992bb'] OR [file:hashes.'SHA-256' = '3ac830b1499c00d1433f19e833f68286f462b996ceec568ef69453aaee9b9c64'] OR [file:hashes.'SHA-256' = '3b562a133ca05f1921c230383726049fb1eb7f1af0ac49194b0c047c87f76719'] OR [file:hashes.'SHA-256' = '3c4da6c520bb4b7ed8606bacf4c2956a5f7e3a77c1e01607bb270ae7765608c9'] OR [file:hashes.'SHA-256' = '3d942864e59d5dd6a6b0e138aaf63bd31d5d21e10a9c3eef7c1eccd01900455d'] OR [file:hashes.'SHA-256' = '3f0d14ae0aee61e3342d12a0b84bfd240257b589cba4b5189f126cbe44777ced'] OR [file:hashes.'SHA-256' = '3f4a9dd1e512ef05d6871676dc10094e8da5eaa4cb9df4fcbb61b27bca3dee89']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 2, hashes 33-64)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 2 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '40ba596be5c0c702a2ca4f156b7e3102cafe324e5191d25c25bdd12b521fe59b'] OR [file:hashes.'SHA-256' = '421b2bb856c017b29788073ebcfce11a684555d9945a0377e4f8e27959b02ee1'] OR [file:hashes.'SHA-256' = '429ab5f3d38e47a6aeda69cee14475745264bbad865aebfa7e0a1774feb9d44a'] OR [file:hashes.'SHA-256' = '42c2f7ffab89d769906f4cb65bf9f30f61f13bc4dba128d57845f94bb9c8163f'] OR [file:hashes.'SHA-256' = '42eabf1e8e5e5f2c2cbeaf47b277ba768d4c84b65b44f5db5d811c4347da59f8'] OR [file:hashes.'SHA-256' = '43125fdc0fbdd0612b985f03298b7bd505f3f286ce2958d83e5d4bc5f46da870'] OR [file:hashes.'SHA-256' = '4341879fe90a6edb5c8e826e25c37cb8a7f49890781ffe2732b3bd963795a63c'] OR [file:hashes.'SHA-256' = '4475e6254c8c10e7a1ee231cafac459388de7e026bf8987dd11832b0b0fff30c'] OR [file:hashes.'SHA-256' = '44e5b0bf7843024b86ae669ac96143fb84388ab03b0ae4887066cc3118d1cbe0'] OR [file:hashes.'SHA-256' = '46bd2546646cc5f09ede431e971813f48b243c9d38af1eed5bcc97747908bfb5'] OR [file:hashes.'SHA-256' = '47f04785b7414f2c9628fc544dc05c8da43b186ce3c9b3790d7af28bb2b2bcde'] OR [file:hashes.'SHA-256' = '48da3a8666a96374253c20e98608803a41a8057a318e458f2241b9e97ec13263'] OR [file:hashes.'SHA-256' = '49e7a5329a19e32df5998efd8bb3b5eaeed28b13fe79218949693706f239305d'] OR [file:hashes.'SHA-256' = '4a0591336c7df9c61ed2656ac8d943cbc5b9a1375d83723e1cc9e3c71dd9a01c'] OR [file:hashes.'SHA-256' = '4a1b0e3635668e15ccadb554acd571109d8e5d3398deb39b0346aebcb6561d9b'] OR [file:hashes.'SHA-256' = '4afa12e92cb5cfa1ce31dc3679576b3dd70cb0c14c0fa5105c09612b6c515bf4'] OR [file:hashes.'SHA-256' = '52faca2228eb5a3f2820e792279f338c5a0faffada1ce3b554873a128b234013'] OR [file:hashes.'SHA-256' = '58e5b3002218fb778f2648c6096655aeab2a9b62973dbd7f7dc6a170edf522ef'] OR [file:hashes.'SHA-256' = '5be1cde221d957444d8f4db59f50e0f14363ef4de69f0f46af460c592adb6100'] OR [file:hashes.'SHA-256' = '5f2e9a0da6938034fb0310f82d85afbe923df5963364b2b257ace0f9b33e51c4'] OR [file:hashes.'SHA-256' = '6040a2950f28f8d4ea16f8b9f73f95fca4043ec5356eeb14e1dcdd621ead06cc'] OR [file:hashes.'SHA-256' = '60474d9dfcd8e77331b3f317441bb0c065d924b2dbb8b4dcc9ad917f4074a302'] OR [file:hashes.'SHA-256' = '64bc219bca2e3a4426199b2cf54aba7df8ea53f8a0ed04364aae9a654e96efe1'] OR [file:hashes.'SHA-256' = '6678141627eeb3bbb72f2e48c0dcfc1f7bbe7c54f1a7787dcba7e780020e2167'] OR [file:hashes.'SHA-256' = '6840d20d78db83e0bd6f81e3c7cb5cda6577336ecbce38626e2299d79082ad5a'] OR [file:hashes.'SHA-256' = '6962de7de92116ea5eae20476f3490aa862091196d1eb00e216ff1a4960a3c10'] OR [file:hashes.'SHA-256' = '6c0fe0efb2bbfaa12c321e747a893ad0c9fa1e4e549a193a36a86bc2edb2c6d4'] OR [file:hashes.'SHA-256' = '6d0068de8bc140cfe20a79d0ce8f1feb5778c13f93e65938e0114d236291117e'] OR [file:hashes.'SHA-256' = '6d202bab1a6a981beb3d87936dbb2b526f4ef2d0c317194cccec8be324c05a48'] OR [file:hashes.'SHA-256' = '6e2ae6f112a0bb20a7b4907976b4279a8afb3778a6adb8b4b5db0228f257f49f'] OR [file:hashes.'SHA-256' = '6fae124d09e3eb213357175e59fded348b9f47fdb30a7a660f1e65771cb6eef7'] OR [file:hashes.'SHA-256' = '72817b35ab376da800b5403fe3595676680dad41033a0f7107d0261a086f6eae']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 3, hashes 65-96)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 3 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '742f5543ca17514b9a3b2fd7227f962cea17477050b03ebe8e07f1b1bdf1dea1'] OR [file:hashes.'SHA-256' = '76a10b1097d80a92a99fb3fa313c290f236e1e69be703accd20c600bc164841c'] OR [file:hashes.'SHA-256' = '7c7aad09308047f103aa8d2d692707b5e2adf4ac219862ef1fbaf5e97854ee0f'] OR [file:hashes.'SHA-256' = '7e01ba0fd3dbc631f49c5b6a14fd954efde9bed0b00c7fa150665c6407c05b68'] OR [file:hashes.'SHA-256' = '7f83cf01abd97ca0fdac21991a6ddd45b57815ddd5bdc1a62e0f469550b6e9a5'] OR [file:hashes.'SHA-256' = '7f9700249874f38f183556f8028b2d59aaa20fa0cb03a427772507eb480ca103'] OR [file:hashes.'SHA-256' = '809be9b70095f131db8a41629bd079424975668ef78fb75297d4e8251907d70c'] OR [file:hashes.'SHA-256' = '80d289a581c8ef758ef16165b35a2294fa21b27c60dafe81bd706da962127f88'] OR [file:hashes.'SHA-256' = '80f1c57294dadc4551a0a5d830dd508df0a491a7d4fc48c85e47ef795a97821d'] OR [file:hashes.'SHA-256' = '8110d62f3238365518dfaf9e673c5cae2ffee7dfdb8e6d48bfc2d211deab72c5'] OR [file:hashes.'SHA-256' = '83b63027f77ccc7d1cdfd22ff160a20ff129ef660fb86af5839a675290c73181'] OR [file:hashes.'SHA-256' = '84c35ac3554103162155a3c1fa2211a4ab703d9b1614b69a75248f300cf35eac'] OR [file:hashes.'SHA-256' = '859834fba7aec413f91a24d7b72473f9a587e1e5e3ea15498050d26400228f4f'] OR [file:hashes.'SHA-256' = '890950b1f00724110afa7ca2e5381fc49576bd20985444910e9c0c7cb6e770c6'] OR [file:hashes.'SHA-256' = '8975c1f6424eaff78d99c9e5dc69d63c0b3150146cef490e9935fe80d1fc8a04'] OR [file:hashes.'SHA-256' = '89b32e6252d2b66e15f255f803d1e9936431f3ec05a343e36e0279c42bb2d2a9'] OR [file:hashes.'SHA-256' = '8a5e13b35745a2fd1de5567ee10e0493c437b59a6c8bd081f7543a71d3affe19'] OR [file:hashes.'SHA-256' = '8a5e9cbdc3fdf28bbf5d97559f6d6a6a76a89e25f2e6e6aa615ecf9d5fd1f2fb'] OR [file:hashes.'SHA-256' = '8bc815d40768f04720d1112b7d477e90c2f26611ae0488f2bb43502c008868e9'] OR [file:hashes.'SHA-256' = '8d3634a77504cb0eee0f0f853bebaeb501a8147e104eb0f381a93b497272e34f'] OR [file:hashes.'SHA-256' = '8d9044c428b2cad9b1ff7218d8a7d652964abb9a567468727808fd63ec9e60a8'] OR [file:hashes.'SHA-256' = '8da7cca815469604dd7e360c3567db5ff1354fe662a45392a3cbfdfcb5acb047'] OR [file:hashes.'SHA-256' = '8e7d408cc63726a0e53adb06749ab7a3115e11cac4e7befe72c7135d1e1278a8'] OR [file:hashes.'SHA-256' = '8f237a902bc62ad96dd5643275f4ad1ea64cb5dedbcc16d62db0e6de25cd9e5b'] OR [file:hashes.'SHA-256' = '8fc16b78b93594da17f958aecb690a8b39cdeabb63639887aa65a82038b0639c'] OR [file:hashes.'SHA-256' = '903af605398c2582a90df8ca56fa6b780fd29d6892ec0e9dcaa7770d9e5329a0'] OR [file:hashes.'SHA-256' = '904fa94df03c2933c589401f3905511461b10f7a21dcd68a8c4317693a9e6f79'] OR [file:hashes.'SHA-256' = '917c89e14b81f4d2f76ae245974d5b6bc596cccee6be901ce8c5840e73ea1c63'] OR [file:hashes.'SHA-256' = '93996926637363d89936b9c878c11e0c5289c8aadecd07cbd7475e7caab83595'] OR [file:hashes.'SHA-256' = '9560b4aaff3989b986697e642528601e821f306b7b4161131b5bf5bdf83786d0'] OR [file:hashes.'SHA-256' = '986b8a112ee72aff84800420d69524c35bfb2c307779d2b440d2c78734f2d130'] OR [file:hashes.'SHA-256' = '993f59eea8a62974d98d56f6f5465d05b391b6d5272493951e7b59e37a87ed9a']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 4, hashes 97-128)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 4 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = '9a6222acd09d0f5c562df1e6cf9de913e6e19525ff2c299b3ccfefe5b442fe5c'] OR [file:hashes.'SHA-256' = '9cdc77b08aa5d2a1b7ff74d9adbbc6845c14764bb8c3017b51510cd1a46a0db9'] OR [file:hashes.'SHA-256' = '9f91c9f0839fb08719d3426ffc51a343c318482fec1a09c58e1ca304b945a333'] OR [file:hashes.'SHA-256' = 'a03d51cf173223b030a2efc043903a53c17307c81ba871455f700c799d80a081'] OR [file:hashes.'SHA-256' = 'a130899c3d7edb54817005b0e62da8512d674e706aa479c6c5885e221bd374e4'] OR [file:hashes.'SHA-256' = 'a214d286049720fb67ff97716d5695a5c7af9644aa9e1e91f85a291db6f0b074'] OR [file:hashes.'SHA-256' = 'a325ae77780855c5959c237db9cc5dfb215bda7605d8e0a03c25cb33a76003e7'] OR [file:hashes.'SHA-256' = 'a389ea8e6a5d25145dfeb476a6d79a4ac95c0d252775e0f38400368b70597c89'] OR [file:hashes.'SHA-256' = 'a54be7b1aefe64427a8a60ad27d2d6a2a2f862c3c3598f05593ef6c44d37a47c'] OR [file:hashes.'SHA-256' = 'a59b4a80e971c197c10fc8d37c2e7936618a59d25b0c3f3bc5fb8270043e778e'] OR [file:hashes.'SHA-256' = 'a6087401434c0ce8a2b141a1b87ee301d7945b7a8c51a3aee5cde72a19a632d6'] OR [file:hashes.'SHA-256' = 'a7987ec4361b890bc4248964b5b3cb79a3dcdb1e0044df5377a335bbee351857'] OR [file:hashes.'SHA-256' = 'a857af09fdfbceebcfdca6a0c8bb242bda95f1250f69225680e45c13487a568e'] OR [file:hashes.'SHA-256' = 'a8f5ad6064065fe0821daa6aef489b8ae3ac61b8dbe245af7dbfec19bcab05b4'] OR [file:hashes.'SHA-256' = 'acf12a0375d46897a69d730e32b3d8c14ca79f593db0d602fc398deb91430575'] OR [file:hashes.'SHA-256' = 'af421446784776aa11a0542445141d44e083ee683fff905b04dfdaf3e51ea479'] OR [file:hashes.'SHA-256' = 'b0c684a54ee747c2241eff998c3b2c4fdc6f17c3c74637c21bcbcbfdcde44e72'] OR [file:hashes.'SHA-256' = 'b407f05eae27d33fb5a71e5969c824732853248bb4905d8cca541d556e5decba'] OR [file:hashes.'SHA-256' = 'b4363643a18007f3a1fd4e68269f87f6b78b0fb7390021df606901fd87c87aab'] OR [file:hashes.'SHA-256' = 'b5b8fa30d56490fc8385369ec7adcf3f1cc334b2204c910d7da43fdc06a4c08d'] OR [file:hashes.'SHA-256' = 'b999ccdeb2d043b645c9989ae4330f8abe039a6708bdbdfded750cc5f91a8e09'] OR [file:hashes.'SHA-256' = 'bb129862e059eb57df8d01311dfcae333d34f47a4a95f0f916c871b1aefb31f8'] OR [file:hashes.'SHA-256' = 'bbd76bcc6023e877ba553fe54cd072bed8ad483ce2fc778417600df0c05701a0'] OR [file:hashes.'SHA-256' = 'bfcd2440a0fc09819ee4034cab2a1f22a8d60a4b8812d65fd426ff5b7af1155d'] OR [file:hashes.'SHA-256' = 'c0709c02d27a88b78939bc422e738af70b1455580a5ef7f3169b2868ecdd584a'] OR [file:hashes.'SHA-256' = 'c251c36277cccfca55e7807c1720dd372012aff5ee6c6f27f58a9e1c1d753794'] OR [file:hashes.'SHA-256' = 'c25f55c1b8c8df717a347733bd13b8fe544969cdbdb81eace3d41b737179cd64'] OR [file:hashes.'SHA-256' = 'c39cf50252f271b3a7fb96429606c7acb791457076a80fb6bd8fb7302eae08c2'] OR [file:hashes.'SHA-256' = 'c62e8f6718bd826dff060996de02cab86d78385b8c147b8c21289067842bfe20'] OR [file:hashes.'SHA-256' = 'c641fcafd2aa18b7613c042deb8160ec9519b4c6795d42848a1ea42d3c0ecaef'] OR [file:hashes.'SHA-256' = 'c94be154ff82f46d6cfd34bae05ba8ae2502fe49e4eee23851f7b1db406adb21'] OR [file:hashes.'SHA-256' = 'ccc9acd19fa263eae1f879c6404f2a73fd0bcb0092e25d3c44f63f0cf6d5779d']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 5, hashes 129-160)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 5 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'cd713042c74ca5cd390ae794aa61e745df5d8b43f24b67b58336756dff3612f2'] OR [file:hashes.'SHA-256' = 'cf4a556c2adaf3f3c38c2dffd663cccb21606b9cfe4760bf87d970569669975a'] OR [file:hashes.'SHA-256' = 'd22eea2a1ad481932a96c5f1fa5f420f7f3754bcda91f8b8b5ef179158241a4a'] OR [file:hashes.'SHA-256' = 'd2d99ee55ce67286247f7acc45c8cff8dbf58d018298f854a6f3e0d41c4320e0'] OR [file:hashes.'SHA-256' = 'd31f0db296f0b8588af3b8094772ec57f7c51ce95d1bdec0c7ddc45994c4669e'] OR [file:hashes.'SHA-256' = 'd656f7f2013255b19c2c17bbc6dcbf00c81ac61e6109bc5b439053d510e8c383'] OR [file:hashes.'SHA-256' = 'd83fe96db4f4f9ce7049af471e78fabd425cbbfc9bc1f5ee474b80c46bb08493'] OR [file:hashes.'SHA-256' = 'd8a855515e8bc62c09a90698218c9befb7a5dcc8967852cb05721432c6eaaf45'] OR [file:hashes.'SHA-256' = 'd8dbbcab910ae421f9194f25e6e9a3604205fd4d006980c710a023e26fb416a1'] OR [file:hashes.'SHA-256' = 'dcca439390582b45f9a0b3e30f59c8ca43aaee050d1a6db3de9e5286dad4b765'] OR [file:hashes.'SHA-256' = 'dd0d7e49323ffad1a9803f1299dffc5dd38ab96bc7e2ae6ba1509dc7944150e4'] OR [file:hashes.'SHA-256' = 'deab8293009b0660cd094d5596e4627d5811ec20ab8dc90253431d3afc7428af'] OR [file:hashes.'SHA-256' = 'e102e3fc64fd8e6e688dfab60761c3cbb3e5b7b9127000c5136a0063b28deadc'] OR [file:hashes.'SHA-256' = 'e2809f1d32105a31ef82ed30cc6d1dd6ed93b17a335dc9e0f66b295b6aee5e30'] OR [file:hashes.'SHA-256' = 'e43ebc41d3091fa5353d38504557b7b91757a3f1049105a034064d87f3b4e650'] OR [file:hashes.'SHA-256' = 'e5a27de41e2a586b44f92622fc025be4d24c2c292ebcf24c11c4fe47364d5430'] OR [file:hashes.'SHA-256' = 'e73497f7c3d311faa8af5c83aafdfd08fd2cf3631cf6df295b0241033e4a11b4'] OR [file:hashes.'SHA-256' = 'e7cdf0c76ebbc46f9521d16cd8f3ee8ff55d5e6a20f50a8c9a02e20700aa3b38'] OR [file:hashes.'SHA-256' = 'e9f38fe0e1e22b28f05c5079c9436946e0b20ba9f73d719b0dc782ed8f392a23'] OR [file:hashes.'SHA-256' = 'eb11fbb9fdc5a0ffab884629c0c24042912ac85eedcc5becb72606ecfb603065'] OR [file:hashes.'SHA-256' = 'eb20c5b57c3f8518ef554936d492d96f7ebbfda2e5210669fe0ed8a651ec1392'] OR [file:hashes.'SHA-256' = 'ebb439fd5a48a86a3b1eecd66929f6692b7f6e7a4b48238a1340566171e49c70'] OR [file:hashes.'SHA-256' = 'ec09d94ab15223852ae23c9e9245c880aada90e1de590feb34334ce28e7e8de9'] OR [file:hashes.'SHA-256' = 'eefe961b5e4ee1bab6379431c0a0d831fd35df5bbfeb9f3d4109def041182852'] OR [file:hashes.'SHA-256' = 'f49e6edb57d0b4f4dd37cf695ab54a35af2b016ab6bae2e555be22a7141cde55'] OR [file:hashes.'SHA-256' = 'f4be3316d1283766d8479e1ae49b0f2b114ca5dd4fc076cb8d350636d4360da1'] OR [file:hashes.'SHA-256' = 'f4d640102f791f45864d15702ea91c2f4acca45c424ee05f34a4112aa1a0dd87'] OR [file:hashes.'SHA-256' = 'f5729e4772ff54d9d467d8db254c220e7880a50a28820135294ec7d5df37a89c'] OR [file:hashes.'SHA-256' = 'f59df0373050020d46cc36bdec28542e71136d7a7988f8b1576272c8f1f5afbb'] OR [file:hashes.'SHA-256' = 'f7b08d7183bc1b1ec18a3f12496243a52f14a1535b776771b02cffe1760145c7'] OR [file:hashes.'SHA-256' = 'f89e7b0c6408f89c73bfa7c6f97d28c7bca0c067bcea97a524c10a377e55ee50'] OR [file:hashes.'SHA-256' = 'fa5d5774063fe032b9be993617435b57da556c4ce2cef267581acb493098b76b']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ha5h0000-0001-4000-8000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "name": "Muestras de Amatera/ACR Stealer (lote 6, hashes 161-192)",
+      "description": "Hashes SHA-256 de muestras de malware asociadas a Amatera Stealer y ACR Stealer. Lote 6 de 32 hashes.",
+      "indicator_types": ["malicious-activity"],
+      "pattern": "[file:hashes.'SHA-256' = 'fcd37d51ca9d72e7a38df466a2495e7cc4478e820f0d6953fb617bfe31142449'] OR [file:hashes.'SHA-256' = 'fe5b16ab3a33610667334967a1d4e314e4291305390fc893060efda132dc7bd9'] OR [file:hashes.'SHA-256' = 'fe65744e7490a23a0dc2ee6914184fbbc0e0f9815a285928a5b803de59959c85'] OR [file:hashes.'SHA-256' = '120316ecaf06b76a564ce42e11f7074c52df6d79b85d3526c5b4e9f362d2f1c2'] OR [file:hashes.'SHA-256' = '59202cb766c3034c308728c2e5770a0d074faa110ea981aa88f570eb402540d2'] OR [file:hashes.'SHA-256' = 'ad0bfefa643b395400d4c89181446dbfec57f263dda39555c2ef5e704a9e6eb6'] OR [file:hashes.'SHA-256' = 'f82938352cebfe4338e0e3e763cfee88aa5dd6229ac36200ce0392619153f4cd'] OR [file:hashes.'SHA-256' = '64010a9fe4483155044ad76aecbd2cdafab0fc1399e4ae0c644bcce6acbf7f58'] OR [file:hashes.'SHA-256' = '2db0c548a91356a4f79bcad8d492342699a5842b36cd813485145df0c2957c08'] OR [file:hashes.'SHA-256' = '68f9e86795c5dd817dec72f776ea0162a8c4a9cef26b54843fac00c101158ba1'] OR [file:hashes.'SHA-256' = '2df520219dd0db59d75203dec58c8d0dcce55b4e947defb1df30fdce4af982da'] OR [file:hashes.'SHA-256' = '4867b739b7a4cb72fdd88c7716150e12183b98a07a752753ced440355a5ee193'] OR [file:hashes.'SHA-256' = '38cd4bb0d7e4b8bc5de10df2a2554939ae96642109567e103d779b6eb19c40ae'] OR [file:hashes.'SHA-256' = '12ab29ed1c3f60092c101e9c8451ff44fda6c9787c6e32e3956e9a645be5dcee'] OR [file:hashes.'SHA-256' = '0111ffb0dab4bdef8c8788e4ce6ad4fc071b9f7b1f3affb7ead8d5df9582f34f'] OR [file:hashes.'SHA-256' = '006f0054609064c00d3d217ee37f924b4cf8c4fabde362408cdec1446d719913'] OR [file:hashes.'SHA-256' = '00b84eae83e4cd6165255247026c702c2c88f5cea8a1032187c2b842dc54095d'] OR [file:hashes.'SHA-256' = 'dc363b99506502dac735b4b5636dfeadc07fec6742140da0d89673110538e532'] OR [file:hashes.'SHA-256' = 'f7131fc0267d5e0eae0b00ee05eb221351910114d1794c30997a5e45e24059ef'] OR [file:hashes.'SHA-256' = 'bbf45b03ba04ceab793e2a4dda578c9d4881ba26d1a39bc1257a7996f7c3dfac'] OR [file:hashes.'SHA-256' = 'bc55d60466f7d1a03e4002759aa95cae2bd08cf9c0685f2f822ebcc8956569b2'] OR [file:hashes.'SHA-256' = '8721d3af5d2d01dc76d8102716dd6bc4271284a7682df46f10b6aacfd5b2cd48'] OR [file:hashes.'SHA-256' = '3e99b0f5eb750b818e55f23a6f1fcf8213e7ed3ac850529ade7e6fa6b7afe0e2'] OR [file:hashes.'SHA-256' = '2428bd931dde4d818437ff9e12197bdbb4a5c0548bc7c068bb732c7bc4847554'] OR [file:hashes.'SHA-256' = 'e4a1b01b2a76ef02a2f6ea32275eeee4f44b867d2d5768bf89f870cbfacfa47e'] OR [file:hashes.'SHA-256' = '0cec3100b84f95dfb1e856390cf41809b653812fd4d51025517ba11b167442fa'] OR [file:hashes.'SHA-256' = 'b9ff92917225778b82c30587d5559628f0ab14c359bd2b6ae4981ff262480fc8'] OR [file:hashes.'SHA-256' = 'ca6b92b816c98e3fca7b287cf665257a93f1a35cc768cae223ac31a97d1af203'] OR [file:hashes.'SHA-256' = 'e01fa4ca545c8a4002b9afe3243f80027b76ef5fb81fd5d9e9d1dcaddfaca54b'] OR [file:hashes.'SHA-256' = 'f213970c9bde24a7b774e16803b9df9be69e02f1795e777241ada5201ed72666'] OR [file:hashes.'SHA-256' = '4ad9fd2b5519c521765a80f3411f825adcd38409ba6cfefd595873c9c6db92c3'] OR [file:hashes.'SHA-256' = '9375878e6780ed937d68f58904d27257c5ec7af0fef24c6126a8e05eb2dbd4f3']",
+      "pattern_type": "stix",
+      "valid_from": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000001",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "La campana InstallFix distribuye Amatera Stealer",
+      "source_ref": "campaign--e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a90",
+      "target_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000002",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "attributed-to",
+      "description": "La campana InstallFix se atribuye al operador desconocido",
+      "source_ref": "campaign--e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a90",
+      "target_ref": "threat-actor--d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000003",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "Amatera Stealer utiliza la tecnica de Malvertising",
+      "source_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "target_ref": "attack-pattern--f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b01"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000004",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "Amatera Stealer utiliza Malicious Copy and Paste para ejecucion inicial",
+      "source_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "target_ref": "attack-pattern--a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c12"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000005",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "Amatera Stealer utiliza Command and Scripting Interpreter",
+      "source_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+      "target_ref": "attack-pattern--b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d23"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000006",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "exploits",
+      "description": "La campana InstallFix puede explotar CVE-2025-59536",
+      "source_ref": "campaign--e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a90",
+      "target_ref": "vulnerability--b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000007",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "exploits",
+      "description": "La campana InstallFix puede explotar CVE-2026-21852",
+      "source_ref": "campaign--e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a90",
+      "target_ref": "vulnerability--c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000008",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "Los indicadores de dominio indican la presencia de Amatera Stealer",
+      "source_ref": "indicator--d001a000-0001-4000-8000-000000000001",
+      "target_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000009",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "Los indicadores de hash indican la presencia de Amatera Stealer",
+      "source_ref": "indicator--ha5h0000-0001-4000-8000-000000000001",
+      "target_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000010",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "description": "Las direcciones IP indican infraestructura C2 de Amatera Stealer",
+      "source_ref": "indicator--1fa00000-0001-4000-8000-000000000001",
+      "target_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--re1a0000-0001-4000-8000-000000000011",
+      "created": "2026-03-12T00:00:00.000Z",
+      "modified": "2026-03-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "description": "El actor de amenaza opera Amatera Stealer como MaaS",
+      "source_ref": "threat-actor--d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80",
+      "target_ref": "malware--a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+    }
+  ]
+};
+
+// Render STIX bundle
+document.getElementById('stixBundle').textContent = JSON.stringify(stixBundle, null, 2);
+
+// Download function
+function downloadSTIX() {
+  var json = JSON.stringify(stixBundle, null, 2);
+  var blob = new Blob([json], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'stix_bundle_installfix_amatera_2026-03-12.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
